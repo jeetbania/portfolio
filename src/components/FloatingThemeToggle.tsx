@@ -3,16 +3,26 @@
 import { useTheme } from "@/lib/theme";
 import { withGlassShine, QUICK_EASE } from "@/lib/hoverStyles";
 import { useState } from "react";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 /**
  * A second, always-reachable theme toggle fixed to the bottom-right of
  * the viewport — doesn't depend on the nav header being scrolled into
  * its visible state, so the theme is always one click away.
+ *
+ * Desktop only: the mobile header's expand panel already has its own
+ * theme toggle (see Header.tsx's MobileNav), making this one redundant
+ * there — and its permanently-clickable fixed hitbox in the bottom-right
+ * corner is exactly the kind of thing that can end up sitting on top of
+ * page content at some scroll depths on a small screen.
  */
 export default function FloatingThemeToggle() {
   const { theme, toggle } = useTheme();
   const [hovered, setHovered] = useState(false);
+  const isMobile = useIsMobile();
   const isDark = theme === "dark";
+
+  if (isMobile) return null;
 
   const label = isDark ? "Switch to light mode" : "Switch to dark mode";
 

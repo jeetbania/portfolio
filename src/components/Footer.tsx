@@ -431,43 +431,49 @@ function DinoGame() {
           </div>
         </div>
 
-        <div style={{ display:"flex", alignItems:"stretch", gap:"8px" }}>
-          {/* Score pill — SAME bg as the outer card, white outline, soft shadow */}
-          <div style={{
-            background:CARD_BG, borderRadius:"13px",
-            outline:"1px solid #fff",
-            boxShadow: SHADOW_SOFT,
-            padding:"7px 18px", textAlign:"left", minWidth:78,
-          }}>
-            {/* Was #BDBDBD (1.78:1) / #417EFF (3.53:1) — both fail AA
-                against this panel's #F8F9FD. #6E6E6E / #3465CC clear
-                4.5:1 while keeping the same gray/blue read. */}
-            <p style={{ fontFamily:"var(--font-sans)", fontSize:"13px", fontWeight:700,
-              color:"#6E6E6E", margin:"0 0 1px" }}>
-              SCORE
-            </p>
-            <p style={{ fontFamily:"var(--font-sans)", fontSize:"clamp(18px,2vw,22px)", fontWeight:600,
-              color:"#3465CC", margin:0, fontVariantNumeric:"tabular-nums" }}>
-              {fmt(score)}
-            </p>
-          </div>
+        <div className="jeet-run-stats-row" style={{ display:"flex", alignItems:"stretch", gap:"8px" }}>
+          {/* Score + Best grouped together — on mobile the row's own
+              space-between (see .jeet-run-stats-row) should only open a
+              gap between this group and the reset button, not between
+              score and best themselves. */}
+          <div style={{ display:"flex", alignItems:"stretch", gap:"8px" }}>
+            {/* Score pill — SAME bg as the outer card, white outline, soft shadow */}
+            <div style={{
+              background:CARD_BG, borderRadius:"13px",
+              outline:"1px solid #fff",
+              boxShadow: SHADOW_SOFT,
+              padding:"7px 18px", textAlign:"left", minWidth:78,
+            }}>
+              {/* Was #BDBDBD (1.78:1) / #417EFF (3.53:1) — both fail AA
+                  against this panel's #F8F9FD. #6E6E6E / #3465CC clear
+                  4.5:1 while keeping the same gray/blue read. */}
+              <p style={{ fontFamily:"var(--font-sans)", fontSize:"13px", fontWeight:700,
+                color:"#6E6E6E", margin:"0 0 1px" }}>
+                SCORE
+              </p>
+              <p style={{ fontFamily:"var(--font-sans)", fontSize:"clamp(18px,2vw,22px)", fontWeight:600,
+                color:"#3465CC", margin:0, fontVariantNumeric:"tabular-nums" }}>
+                {fmt(score)}
+              </p>
+            </div>
 
-          {/* Best pill — same contrast fix as the Score pill above, green
-              value swapped #44B68F (2.39:1) → #2C765D (~5.16:1). */}
-          <div style={{
-            background:CARD_BG, borderRadius:"13px",
-            outline:"1px solid #fff",
-            boxShadow: SHADOW_SOFT,
-            padding:"7px 18px", textAlign:"left", minWidth:78,
-          }}>
-            <p style={{ fontFamily:"var(--font-sans)", fontSize:"13px", fontWeight:700,
-              color:"#6E6E6E", margin:"0 0 1px", textAlign:"center" }}>
-              BEST
-            </p>
-            <p style={{ fontFamily:"var(--font-sans)", fontSize:"clamp(18px,2vw,22px)", fontWeight:600,
-              color:"#2C765D", margin:0, fontVariantNumeric:"tabular-nums" }}>
-              {fmt(best)}
-            </p>
+            {/* Best pill — same contrast fix as the Score pill above, green
+                value swapped #44B68F (2.39:1) → #2C765D (~5.16:1). */}
+            <div style={{
+              background:CARD_BG, borderRadius:"13px",
+              outline:"1px solid #fff",
+              boxShadow: SHADOW_SOFT,
+              padding:"7px 18px", textAlign:"left", minWidth:78,
+            }}>
+              <p style={{ fontFamily:"var(--font-sans)", fontSize:"13px", fontWeight:700,
+                color:"#6E6E6E", margin:"0 0 1px", textAlign:"center" }}>
+                BEST
+              </p>
+              <p style={{ fontFamily:"var(--font-sans)", fontSize:"clamp(18px,2vw,22px)", fontWeight:600,
+                color:"#2C765D", margin:0, fontVariantNumeric:"tabular-nums" }}>
+                {fmt(best)}
+              </p>
+            </div>
           </div>
 
           {/* Reset button — height stretches to match the pills exactly (flex align-items:stretch).

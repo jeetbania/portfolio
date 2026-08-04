@@ -454,6 +454,17 @@ body {
     grid-template-columns: 1fr !important;
     gap: 0 !important;
   }
+
+  /* Footer game header row: on desktop this sits inline next to the
+     logo/title with no extra space to distribute, so it needs no
+     override there. On mobile the row wraps onto its own line below the
+     logo (see the header row's flexWrap:"wrap" in Footer.tsx) with room
+     to spare beside it — stretching to full width lets space-between
+     keep SCORE/BEST pinned left while pushing reset to the far right. */
+  .jeet-run-stats-row {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
 }
 
 /* ─── Case study body grid (desktop default) ───────────────────────── */

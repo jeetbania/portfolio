@@ -224,31 +224,57 @@ function DesktopNav() {
    Completely separate component/markup from desktop, so nothing here
    can ever affect the desktop nav.
    ══════════════════════════════════════════════════════════════════ */
+/* Panel open/close — a real spring (via Motion) instead of a fixed CSS
+   cubic-bezier, so it actually overshoots slightly on open for a more
+   tactile, "premium" feel. Kept as separate open/close curves — closing
+   snappier with almost no bounce, matching the folder-card convention in
+   Folder.tsx (OPEN_SPRING/CLOSE_SPRING). */
+const PANEL_OPEN_SPRING  = { type: "spring" as const, duration: 0.46, bounce: 0.38 };
+const PANEL_CLOSE_SPRING = { type: "spring" as const, duration: 0.28, bounce: 0.1  };
+
 function MobileNav() {
   const { visible, active } = useHeaderState();
   const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const logoRef  = useRef<HTMLDivElement>(null);
+  const menuRef  = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
+    const targets = [logoRef.current, menuRef.current].filter(Boolean) as HTMLElement[];
+    if (targets.length === 0) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (visible) {
-      animate(el, { y: 0, opacity: 1, scale: 1 },
-        reduced ? { duration: 0 } : { type: "spring", duration: 0.4, bounce: 0.24 });
+      targets.forEach(el => animate(el, { y: 0, opacity: 1, scale: 1 },
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.4, bounce: 0.24 }));
     } else {
-      animate(el, { y: -14, opacity: 0, scale: 0.96 },
-        reduced ? { duration: 0 } : { type: "spring", duration: 0.26, bounce: 0 });
+      targets.forEach(el => animate(el, { y: -14, opacity: 0, scale: 0.96 },
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.26, bounce: 0 }));
       setOpen(false);
     }
   }, [visible]);
+
+  /* Panel spring — separate from the show/hide animation above since it
+     runs on a different trigger (`open`, not `visible`) and targets a
+     different element (the panel itself, not the logo/menu pills). */
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (open) {
+      animate(el, { scale: 1, y: 0, opacity: 1 }, reduced ? { duration: 0 } : PANEL_OPEN_SPRING);
+    } else {
+      animate(el, { scale: 0.92, y: -10, opacity: 0 }, reduced ? { duration: 0 } : PANEL_CLOSE_SPRING);
+    }
+  }, [open]);
 
   /* Close on any click outside the pills/panel — same pattern as
      MobileFloatingMenu / the Quick Ask reply bar. */
   useEffect(() => {
     if (!open) return;
     function onOutside(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      if (logoRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setOpen(false);
     }
     document.addEventListener("mousedown", onOutside);
     return () => document.removeEventListener("mousedown", onOutside);
@@ -307,72 +333,106 @@ function MobileNav() {
         }}
       />
 
-      <div style={{ position: "fixed", top: "14px", left: 0, right: 0, zIndex: 100, display: "flex", justifyContent: "center", pointerEvents: "none", padding: "0 16px" }}>
+      {/* Logo pill — its own independently fixed, truly centered anchor.
+          The centering transform (translateX(-50%)) lives on this OUTER,
+          never-animated wrapper; the INNER logoRef div is the sole target
+          of Motion's show/hide animation. Mixing a baked-in CSS transform
+          with Motion's own transform writes on the same element is what
+          caused Folder.tsx's documented 360°-spin bug — keeping them on
+          separate elements avoids that entirely. */}
+      <div style={{ position: "fixed", top: "14px", left: "50%", transform: "translateX(-50%)", zIndex: 100, pointerEvents: "none" }}>
         <div
-          ref={wrapRef}
+          ref={logoRef}
           style={{
-            display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
             pointerEvents: visible ? "auto" : "none",
             opacity: 0,
             transform: "translateY(-14px) scale(0.96)",
           }}
         >
-          {/* Row: logo pill (links home) + menu pill (toggles the panel) */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Link
-              href="/"
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                padding: "12px 22px",
-                borderRadius: "99px",
-                background: "var(--surface-nav)",
-                backdropFilter: "blur(22px) saturate(180%)",
-                WebkitBackdropFilter: "blur(22px) saturate(180%)",
-                border: "1px solid var(--surface-glass-border)",
-                boxShadow: pillShadow,
-                fontFamily: "var(--font-serif)", fontSize: "16px", fontWeight: 400,
-                color: "var(--col-fg)", letterSpacing: "-0.01em",
-                textDecoration: "none", whiteSpace: "nowrap",
-              }}
-            >
-              Jeet Bania
-            </Link>
-
-            <button
-              onClick={() => setOpen(o => !o)}
-              aria-expanded={open}
-              aria-label={open ? "Close menu" : "Open menu"}
-              style={{
-                flexShrink: 0,
-                width: 44, height: 44,
-                borderRadius: "50%",
-                display: "grid", placeItems: "center",
-                background: "var(--surface-nav)",
-                backdropFilter: "blur(22px) saturate(180%)",
-                WebkitBackdropFilter: "blur(22px) saturate(180%)",
-                border: "1px solid var(--surface-glass-border)",
-                boxShadow: pillShadow,
-                cursor: "pointer",
-              }}
-            >
-              {open ? (
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 3l10 10M13 3 3 13" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
-              ) : (
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M2 5h12M2 11h12" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
-              )}
-            </button>
-          </div>
-
-          {/* Panel — pops open below the pill row, same scale+opacity
-              language as MobileFloatingMenu's panel (transformOrigin
-              flipped to "top center" since this one opens downward). */}
-          <div
+          <Link
+            href="/"
             style={{
-              width: "min(280px, 100%)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: "12px 22px",
+              borderRadius: "99px",
+              background: "var(--surface-nav)",
+              backdropFilter: "blur(22px) saturate(180%)",
+              WebkitBackdropFilter: "blur(22px) saturate(180%)",
+              border: "1px solid var(--surface-glass-border)",
+              boxShadow: pillShadow,
+              fontFamily: "var(--font-serif)", fontSize: "16px", fontWeight: 400,
+              color: "var(--col-fg)", letterSpacing: "-0.01em",
+              textDecoration: "none", whiteSpace: "nowrap",
+            }}
+          >
+            Jeet Bania
+          </Link>
+        </div>
+      </div>
+
+      {/* Menu pill — independently fixed to the right edge, with its
+          expand panel anchored below it via position:absolute. Absolute
+          (not a normal flex-flow sibling) matters: a statically-flowed
+          panel keeps reserving its full closed-state box even at
+          scale(0.92)/opacity:0 (CSS transforms never collapse layout),
+          and this container's default pointer-events:auto made that
+          invisible box swallow taps to whatever page content scrolled
+          underneath it — the actual cause of the "Copy Email unclickable"
+          and "Quick Ask untypeable" bugs. Taking the panel out of flow
+          shrinks this box down to just the visible button. */}
+      <div
+        ref={menuRef}
+        style={{
+          position: "fixed", top: "14px",
+          right: "calc(16px + env(safe-area-inset-right, 0px))",
+          zIndex: 100,
+          pointerEvents: visible ? "auto" : "none",
+          opacity: 0,
+          transform: "translateY(-14px) scale(0.96)",
+        }}
+      >
+        <button
+          onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
+          aria-label={open ? "Close menu" : "Open menu"}
+          style={{
+            flexShrink: 0,
+            width: 44, height: 44,
+            borderRadius: "50%",
+            display: "grid", placeItems: "center",
+            background: "var(--surface-nav)",
+            backdropFilter: "blur(22px) saturate(180%)",
+            WebkitBackdropFilter: "blur(22px) saturate(180%)",
+            border: "1px solid var(--surface-glass-border)",
+            boxShadow: pillShadow,
+            cursor: "pointer",
+          }}
+        >
+          {open ? (
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 3l10 10M13 3 3 13" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M2 5h12M2 11h12" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+
+        {/* Positioning wrapper — no visual styling of its own, always
+            pointer-events:none so it can never intercept taps; the real
+            panel inside toggles its own pointer-events with `open`. */}
+        <div
+          aria-hidden={!open}
+          style={{
+            position: "absolute", top: "calc(100% + 8px)", right: 0,
+            width: "min(320px, calc(100vw - 32px))",
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            ref={panelRef}
+            style={{
               borderRadius: "22px",
               background: "var(--surface-nav)",
               backdropFilter: "blur(22px) saturate(180%)",
@@ -380,11 +440,10 @@ function MobileNav() {
               border: "1px solid var(--surface-glass-border)",
               boxShadow: "0 20px 44px rgba(var(--shadow-tint-rgb),0.2), var(--glass-bevel)",
               overflow: "hidden",
-              transformOrigin: "top center",
-              transform: open ? "scale(1) translateY(0)" : "scale(0.92) translateY(-10px)",
-              opacity: open ? 1 : 0,
+              transformOrigin: "top right",
+              opacity: 0,
+              transform: "scale(0.92) translateY(-10px)",
               pointerEvents: open ? "auto" : "none",
-              transition: "transform 260ms var(--ease-spring), opacity 200ms var(--ease-out)",
             }}
           >
             <nav

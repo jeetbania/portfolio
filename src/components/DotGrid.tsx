@@ -3,11 +3,13 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/lib/theme";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function DotGrid() {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   const isHome = pathname === "/";
 
   useEffect(() => {
@@ -67,16 +69,25 @@ export default function DotGrid() {
 
     resize();
     window.addEventListener("resize", resize, { passive: true });
-    window.addEventListener("pointermove", e => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
-    window.addEventListener("pointerleave", () => { pointer.x = -9999; pointer.y = -9999; });
 
-    if (reduced) draw(); else rafId = requestAnimationFrame(loop);
+    /* Mobile: skip the pointer-follow interaction entirely — there's no
+       persistent hover on touch, and leaving the listener + RAF loop
+       running just burns battery animating dots toward a target that
+       never moves. Pointer stays at its off-screen default, so every dot
+       just renders at rest, once, same as the reduced-motion path. */
+    const stayStatic = reduced || isMobile;
+    if (!isMobile) {
+      window.addEventListener("pointermove", e => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+      window.addEventListener("pointerleave", () => { pointer.x = -9999; pointer.y = -9999; });
+    }
+
+    if (stayStatic) draw(); else rafId = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
     };
-  }, [theme, isHome]);
+  }, [theme, isHome, isMobile]);
 
   if (!isHome) return null;
 

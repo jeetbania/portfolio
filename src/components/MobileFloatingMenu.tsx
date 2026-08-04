@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { animate } from "motion";
+
+const PANEL_OPEN_SPRING  = { type: "spring" as const, duration: 0.46, bounce: 0.38 };
+const PANEL_CLOSE_SPRING = { type: "spring" as const, duration: 0.28, bounce: 0.1  };
 
 export interface FloatingMenuItem {
   key: string;
@@ -38,6 +42,7 @@ export default function MobileFloatingMenu({
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [pillWidth, setPillWidth] = useState<number>();
 
   useLayoutEffect(() => {
@@ -67,6 +72,21 @@ export default function MobileFloatingMenu({
     return () => document.removeEventListener("mousedown", onOutside);
   }, [open]);
 
+  /* Spring-driven open/close instead of a fixed CSS cubic-bezier — a real
+     overshoot on open reads as more premium/tactile. Separate curves for
+     open vs close (snappier, near-zero bounce on close) matching the
+     folder-card convention elsewhere (Folder.tsx's OPEN_SPRING/CLOSE_SPRING). */
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (open) {
+      animate(el, { scale: 1, y: 0, opacity: 1 }, reduced ? { duration: 0 } : PANEL_OPEN_SPRING);
+    } else {
+      animate(el, { scale: 0.92, y: 10, opacity: 0 }, reduced ? { duration: 0 } : PANEL_CLOSE_SPRING);
+    }
+  }, [open]);
+
   return (
     <>
       <div
@@ -88,80 +108,8 @@ export default function MobileFloatingMenu({
           left: "calc(18px + env(safe-area-inset-left, 0px))",
           bottom: "calc(18px + env(safe-area-inset-bottom, 0px))",
           zIndex: 50,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: "8px",
         }}
       >
-        {/* Expanded panel — sized to its own content (fit-content), capped
-            so a long section label can't push it off the right edge of a
-            narrow phone. Left-anchored to the same edge as the pill below
-            it regardless of which one is wider. */}
-        <div
-          role="menu"
-          style={{
-            width: "fit-content",
-            minWidth: pillWidth ? `${pillWidth}px` : undefined,
-            maxWidth: "min(280px, calc(100vw - 52px))",
-            borderRadius: "20px",
-            background: "var(--surface-nav)",
-            border: "1px solid var(--surface-glass-border)",
-            boxShadow: "0 20px 44px rgba(var(--shadow-tint-rgb),0.2), var(--glass-bevel)",
-            backdropFilter: "blur(22px) saturate(180%)",
-            WebkitBackdropFilter: "blur(22px) saturate(180%)",
-            overflow: "hidden",
-            transformOrigin: "bottom left",
-            transform: open ? "scale(1) translateY(0)" : "scale(0.92) translateY(10px)",
-            opacity: open ? 1 : 0,
-            pointerEvents: open ? "auto" : "none",
-            transition: "transform 260ms var(--ease-spring), opacity 200ms var(--ease-out)",
-          }}
-        >
-          <div style={{ maxHeight: "min(52vh, 380px)", overflowY: "auto", padding: "6px" }}>
-            {leading && (
-              <>
-                <button
-                  onClick={() => { leading.onSelect(); setOpen(false); }}
-                  style={{
-                    display: "flex", alignItems: "center", gap: "8px", width: "100%",
-                    padding: "12px 14px", borderRadius: "13px", border: "none",
-                    background: "transparent", textAlign: "left", cursor: "pointer",
-                    fontFamily: "var(--font-sans)", fontSize: "14.5px", fontWeight: 500,
-                    color: "var(--col-fg)", whiteSpace: "nowrap",
-                  }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <path d="M11.5 7H2.5M2.5 7L6 3.5M2.5 7L6 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {leading.label}
-                </button>
-                <div style={{ height: 1, background: "var(--col-hairline)", margin: "4px 10px" }} />
-              </>
-            )}
-            {items.map(item => (
-              <button
-                key={item.key}
-                role="menuitemradio"
-                aria-checked={!!item.active}
-                onClick={() => { item.onSelect(); setOpen(false); }}
-                style={{
-                  display: "block", width: "100%",
-                  padding: "12px 14px", borderRadius: "13px", border: "none",
-                  background: item.active ? "var(--toc-active-bg)" : "transparent",
-                  textAlign: "left", cursor: "pointer", whiteSpace: "nowrap",
-                  fontFamily: "var(--font-sans)", fontSize: "14.5px",
-                  fontWeight: item.active ? 600 : 400,
-                  color: item.active ? "var(--col-fg)" : "var(--col-muted)",
-                  transition: "background 120ms var(--ease-out), color 120ms var(--ease-out)",
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Trigger pill — width is JS-measured (see pillWidth above) and
             tweened by .t-resize whenever the label's natural size changes,
             instead of just snapping to the new width. */}
@@ -207,6 +155,89 @@ export default function MobileFloatingMenu({
             <path d="M2.5 4.5 6 8 9.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
+
+        {/* Positioning wrapper — position:absolute (not a normal flex-flow
+            sibling of the pill) so it never reserves layout space in the
+            closed state. A statically-flowed panel kept its full box at
+            scale(0.92)/opacity:0 (CSS transforms don't collapse layout),
+            and this wrapRef's default pointer-events:auto let that
+            invisible box swallow taps to whatever page content sat
+            underneath it at a given scroll position. Always
+            pointer-events:none itself; the real panel below toggles its
+            own pointer-events with `open`. */}
+        <div
+          aria-hidden={!open}
+          style={{
+            position: "absolute",
+            bottom: "calc(100% + 8px)",
+            left: 0,
+            width: "fit-content",
+            minWidth: pillWidth ? `${pillWidth}px` : undefined,
+            maxWidth: "min(320px, calc(100vw - 40px))",
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            ref={panelRef}
+            role="menu"
+            style={{
+              borderRadius: "20px",
+              background: "var(--surface-nav)",
+              border: "1px solid var(--surface-glass-border)",
+              boxShadow: "0 20px 44px rgba(var(--shadow-tint-rgb),0.2), var(--glass-bevel)",
+              backdropFilter: "blur(22px) saturate(180%)",
+              WebkitBackdropFilter: "blur(22px) saturate(180%)",
+              overflow: "hidden",
+              transformOrigin: "bottom left",
+              opacity: 0,
+              transform: "scale(0.92) translateY(10px)",
+              pointerEvents: open ? "auto" : "none",
+            }}
+          >
+            <div style={{ maxHeight: "min(52vh, 380px)", overflowY: "auto", padding: "6px" }}>
+              {leading && (
+                <>
+                  <button
+                    onClick={() => { leading.onSelect(); setOpen(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "8px", width: "100%",
+                      padding: "12px 14px", borderRadius: "13px", border: "none",
+                      background: "transparent", textAlign: "left", cursor: "pointer",
+                      fontFamily: "var(--font-sans)", fontSize: "14.5px", fontWeight: 500,
+                      color: "var(--col-fg)", whiteSpace: "nowrap",
+                    }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M11.5 7H2.5M2.5 7L6 3.5M2.5 7L6 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {leading.label}
+                  </button>
+                  <div style={{ height: 1, background: "var(--col-hairline)", margin: "4px 10px" }} />
+                </>
+              )}
+              {items.map(item => (
+                <button
+                  key={item.key}
+                  role="menuitemradio"
+                  aria-checked={!!item.active}
+                  onClick={() => { item.onSelect(); setOpen(false); }}
+                  style={{
+                    display: "block", width: "100%",
+                    padding: "12px 14px", borderRadius: "13px", border: "none",
+                    background: item.active ? "var(--toc-active-bg)" : "transparent",
+                    textAlign: "left", cursor: "pointer", whiteSpace: "nowrap",
+                    fontFamily: "var(--font-sans)", fontSize: "14.5px",
+                    fontWeight: item.active ? 600 : 400,
+                    color: item.active ? "var(--col-fg)" : "var(--col-muted)",
+                    transition: "background 120ms var(--ease-out), color 120ms var(--ease-out)",
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
