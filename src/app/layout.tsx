@@ -1,0 +1,82 @@
+import type { Metadata } from "next";
+import { Instrument_Sans, Instrument_Serif, Shadows_Into_Light } from "next/font/google";
+import "./globals.css";
+import Header  from "@/components/Header";
+import DotGrid from "@/components/DotGrid";
+import FloatingThemeToggle from "@/components/FloatingThemeToggle";
+import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
+
+/*
+ * Self-hosted via next/font/google instead of a manual <link> to
+ * fonts.googleapis.com in <head> — that link was a render-blocking
+ * request to an external origin (Lighthouse flagged ~500ms of blocking
+ * time from it alone), and Instrument Sans/Serif were actually being
+ * loaded TWICE: once via that <link> and again via the @import at the
+ * top of globals.css. next/font downloads the font files at build time,
+ * serves them from this domain, and injects non-blocking @font-face CSS
+ * — no external request, no render-blocking, no duplicate load. Each
+ * font's `variable` name matches the --font-sans/--font-serif/--font-hand
+ * custom properties already used everywhere via var(--font-*), so no
+ * component code needs to change — only where the value comes from.
+ */
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"], // italic is only ever used with --font-serif, never --font-sans
+  variable: "--font-sans",
+  display: "swap",
+});
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400", // Instrument Serif only ships one weight
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+const shadowsIntoLight = Shadows_Into_Light({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-hand",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Jeet Bania — UX & Motion Designer",
+  description: "I make real experiences that connect with real people.",
+  openGraph: {
+    title: "Jeet Bania — UX & Motion Designer",
+    description: "I make real experiences that connect with real people.",
+    type: "website",
+  },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${instrumentSans.variable} ${instrumentSerif.variable} ${shadowsIntoLight.variable}`}
+    >
+      <head>
+        {/*
+         * Runs before hydration so the correct theme (from localStorage,
+         * or the OS preference on first visit) is already applied to
+         * <html> for the very first paint — no flash of the wrong theme.
+         * This one script is the only thing every future page needs;
+         * everything else flows from the CSS variables it activates.
+         */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body style={{ position: "relative" }}>
+        <ThemeProvider>
+          {/* Dot grid sits behind everything */}
+          <DotGrid />
+          <Header />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {children}
+          </div>
+          <FloatingThemeToggle />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

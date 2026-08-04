@@ -1,0 +1,502 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   Every theme-sensitive color in the app should reference one of these
+   variables rather than a literal hex/rgba. That's what makes dark
+   mode (and any future theme) a token swap instead of a rewrite —
+   new pages (about, case studies) get it for free by using the same
+   variables.
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+
+  /* Decorative hero shadow blobs — same asset, theme-tuned opacity */
+  --shadow-decorative-opacity: 0.16;
+
+  /* Rounded "cap" radius used where a content card curves into the
+     black footer — shared across homepage / about / case study pages */
+  --rounded-cap: 44px;
+
+  /* Table-of-contents active-row background — needs more contrast against
+     --col-bg than --surface-card provides (that's near-white at 0.88 alpha) */
+  --toc-active-bg: #E9E7E1;
+
+  /* Base palette */
+  --col-bg:           #F5F4F0;
+  --col-fg:           #1A1A1A;
+  --col-muted:        #6B6B6B;
+  /* Was .4 (2.8:1 against --col-bg) — real text at this token's actual
+     sizes (10.5–13px meta labels/captions) needs WCAG AA's 4.5:1, not
+     just "looks appropriately faint." .55 clears it with margin even on
+     the lightest surface (--surface-opaque tiles) this sits on. */
+  --col-muted-2:      rgba(0,0,0,0.55);
+  --col-border:       rgba(0,0,0,0.08);
+
+  /* Glass / surface system — every blurred card in the app draws from these */
+  --surface-glass:        rgba(255,255,255,0.65);
+  --surface-glass-strong: rgba(255,255,255,0.88);
+  --surface-glass-border: rgba(255,255,255,0.75);
+  --surface-nav:          rgba(245,244,240,0.78);
+  --surface-card:         rgba(255,255,255,0.88);
+  --surface-card-border:  rgba(0,0,0,0.06);
+
+  /* Primary CTA (hero "Let's Talk", reset button, send button, etc.) */
+  --cta-bg:            rgba(255,255,255,0.72);
+  --cta-bg-hover:      rgba(20,20,22,0.9);
+  --cta-text:          var(--col-fg);
+  --cta-text-hover:    #ffffff;
+  --cta-border:        rgba(0,0,0,0.09);
+  --cta-shadow:        rgba(0,0,0,0.07);
+  --cta-shadow-hover:  rgba(0,0,0,0.2);
+  /* The subtle top highlight on a RESTING glass button — a bright glossy
+     sheen reads naturally on a light pill, but the same brightness on a
+     dark button looks like a stray glow, so this is themed separately
+     from the hover shine (which stays a fixed, universal effect). */
+  --cta-shine-rest:    rgba(255,255,255,0.95);
+
+  /* Ambient dot grid */
+  --dot-color: rgba(0,0,0,0.38);
+
+  /* Small structural elements: divider lines, progress-ring tracks, muted number chips */
+  --col-hairline:    rgba(0,0,0,0.07);
+  --col-chip-muted:  rgba(0,0,0,0.05);
+  --surface-wash:    linear-gradient(180deg, rgba(20,20,30,0.045) 0%, rgba(20,20,30,0) 65%);
+
+  /*
+   * Fully opaque neutral — for anything that must completely block what's
+   * behind it (the dot grid, a vivid gradient card) rather than blend with
+   * it. --surface-glass-strong / --surface-card are tuned for subtlety
+   * against a neutral backdrop; this one is for when subtlety would fail.
+   */
+  --surface-opaque: rgba(255,255,255,0.94);
+
+  /*
+   * A partially see-through card face — for surfaces sitting on top of a
+   * vividly-coloured backing (the "about me" fan cards) that should still
+   * mute the colour a little for text legibility without fully hiding it.
+   * Distinct from --surface-opaque, which is for full coverage (dot grid,
+   * the Quick Ask bar) where nothing behind should show through at all.
+   */
+  --surface-card-tinted: rgba(255,255,255,0.88);
+
+  /* Shadow tint (used for the indigo-tinted "nested card" shadows) */
+  --shadow-tint-rgb: 20,20,40;
+
+  /* Folder tints — brand colours, identical in both themes */
+  --folder-incore:    #B8F0D8;
+  --folder-migrateful:#D4C9F5;
+  --folder-yap:       #B8CEF5;
+  --folder-fourth:    #F5D4B8;
+  --folder-fifth:     #F5C6DC;
+  --folder-sixth:     #C8E6C0;
+
+  /* Typography — --font-serif/--font-sans/--font-hand are NOT defined
+     here. They come from next/font/google in layout.tsx (each font's
+     `variable` option is set to match these exact names), applied via
+     className on <html> — that's what actually self-hosts the fonts and
+     avoids a render-blocking request to fonts.googleapis.com. Defining
+     them here too would just be a second, conflicting source of truth. */
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* Permanent top-edge highlight for "raised glass" surfaces (pills, cards,
+     tabs) — distinct from --cta-shine-rest / withGlassShine(), which are
+     both a brighter HOVER-only reward. This is a much dimmer, always-on
+     bevel. Light mode doesn't need it — the shadow-tint ambient shadow
+     already reads fine against a light page — so it's a no-op here and
+     only does real work in the dark override below. */
+  --glass-bevel: none;
+}
+
+/* ─── Dark theme overrides ──────────────────────────────────────────── */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --shadow-decorative-opacity: 0.22;
+  --toc-active-bg: rgba(255,255,255,0.09);
+
+  --col-bg:      #111113;
+  --col-fg:      #F2F1ED;
+  --col-muted:   rgba(255,255,255,0.56);
+  /* Was .4 (3.8:1 against --col-bg, worse against --surface-opaque tiles)
+     — same fix as the light-theme value above, same reasoning. .5 clears
+     4.5:1 with margin. */
+  --col-muted-2: rgba(255,255,255,0.5);
+  --col-border:  rgba(255,255,255,0.10);
+
+  /* Bumped up from an earlier pass (.055/.09/.14/.045/.08) — on a flat
+     near-black page, box-shadows built from --shadow-tint-rgb (0,0,0 below)
+     are essentially invisible, so glass surfaces here have to read almost
+     entirely through fill contrast + a visible border instead of shadow.
+     The old, more subtle values matched fine against the light theme's
+     off-white page but washed out to nearly nothing here. */
+  --surface-glass:        rgba(255,255,255,0.08);
+  --surface-glass-strong: rgba(255,255,255,0.14);
+  --surface-glass-border: rgba(255,255,255,0.22);
+  --surface-nav:          rgba(22,22,24,0.72);
+  --surface-card:         rgba(255,255,255,0.06);
+  --surface-card-border:  rgba(255,255,255,0.14);
+
+  --cta-bg:           rgba(255,255,255,0.10);
+  --cta-bg-hover:     #ffffff;
+  --cta-text:         #ffffff;
+  --cta-text-hover:   #111113;
+  --cta-border:       rgba(255,255,255,0.14);
+  --cta-shadow:       rgba(0,0,0,0.45);
+  --cta-shadow-hover: rgba(255,255,255,0.18);
+  /* Near-invisible at rest — avoids the "glowing rim" look on a dark button */
+  --cta-shine-rest:   rgba(255,255,255,0.05);
+
+  --dot-color: rgba(255,255,255,0.22);
+
+  --col-hairline:    rgba(255,255,255,0.09);
+  --col-chip-muted:  rgba(255,255,255,0.07);
+  --surface-wash:    linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 65%);
+
+  /* Lightened from rgba(22,22,25,.95) — that was barely distinguishable
+     from --col-bg (#111113), so opaque cards had no visible "floor" to
+     sit on. Now they read as a raised surface even before border/bevel. */
+  --surface-opaque: rgba(32,32,37,0.97);
+
+  /* Much more see-through than --surface-opaque so the vivid backing
+     colour on the "about me" cards stays visible, not muddy-dark */
+  --surface-card-tinted: rgba(18,18,22,0.42);
+
+  --shadow-tint-rgb: 0,0,0;
+
+  /* See the :root comment — this is what actually does something: a dim,
+     permanent top-edge highlight that reads as a glass bevel against a
+     flat black page, standing in for the drop-shadow depth cue that
+     --shadow-tint-rgb can't provide here (black-on-black is invisible). */
+  --glass-bevel: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* ─── Reset & base ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--col-bg);
+  color: var(--col-fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 320ms var(--ease-out), color 320ms var(--ease-out);
+}
+
+/* ─── Type scale ────────────────────────────────────────────────────── */
+.t-hero {
+  font-family: var(--font-serif);
+  font-size: clamp(52px, 8vw, 96px);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+.t-tagline {
+  font-family: var(--font-serif);
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.4;
+  font-weight: 400;
+}
+.t-body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--col-muted);
+}
+.t-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--col-muted);
+}
+.t-hand {
+  font-family: var(--font-hand);
+  font-size: clamp(20px, 2.8vw, 26px);
+  color: var(--col-muted);
+}
+
+/* ─── Global keyboard-focus ring — branded (site ink color), not each
+   browser's mismatched default blue. :focus-visible only, so it never
+   shows on a mouse click. Folder.tsx / BlogCard.tsx opt out via Tailwind's
+   `focus-visible:outline-none focus-visible:ring-*` (higher specificity
+   than this, so it still wins there) since those already have their own
+   custom ring — this is the default for everything else. ─────────────── */
+:focus-visible {
+  outline: 2px solid var(--col-fg);
+  outline-offset: 2px;
+}
+
+/* ─── Focus ring for text-input pills (FilterBar search, Quick Ask) ────
+   Both inputs set outline:none inline with nothing to replace it — a real
+   keyboard-focus regression (WCAG 2.4.7). Rather than ring the bare
+   <input> (an ugly rectangle inside a rounded pill), :has(:focus-visible)
+   rings the whole rounded container the input lives in. :focus-visible
+   still matches on the input even though its own outline is suppressed —
+   that inline style only stops the paint, not the pseudo-class. Keyboard
+   only, never on a mouse click, same as native :focus-visible anywhere
+   else. ─────────────────────────────────────────────────────────────── */
+.t-focus-ring:has(:focus-visible) {
+  outline: 2px solid var(--col-fg);
+  outline-offset: 2px;
+}
+
+/* ─── Quote block toolbar (QuoteBlock.tsx) — hidden-until-hover ONLY on
+   devices that genuinely support hover (mouse/trackpad). A JS
+   onMouseEnter/Leave toggle never fires on touch, so a touch user could
+   never reveal (or use) the copy buttons at all; hover:hover also covers
+   the keyboard case since :focus-within reveals it the moment Tab lands
+   on a button, instead of leaving it invisible mid-focus. ─────────────── */
+.quote-toolbar {
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .quote-toolbar {
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+  .quote-block:hover .quote-toolbar,
+  .quote-block:focus-within .quote-toolbar {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--col-border); border-radius: 3px; }
+
+/* ─── Reduced motion ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Tooltip (transitions.dev) — used for icon-only hovers: tool
+   logos, social icons, theme toggle. Colors ride the theme tokens
+   (inverted fg/bg) so light/dark mode both get proper contrast without
+   a separate dark-mode override. The reduced-motion block above already
+   zeroes every transition duration site-wide, so no extra override
+   needed here. ────────────────────────────────────────────────────── */
+:root {
+  --tt-in-dur: 150ms;
+  --tt-out-dur: 50ms;
+  --tt-scale: 0.98;
+  --tt-delay: 80ms;
+  --tt-in-ease: ease-out;
+  --tt-out-ease: ease-out;
+  --tt-bg: var(--col-fg);
+  --tt-fg: var(--col-bg);
+}
+
+.t-tt-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.t-tt {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translate(-50%, 0) scale(var(--tt-scale));
+  transform-origin: 50% 100%;
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--tt-bg);
+  color: var(--tt-fg);
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 2px 6px 0 rgba(0, 0, 0, 0.05),
+    0 4px 42px 0 rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 40;
+  /* Default rule controls the LEAVE state. transition-delay stays
+     unset so leaving plays without delay. */
+  transition:
+    opacity   var(--tt-out-dur) var(--tt-out-ease),
+    transform var(--tt-out-dur) var(--tt-out-ease);
+}
+/* The delay belongs ONLY to the hover rule so leaving the trigger
+   snaps the delay back to 0 and the disappear plays immediately. */
+.t-tt-wrap:hover .t-tt,
+.t-tt-trigger:focus-visible + .t-tt {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+  transition-duration: var(--tt-in-dur);
+  transition-timing-function: var(--tt-in-ease);
+  transition-delay: var(--tt-delay);
+}
+
+/* ─── Shimmer text (transitions.dev) — "Let me think..." in the
+   Quick Ask reply panel. Base/highlight ride the theme's muted/fg
+   tokens so the sweep reads correctly in both themes: in light mode
+   the highlight is the darker --col-fg (higher contrast on a light
+   surface); in dark mode --col-fg is the lighter tone, so the sweep
+   naturally brightens instead. ─────────────────────────────────────── */
+:root {
+  --shimmer-dur: 1600ms;
+  --shimmer-base: var(--col-muted);
+  --shimmer-highlight: var(--col-fg);
+  --shimmer-band: 400%;
+  --shimmer-ease: linear;
+}
+
+.t-shimmer {
+  position: relative;
+  display: inline-block;
+  color: var(--shimmer-base);
+}
+.t-shimmer::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    90deg,
+    transparent               0%,
+    transparent              40%,
+    var(--shimmer-highlight)  50%,
+    transparent              60%,
+    transparent             100%
+  );
+  background-size: var(--shimmer-band) 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: t-shimmer var(--shimmer-dur) var(--shimmer-ease) infinite;
+}
+@keyframes t-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: 0% 0; }
+}
+
+/* ─── Pixel loader (Quick Ask "Let me think...") — one pixel bright,
+   fading, at a time; each of the 8 dots is phase-offset via a negative
+   animation-delay (see PixelLoader in Playground.tsx) so together they
+   read as a single point chasing around the ring. ───────────────────── */
+@keyframes pixel-loader-tick {
+  0%    { opacity: 1; }
+  12.5% { opacity: 0.2; }
+  100%  { opacity: 0.2; }
+}
+
+/* ─── Card resize (transitions.dev) — tweens width/height changes instead
+   of snapping. Used on MobileFloatingMenu's trigger pill: it sizes to fit
+   its own label ("All" vs "06 · Design System"), so the pill itself needs
+   to visibly grow/shrink as that label changes, not just pop to a new size. */
+:root {
+  --resize-dur: 300ms;
+  --resize-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.t-resize {
+  transition:
+    width  var(--resize-dur) var(--resize-ease),
+    height var(--resize-dur) var(--resize-ease);
+  will-change: width, height;
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-resize { transition: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE — pure CSS layout overrides only (no JS, no hydration risk).
+   Anything needing a genuinely different structure (not just size)
+   uses the useIsMobile() hook instead — see Header.tsx and Playground.tsx.
+   Scoped to max-width so desktop styles above are completely untouched.
+   ══════════════════════════════════════════════════════════════════ */
+/* ─── Work page filter grid — entrance keyframe for filtered items ──── */
+@keyframes work-item-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE — real breakpoint (≤767px). Layout-only changes live here as
+   plain CSS media queries; anything that needs different STRUCTURE (not
+   just smaller sizes) uses the useIsMobile() hook instead — see Header.tsx and Playground.tsx.
+   Scoped to max-width so desktop styles above are completely untouched.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Work section: 2 columns → 1. This was the root cause of folders
+     overflowing on phones — at ~170px wide, the tag pills + arrow
+     button simply didn't fit. Full width fixes it directly. */
+  .work-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+  .work-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* Case study body: sidebar rail → stacked, since CaseStudyNav itself
+     swaps to a horizontal sticky strip at this breakpoint (see
+     useIsMobile in CaseStudyNav.tsx — that's a structural swap, this
+     media query just collapses the grid it sits inside). */
+  .case-study-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+}
+
+/* ─── Case study body grid (desktop default) ───────────────────────── */
+/* NOTE: no `align-items: start` here — a grid item defaults to stretching
+   to the row's full height, and the row height is set by the right
+   column's (much taller) content. That stretch is exactly what makes the
+   left rail's `position: sticky` nav (see CaseStudyNav.tsx) work: sticky
+   needs a tall containing block to scroll *within*. Adding
+   `align-items: start` back would shrink the left column to its own
+   content height (just the back-link + nav), giving the sticky nav
+   nothing to stick inside — it would scroll away almost immediately. */
+.case-study-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 64px;
+}
+
+.next-project-teaser:hover .next-project-teaser-name {
+  color: var(--col-muted);
+}
+
+/* ─── About page "snapshot" card — tool tiles + interest chips ────── */
+.snapshot-tile {
+  transition: transform 200ms var(--ease-spring), box-shadow 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+.snapshot-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(var(--shadow-tint-rgb),0.16), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+/* ─── Blog card — lift + shadow bloom on hover; arrow chip nudges toward
+   the corner it's pointing at. Thumbnail deliberately does NOT zoom on
+   hover (tried it, read as too busy alongside the card lift). ──────── */
+.blog-card {
+  transition: transform 220ms var(--ease-spring), box-shadow 220ms var(--ease-out);
+}
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(var(--shadow-tint-rgb),0.08), 0 18px 38px rgba(var(--shadow-tint-rgb),0.14), var(--glass-bevel);
+}
+.blog-card-arrow { transition: background 180ms var(--ease-out), transform 180ms var(--ease-spring); }
+.blog-card:hover .blog-card-arrow { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
