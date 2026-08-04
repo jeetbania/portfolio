@@ -224,20 +224,57 @@ function DesktopNav() {
    Completely separate component/markup from desktop, so nothing here
    can ever affect the desktop nav.
    ══════════════════════════════════════════════════════════════════ */
-/* Panel open/close — a real spring (via Motion) instead of a fixed CSS
-   cubic-bezier, so it actually overshoots slightly on open for a more
-   tactile, "premium" feel. Kept as separate open/close curves — closing
-   snappier with almost no bounce, matching the folder-card convention in
-   Folder.tsx (OPEN_SPRING/CLOSE_SPRING). */
-const PANEL_OPEN_SPRING  = { type: "spring" as const, duration: 0.46, bounce: 0.38 };
-const PANEL_CLOSE_SPRING = { type: "spring" as const, duration: 0.28, bounce: 0.1  };
+/* Panel open/close — a true shape morph (width + height, via Motion)
+   instead of a scale/translate pop, so it reads as the button fluidly
+   growing into the panel rather than a box popping into place (the
+   transitions.dev "plus → menu" pattern). Border-radius deliberately
+   stays constant: at the small collapsed size it's clamped by the
+   browser to a perfect circle automatically (radius can't exceed half
+   the box's shorter side), and at the open size it just reads as a
+   normal rounded-panel corner — no radius keyframing needed at all.
+   Separate open/close curves — closing snappier with almost no bounce,
+   matching the folder-card convention in Folder.tsx (OPEN_SPRING/
+   CLOSE_SPRING). */
+const PANEL_OPEN_SPRING  = { type: "spring" as const, duration: 0.48, bounce: 0.4  };
+const PANEL_CLOSE_SPRING = { type: "spring" as const, duration: 0.28, bounce: 0.08 };
+const PANEL_GAP = 18; /* logo/menu row → panel top edge */
 
 function MobileNav() {
   const { visible, active } = useHeaderState();
+  const { theme, toggle: toggleTheme } = useTheme();
+  const isDark = theme === "dark";
   const [open, setOpen] = useState(false);
-  const logoRef  = useRef<HTMLDivElement>(null);
-  const menuRef  = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const logoRef     = useRef<HTMLDivElement>(null);
+  const logoLinkRef = useRef<HTMLAnchorElement>(null);
+  const menuRef      = useRef<HTMLDivElement>(null);
+  const panelRef      = useRef<HTMLDivElement>(null);
+  const panelBodyRef  = useRef<HTMLDivElement>(null);
+  const [pillSize, setPillSize] = useState(48);
+  const [openWidth, setOpenWidth] = useState(320);
+
+  /* Menu button height matched to the logo pill's actual rendered
+     height (was hardcoded 44px, which drifted slightly from the logo
+     pill's real height and read as "top aligned" against it). Measured
+     rather than assumed since it depends on live font metrics. */
+  useEffect(() => {
+    const el = logoLinkRef.current;
+    if (!el) return;
+    /* offsetHeight (border-box: content + padding + border), not
+       ResizeObserver's default contentRect (content box only, excludes
+       the pill's own padding/border) — the mismatch was exactly why the
+       button came out shorter than the pill it's meant to match. */
+    const ro = new ResizeObserver(() => setPillSize(el.offsetHeight));
+    ro.observe(el);
+    setPillSize(el.offsetHeight);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => setOpenWidth(Math.min(320, window.innerWidth - 32));
+    onResize();
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     const targets = [logoRef.current, menuRef.current].filter(Boolean) as HTMLElement[];
@@ -253,19 +290,31 @@ function MobileNav() {
     }
   }, [visible]);
 
-  /* Panel spring — separate from the show/hide animation above since it
-     runs on a different trigger (`open`, not `visible`) and targets a
-     different element (the panel itself, not the logo/menu pills). */
+  /* Panel morph — separate from the show/hide animation above since it
+     runs on a different trigger (`open`, not `visible`) and targets
+     different elements (the panel box + its content, not the logo/menu
+     pills). Two animations run together: the box's width/height grows
+     from a small seed (the button's own footprint) up to the panel's
+     full measured size, while the content cross-fades in/out slightly
+     offset so text doesn't smear mid-resize. */
   useEffect(() => {
-    const el = panelRef.current;
-    if (!el) return;
+    const box = panelRef.current;
+    const body = panelBodyRef.current;
+    if (!box || !body) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (open) {
-      animate(el, { scale: 1, y: 0, opacity: 1 }, reduced ? { duration: 0 } : PANEL_OPEN_SPRING);
+      const contentHeight = body.scrollHeight;
+      animate(box, { width: `${openWidth}px`, height: `${contentHeight}px`, opacity: 1 },
+        reduced ? { duration: 0 } : PANEL_OPEN_SPRING);
+      animate(body, { opacity: 1, y: 0 },
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.36, bounce: 0.1, delay: 0.06 });
     } else {
-      animate(el, { scale: 0.92, y: -10, opacity: 0 }, reduced ? { duration: 0 } : PANEL_CLOSE_SPRING);
+      animate(box, { width: `${pillSize}px`, height: `${pillSize}px`, opacity: 0 },
+        reduced ? { duration: 0 } : PANEL_CLOSE_SPRING);
+      animate(body, { opacity: 0, y: -6 },
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.18, bounce: 0 });
     }
-  }, [open]);
+  }, [open, openWidth, pillSize]);
 
   /* Close on any click outside the pills/panel — same pattern as
      MobileFloatingMenu / the Quick Ask reply bar. */
@@ -350,6 +399,7 @@ function MobileNav() {
           }}
         >
           <Link
+            ref={logoLinkRef}
             href="/"
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -397,7 +447,7 @@ function MobileNav() {
           aria-label={open ? "Close menu" : "Open menu"}
           style={{
             flexShrink: 0,
-            width: 44, height: 44,
+            width: pillSize, height: pillSize,
             borderRadius: "50%",
             display: "grid", placeItems: "center",
             background: "var(--surface-nav)",
@@ -419,53 +469,72 @@ function MobileNav() {
           )}
         </button>
 
-        {/* Positioning wrapper — no visual styling of its own, always
-            pointer-events:none so it can never intercept taps; the real
-            panel inside toggles its own pointer-events with `open`. */}
+        {/* Panel — animated directly (no extra positioning wrapper needed):
+            width/height are Motion-owned (the shape morph), pointerEvents
+            is a plain conditional style that doesn't conflict with that
+            since it isn't a transform property. Starts at the button's own
+            footprint (pillSize × pillSize, which the constant borderRadius
+            below auto-clamps into a circle) and grows into the full panel
+            — reads as the button fluidly becoming the menu rather than a
+            separate box popping in beside it. */}
         <div
+          ref={panelRef}
           aria-hidden={!open}
           style={{
-            position: "absolute", top: "calc(100% + 8px)", right: 0,
-            width: "min(320px, calc(100vw - 32px))",
-            pointerEvents: "none",
+            position: "absolute", top: `calc(100% + ${PANEL_GAP}px)`, right: 0,
+            width: pillSize, height: pillSize,
+            borderRadius: "22px",
+            background: "var(--surface-nav)",
+            backdropFilter: "blur(22px) saturate(180%)",
+            WebkitBackdropFilter: "blur(22px) saturate(180%)",
+            border: "1px solid var(--surface-glass-border)",
+            boxShadow: "0 20px 44px rgba(var(--shadow-tint-rgb),0.2), var(--glass-bevel)",
+            overflow: "hidden",
+            opacity: 0,
+            pointerEvents: open ? "auto" : "none",
           }}
         >
-          <div
-            ref={panelRef}
+          <nav
+            ref={panelBodyRef}
+            aria-label="Mobile navigation"
             style={{
-              borderRadius: "22px",
-              background: "var(--surface-nav)",
-              backdropFilter: "blur(22px) saturate(180%)",
-              WebkitBackdropFilter: "blur(22px) saturate(180%)",
-              border: "1px solid var(--surface-glass-border)",
-              boxShadow: "0 20px 44px rgba(var(--shadow-tint-rgb),0.2), var(--glass-bevel)",
-              overflow: "hidden",
-              transformOrigin: "top right",
+              display: "flex", flexDirection: "column", gap: "2px",
+              padding: "10px",
+              width: openWidth,
               opacity: 0,
-              transform: "scale(0.92) translateY(-10px)",
-              pointerEvents: open ? "auto" : "none",
+              transform: "translateY(-6px)",
             }}
           >
-            <nav
-              aria-label="Mobile navigation"
+            {SECTIONS.map(s => <MobileLink key={s.href} href={s.href} label={s.label} />)}
+            <button
+              onClick={toggleTheme}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
               style={{
-                display: "flex", flexDirection: "column", gap: "2px",
-                padding: "10px",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                gap: "8px", width: "100%",
+                paddingTop: "10px", marginTop: "6px",
+                border: "none", borderTop: "1px solid var(--col-border)",
+                background: "transparent", cursor: "pointer",
               }}
             >
-              {SECTIONS.map(s => <MobileLink key={s.href} href={s.href} label={s.label} />)}
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                gap: "8px", paddingTop: "10px", marginTop: "6px",
-                borderTop: "1px solid var(--col-border)",
-              }}>
-                <span style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)" }}>
-                  Theme
-                </span>
-                <ThemeToggle size={30} />
-              </div>
-            </nav>
-          </div>
+              <span style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)" }}>
+                Theme
+              </span>
+              <span style={{ width: 30, height: 30, borderRadius: "50%", display: "grid", placeItems: "center", color: "var(--col-muted)" }}>
+                {isDark ? (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="8" cy="8" r="3.4" stroke="currentColor" strokeWidth="1.4" />
+                    <path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.7l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2 3.1 3.1"
+                      stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                  </svg>
+                ) : (
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M14 9.3A6.3 6.3 0 1 1 6.7 2 5 5 0 0 0 14 9.3Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </span>
+            </button>
+          </nav>
         </div>
       </div>
     </>
