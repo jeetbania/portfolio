@@ -215,9 +215,14 @@ function DesktopNav() {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   MOBILE nav — a compact pill that expands downward into a full
-   vertical menu. Completely separate component/markup from desktop,
-   so nothing here can ever affect the desktop nav.
+   MOBILE nav — two separate pills (logo, menu) instead of one pill that
+   grows downward. The logo stays a stable, centered anchor; tapping the
+   menu pill pops a floating glass panel below it — same visual language
+   (blur/border/shadow) and scale+opacity transition as the bottom
+   MobileFloatingMenu used for the case-study TOC / filter tabs, just
+   anchored at the top with the panel opening downward instead of up.
+   Completely separate component/markup from desktop, so nothing here
+   can ever affect the desktop nav.
    ══════════════════════════════════════════════════════════════════ */
 function MobileNav() {
   const { visible, active } = useHeaderState();
@@ -238,7 +243,17 @@ function MobileNav() {
     }
   }, [visible]);
 
-  /* Close the expanded menu whenever the section changes (link tapped) */
+  /* Close on any click outside the pills/panel — same pattern as
+     MobileFloatingMenu / the Quick Ask reply bar. */
+  useEffect(() => {
+    if (!open) return;
+    function onOutside(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onOutside);
+    return () => document.removeEventListener("mousedown", onOutside);
+  }, [open]);
+
   const closeAndGo = () => setOpen(false);
 
   const MobileLink = ({ href, label }: { href: string; label: string }) => {
@@ -266,82 +281,117 @@ function MobileNav() {
     );
   };
 
+  /* Shared "nav pill" recipe — same glass/blur/shadow both new pills use,
+     matching what the single old pill (and the desktop pill) already
+     looked like, just applied to two smaller shapes instead of one bar. */
+  const pillShadow = [
+    "0 1px 0 rgba(255,255,255,0.2) inset",
+    "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
+    "0 8px 24px rgba(var(--shadow-tint-rgb),0.08)",
+  ].join(", ");
+
   return (
-    <div style={{ position: "fixed", top: "14px", left: 0, right: 0, zIndex: 100, display: "flex", justifyContent: "center", pointerEvents: "none", padding: "0 16px" }}>
+    <>
+      {/* Backdrop — dims the page while the menu panel is open, tap
+          anywhere on it to close. Sits below the pills (zIndex 95 vs
+          their 100) so the pills themselves stay fully visible/usable. */}
       <div
-        ref={wrapRef}
+        aria-hidden="true"
+        onClick={() => setOpen(false)}
         style={{
-          width: "min(320px, 100%)",
-          borderRadius: "26px",
-          background: "var(--surface-nav)",
-          backdropFilter: "blur(22px) saturate(180%)",
-          WebkitBackdropFilter: "blur(22px) saturate(180%)",
-          border: "1px solid var(--surface-glass-border)",
-          boxShadow: [
-            "0 1px 0 rgba(255,255,255,0.2) inset",
-            "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
-            "0 8px 24px rgba(var(--shadow-tint-rgb),0.08)",
-          ].join(", "),
-          pointerEvents: visible ? "auto" : "none",
-          opacity: 0,
-          transform: "translateY(-14px) scale(0.96)",
-          overflow: "hidden",
-          transition: "background 320ms var(--ease-out), border-color 320ms var(--ease-out)",
+          position: "fixed", inset: 0, zIndex: 95,
+          background: "rgba(0,0,0,0.32)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 220ms var(--ease-out)",
         }}
-      >
-        {/* Compact bar — always visible while the nav is shown */}
-        <button
-          onClick={() => setOpen(o => !o)}
-          aria-expanded={open}
-          aria-label={open ? "Close menu" : "Open menu"}
+      />
+
+      <div style={{ position: "fixed", top: "14px", left: 0, right: 0, zIndex: 100, display: "flex", justifyContent: "center", pointerEvents: "none", padding: "0 16px" }}>
+        <div
+          ref={wrapRef}
           style={{
-            width: "100%",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "10px 8px 10px 18px",
-            background: "transparent", border: "none", cursor: "pointer",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
+            pointerEvents: visible ? "auto" : "none",
+            opacity: 0,
+            transform: "translateY(-14px) scale(0.96)",
           }}
         >
-          <span style={{
-            fontFamily: "var(--font-serif)", fontSize: "16px", fontWeight: 400,
-            color: "var(--col-fg)", letterSpacing: "-0.01em",
-          }}>
-            Jeet Bania
-          </span>
+          {/* Row: logo pill (links home) + menu pill (toggles the panel) */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Link
+              href="/"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                padding: "12px 22px",
+                borderRadius: "99px",
+                background: "var(--surface-nav)",
+                backdropFilter: "blur(22px) saturate(180%)",
+                WebkitBackdropFilter: "blur(22px) saturate(180%)",
+                border: "1px solid var(--surface-glass-border)",
+                boxShadow: pillShadow,
+                fontFamily: "var(--font-serif)", fontSize: "16px", fontWeight: 400,
+                color: "var(--col-fg)", letterSpacing: "-0.01em",
+                textDecoration: "none", whiteSpace: "nowrap",
+              }}
+            >
+              Jeet Bania
+            </Link>
 
-          {/* Hamburger ⇄ close */}
-          <span style={{
-            width: 34, height: 34, borderRadius: "50%",
-            display: "grid", placeItems: "center",
-            background: "var(--surface-glass)",
-            flexShrink: 0,
-          }}>
-            {open ? (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 3l10 10M13 3 3 13" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
-            ) : (
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M2 5h12M2 11h12" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
-            )}
-          </span>
-        </button>
+            <button
+              onClick={() => setOpen(o => !o)}
+              aria-expanded={open}
+              aria-label={open ? "Close menu" : "Open menu"}
+              style={{
+                flexShrink: 0,
+                width: 44, height: 44,
+                borderRadius: "50%",
+                display: "grid", placeItems: "center",
+                background: "var(--surface-nav)",
+                backdropFilter: "blur(22px) saturate(180%)",
+                WebkitBackdropFilter: "blur(22px) saturate(180%)",
+                border: "1px solid var(--surface-glass-border)",
+                boxShadow: pillShadow,
+                cursor: "pointer",
+              }}
+            >
+              {open ? (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 3l10 10M13 3 3 13" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M2 5h12M2 11h12" stroke="var(--col-fg)" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </div>
 
-        {/* Expandable panel — 0fr → 1fr grid trick, same pattern used
-            for the Quick Ask response reveal elsewhere in the app */}
-        <div style={{
-          display: "grid",
-          gridTemplateRows: open ? "1fr" : "0fr",
-          transition: "grid-template-rows 360ms cubic-bezier(0.34,1.05,0.64,1)",
-        }}>
-          <div style={{ overflow: "hidden" }}>
+          {/* Panel — pops open below the pill row, same scale+opacity
+              language as MobileFloatingMenu's panel (transformOrigin
+              flipped to "top center" since this one opens downward). */}
+          <div
+            style={{
+              width: "min(280px, 100%)",
+              borderRadius: "22px",
+              background: "var(--surface-nav)",
+              backdropFilter: "blur(22px) saturate(180%)",
+              WebkitBackdropFilter: "blur(22px) saturate(180%)",
+              border: "1px solid var(--surface-glass-border)",
+              boxShadow: "0 20px 44px rgba(var(--shadow-tint-rgb),0.2), var(--glass-bevel)",
+              overflow: "hidden",
+              transformOrigin: "top center",
+              transform: open ? "scale(1) translateY(0)" : "scale(0.92) translateY(-10px)",
+              opacity: open ? 1 : 0,
+              pointerEvents: open ? "auto" : "none",
+              transition: "transform 260ms var(--ease-spring), opacity 200ms var(--ease-out)",
+            }}
+          >
             <nav
               aria-label="Mobile navigation"
               style={{
                 display: "flex", flexDirection: "column", gap: "2px",
-                padding: "4px 10px 14px",
-                borderTop: "1px solid var(--col-border)",
-                marginTop: "2px",
+                padding: "10px",
               }}
             >
               {SECTIONS.map(s => <MobileLink key={s.href} href={s.href} label={s.label} />)}
@@ -359,7 +409,7 @@ function MobileNav() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

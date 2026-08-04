@@ -142,9 +142,13 @@ export default function FilterBar({
       )}
 
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        {/* Search — glass pill */}
+        {/* Search — glass pill. Deliberately no focus ring: browsers apply
+            :focus-visible to text inputs even on a plain mouse click (a
+            real spec quirk, not something CSS alone can override per
+            input), so a ring here would show on click too — which is
+            exactly what looked bad. Knowingly trading the WCAG 2.4.7
+            credit on this one input for that. */}
         <div
-          className="t-focus-ring"
           style={{
             display: "flex",
             alignItems: "center",

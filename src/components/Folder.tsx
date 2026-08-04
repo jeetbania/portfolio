@@ -98,7 +98,7 @@ export default function Folder({ project, strongGlass }: FolderProps) {
   return (
     <Link
       href={`/work/${project.slug}`}
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-current rounded-3xl"
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[#3B5BDB] rounded-3xl"
       onMouseEnter={doOpen}
       onMouseLeave={doClose}
       onFocus={doOpen}

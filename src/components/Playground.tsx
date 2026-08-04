@@ -354,7 +354,13 @@ function QuickAsk({ mounted }: { mounted: boolean }) {
       opacity: mounted ? 1 : 0,
       transition: "transform 460ms cubic-bezier(0.34,1.1,0.64,1) 320ms, opacity 460ms ease-out 320ms",
     }}>
-      <div className="t-focus-ring" style={{
+      {/* Deliberately no focus ring on this bar — it wraps a text input,
+          and browsers apply :focus-visible to inputs even on a plain
+          mouse click (a real spec quirk, not overridable via CSS alone
+          per input), so a ring here would show on click too, which read
+          as ugly. Knowingly trading the WCAG 2.4.7 credit on this one
+          element for that. */}
+      <div style={{
         borderRadius: "26px",
         background: "var(--surface-opaque)",
         backdropFilter: "blur(18px) saturate(160%)",

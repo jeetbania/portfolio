@@ -85,18 +85,16 @@ export default function AboutPage() {
              spaces every other section on the page and shouldn't tighten
              along with it. */
           marginTop: "clamp(-36px, -4vh, -16px)",
-          /* The fan deliberately spreads its cards wider than the stage
-             (see AboutFan's computeFanPositions) — on mobile that pushed
-             real, scrollable overflow past the viewport edge (confirmed:
-             body's own overflow-x:hidden safety net wasn't fully
-             containing it here). Only overflow-X, per the documented
-             quirk in CLAUDE.md — setting overflow-x forces overflow-y to
-             compute as "auto", not "hidden", so this can't clip the
-             cards' vertical hover-lift or the speech-bubble pills above
-             them, only horizontal bleed. Guard lives on this wrapper
-             (an ancestor of the hover-animated cards), never on an
-             element the hover motion itself runs on. */
-          overflowX: "hidden",
+          /* No overflow-x:hidden here (there used to be one) — it was
+             papering over a real bug in AboutFan's fan-spread math that
+             let cards overflow the stage horizontally on narrow phones.
+             overflow-x:hidden forces overflow-y to compute as "auto" too
+             (a real CSS quirk, not a bug — see CLAUDE.md), which was
+             clipping the cards' vertical hover-lift and the speech-bubble
+             pills above them. Now that computeFanPositions() has a hard
+             ceiling tied to the actual stage width, the fan never
+             overflows in the first place, so this guard isn't needed —
+             and keeping it around would just re-introduce the cropping. */
         }}>
           <AboutFan />
         </div>

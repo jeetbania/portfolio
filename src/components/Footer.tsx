@@ -298,7 +298,7 @@ function DinoGame() {
 
       ctx!.textAlign="center";
       /* Anchored to the player's own top edge (d.y), not canvas-center
-         (ch/2) — canvas height is responsive (clamp(130px,18vw,160px)),
+         (ch/2) — canvas height is responsive (clamp(165px,18vw,190px)),
          and at the smaller end ch/2 sat almost exactly where the player
          sprite's head/speech-bubble icon is, overlapping it. Tying the
          text to d.y keeps a constant clearance above the character
@@ -502,7 +502,13 @@ function DinoGame() {
       <canvas
         ref={canvasRef}
         style={{
-          display:"block", width:"100%", height:"clamp(130px,18vw,160px)",
+          /* Was clamp(130px,18vw,160px) — bumped both ends up by 35px so
+             the tap target is meaningfully bigger on phones (which sit at
+             the 130px floor), not just visually taller. Ground/player/
+             obstacle/text positions all derive from the canvas's actual
+             clientHeight at runtime (see resize() below), so raising this
+             is the only change needed — nothing else to update. */
+          display:"block", width:"100%", height:"clamp(165px,18vw,190px)",
           cursor:"pointer", background:CARD_BG,
           borderRadius:"clamp(20px,3vw,34px)",
           outline:"4px solid #fff",
@@ -690,14 +696,18 @@ export default function Footer() {
           Work with me.
         </h2>
 
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", width:"100%", maxWidth:"520px", marginBottom:"clamp(24px,4vh,36px)" }}>
-          {/* Footer stays visually dark regardless of the site theme, so its
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"12px", width:"100%", maxWidth:"520px", marginBottom:"clamp(24px,4vh,36px)",
+          /* Footer stays visually dark regardless of the site theme, so its
               tooltips need their own fixed light-on-dark colors rather than
               the theme-linked --tt-bg/--tt-fg (which would go near-black on
-              near-black in light mode). */}
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"10px", flexWrap:"wrap",
-            "--tt-bg": "#f0f0f0", "--tt-fg": "#1a1a1a" } as React.CSSProperties}>
+              near-black in light mode). */
+          "--tt-bg": "#f0f0f0", "--tt-fg": "#1a1a1a" } as React.CSSProperties}>
+          {/* Row 1 — copy email, on its own line and centered */}
+          <div style={{ display:"flex", justifyContent:"center" }}>
             <CopyEmailButton />
+          </div>
+          {/* Row 2 — every social icon together, centered as a group */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"10px", flexWrap:"wrap" }}>
             <SocialIcon icon={SOCIAL_ICONS.doc}      href="/resume.pdf"                              label="CV / Resume" />
             <SocialIcon icon={SOCIAL_ICONS.linkedin} href="https://www.linkedin.com/in/jeetbania/"    label="LinkedIn" />
             <SocialIcon icon={SOCIAL_ICONS.x}        href="https://x.com/figmajeet"                   label="X" />

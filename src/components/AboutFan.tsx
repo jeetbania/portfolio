@@ -121,11 +121,25 @@ export default function AboutFan() {
        (kept slightly narrower than an earlier pass — that one fanned out
        a touch too wide). */
     const usable = stageW * 0.90;
-    const step   = Math.max((usable - cardW) / (N - 1), cardW * 0.72);
+    const step   = Math.max((usable - cardW) / (N - 1), cardW * 0.3);
+    /* Hard ceiling: the fan's total span must never exceed the stage's own
+       content width (stageW minus its own 24px-per-side padding), full
+       stop — this is what actually prevents horizontal overflow, not the
+       floor above. The old fixed floor (cardW*0.72) ignored how much room
+       the stage actually had, so on narrow phones it forced the fan wider
+       than the viewport; that overflow then got clipped VERTICALLY too
+       once the page-level fix for it (overflow-x:hidden on an ancestor)
+       landed, since overflow-x:hidden forces overflow-y to compute as
+       "auto" and clip anything overflowing the box — see the CSS quirk
+       noted in CLAUDE.md. Fixing the actual source of overflow here is
+       what let that ancestor's overflow-x:hidden be removed again. */
+    const contentW = Math.max(stageW - 48, cardW);
+    const maxStep  = Math.max((contentW - cardW) / (N - 1), 0);
+    const safeStep = Math.min(step, maxStep);
     return PHOTOS.map((_, i) => {
       const offset = i - CENTER;
       return {
-        x: offset * step,
+        x: offset * safeStep,
         y: Math.abs(offset) * (cardW * 0.16),
         rotate: offset * 9,
       };

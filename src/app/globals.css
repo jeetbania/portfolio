@@ -226,29 +226,25 @@ body {
   color: var(--col-muted);
 }
 
-/* ─── Global keyboard-focus ring — branded (site ink color), not each
-   browser's mismatched default blue. :focus-visible only, so it never
-   shows on a mouse click. Folder.tsx / BlogCard.tsx opt out via Tailwind's
-   `focus-visible:outline-none focus-visible:ring-*` (higher specificity
-   than this, so it still wins there) since those already have their own
-   custom ring — this is the default for everything else. ─────────────── */
-:focus-visible {
-  outline: 2px solid var(--col-fg);
-  outline-offset: 2px;
+/* Same brand blue used for the headline accent word on Hero/Playground/
+   Services (hardcoded there too — this color doesn't change with theme). */
+:root {
+  --col-focus: #3B5BDB;
 }
 
-/* ─── Focus ring for text-input pills (FilterBar search, Quick Ask) ────
-   Both inputs set outline:none inline with nothing to replace it — a real
-   keyboard-focus regression (WCAG 2.4.7). Rather than ring the bare
-   <input> (an ugly rectangle inside a rounded pill), :has(:focus-visible)
-   rings the whole rounded container the input lives in. :focus-visible
-   still matches on the input even though its own outline is suppressed —
-   that inline style only stops the paint, not the pseudo-class. Keyboard
-   only, never on a mouse click, same as native :focus-visible anywhere
-   else. ─────────────────────────────────────────────────────────────── */
-.t-focus-ring:has(:focus-visible) {
-  outline: 2px solid var(--col-fg);
-  outline-offset: 2px;
+/* ─── Global keyboard-focus ring — the site's own accent blue, not the
+   near-black it was before (that read as a harsh block against the warm
+   background) and not each browser's mismatched default blue either.
+   Tighter offset too, so there's less "dead space" between the element
+   and its ring. Still :focus-visible only — never shows on a mouse click,
+   only on real keyboard navigation, that part was already correct.
+   Folder.tsx / BlogCard.tsx opt out via Tailwind's
+   `focus-visible:outline-none focus-visible:ring-*` (higher specificity
+   than this, so it still wins there) and use this same blue directly on
+   their own ring utility — this rule is the default for everything else. */
+:focus-visible {
+  outline: 2px solid var(--col-focus);
+  outline-offset: 1px;
 }
 
 /* ─── Quote block toolbar (QuoteBlock.tsx) — hidden-until-hover ONLY on
