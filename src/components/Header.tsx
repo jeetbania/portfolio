@@ -235,8 +235,8 @@ function DesktopNav() {
    Separate open/close curves — closing snappier with almost no bounce,
    matching the folder-card convention in Folder.tsx (OPEN_SPRING/
    CLOSE_SPRING). */
-const PANEL_OPEN_SPRING  = { type: "spring" as const, duration: 0.48, bounce: 0.4  };
-const PANEL_CLOSE_SPRING = { type: "spring" as const, duration: 0.28, bounce: 0.08 };
+const PANEL_OPEN_SPRING  = { type: "spring" as const, duration: 0.64, bounce: 0.32 };
+const PANEL_CLOSE_SPRING = { type: "spring" as const, duration: 0.44, bounce: 0.06 };
 const PANEL_GAP = 18; /* logo/menu row → panel top edge */
 
 function MobileNav() {
@@ -307,12 +307,12 @@ function MobileNav() {
       animate(box, { width: `${openWidth}px`, height: `${contentHeight}px`, opacity: 1 },
         reduced ? { duration: 0 } : PANEL_OPEN_SPRING);
       animate(body, { opacity: 1, y: 0 },
-        reduced ? { duration: 0 } : { type: "spring", duration: 0.36, bounce: 0.1, delay: 0.06 });
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.46, bounce: 0.08, delay: 0.1 });
     } else {
       animate(box, { width: `${pillSize}px`, height: `${pillSize}px`, opacity: 0 },
         reduced ? { duration: 0 } : PANEL_CLOSE_SPRING);
       animate(body, { opacity: 0, y: -6 },
-        reduced ? { duration: 0 } : { type: "spring", duration: 0.18, bounce: 0 });
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.3, bounce: 0 });
     }
   }, [open, openWidth, pillSize]);
 
