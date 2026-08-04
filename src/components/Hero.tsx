@@ -100,14 +100,20 @@ export default function Hero() {
             </svg>
           </a>
 
-          {/* Secondary — ghost. No border on hover, no arrow, just darker text. */}
+          {/* Secondary — solid page-bg fill (no border/shadow) instead of
+              transparent: against the dotted background canvas, a fully
+              transparent button let the dots show straight through its
+              own label, making it read as barely there. Matching the
+              page's own background color opaquely blocks the dots behind
+              it while staying visually secondary next to the primary CTA
+              purely through the lack of border/shadow/tint. */}
           <a
             href="/#work"
             style={{
-              fontFamily:"var(--font-sans)", fontSize:"14px", fontWeight:400,
+              fontFamily:"var(--font-sans)", fontSize:"14px", fontWeight:600,
               color:"var(--col-muted)", textDecoration:"none",
               padding:"10px 18px", borderRadius:"99px",
-              background:"transparent",
+              background:"var(--col-bg)",
               transition:"color 160ms var(--ease-out)",
             }}
             onMouseEnter={e => { e.currentTarget.style.color = "var(--col-fg)"; }}
