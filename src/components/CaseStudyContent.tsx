@@ -12,23 +12,30 @@ import QuoteBlock from "./QuoteBlock";
  * tool: DialKit hides itself in production builds automatically, so this
  * never ships to real visitors. `persist: true` + a stable `id` keeps the
  * values in localStorage and reconnects every CaseStudyContent instance on
- * the page (there's one per nav section) to the SAME "Image Card" folder,
- * instead of spawning a separate panel per section.
+ * the page (there's one per nav section) — and CaseStudyCover.tsx's hero
+ * banner — to the SAME "Image Card" folder, instead of spawning a separate
+ * panel per section. Exported so CaseStudyCover.tsx can reconnect to it too.
+ *
+ * Defaults below are the tuned values from the first dial-tweaking pass
+ * (gap 18 / padding 5 / columns 2 / rows 1 / cardRadius 21) — not the
+ * original design's numbers. Moving a slider only changes the live preview
+ * in your browser; landing on numbers you like again means asking for them
+ * to be baked in here the same way.
  */
-function useImageCardDials() {
+export function useImageCardDials() {
   const { imageCard } = useDialKit("Case Study", {
     imageCard: {
-      gap: [12, 0, 40],
-      padding: [10, 0, 40],
+      gap: [18, 0, 40],
+      padding: [5, 0, 40],
       columns: [2, 1, 6, 1],
       rows: [1, 1, 6, 1],
-      cardRadius: [24, 0, 48],
+      cardRadius: [21, 0, 48],
     },
   }, { id: "case-study-image-card", persist: true });
   return imageCard;
 }
 
-type ImageCardValues = ReturnType<typeof useImageCardDials>;
+export type ImageCardValues = ReturnType<typeof useImageCardDials>;
 
 /**
  * White "placeholder card" wrapper — the shell every image/image-grid block
@@ -45,9 +52,9 @@ type ImageCardValues = ReturnType<typeof useImageCardDials>;
  * outer one (-8px, floored at 0) so it keeps reading as "nested" instead
  * of the two radii drifting apart as cardRadius moves.
  */
-function PlaceholderCard({
-  children, aspectRatio = "16/10", dial,
-}: { children?: React.ReactNode; aspectRatio?: string; dial: ImageCardValues }) {
+export function PlaceholderCard({
+  children, aspectRatio = "16/10", dial, innerBackground = "var(--col-bg)",
+}: { children?: React.ReactNode; aspectRatio?: string; dial: ImageCardValues; innerBackground?: string }) {
   return (
     <div style={{
       background: "var(--surface-opaque)",
@@ -61,7 +68,7 @@ function PlaceholderCard({
         aspectRatio,
         borderRadius: `${Math.max(dial.cardRadius - 8, 0)}px`,
         overflow: "hidden",
-        background: "var(--col-bg)",
+        background: innerBackground,
       }}>
         {children}
       </div>

@@ -1,9 +1,9 @@
 import { projects } from "@/data/projects";
 import { getCaseStudy } from "@/data/caseStudies";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import CaseStudyNav from "@/components/CaseStudyNav";
 import CaseStudyContent from "@/components/CaseStudyContent";
+import CaseStudyCover from "@/components/CaseStudyCover";
 import NextProjectLink from "@/components/NextProjectLink";
 import ToolLogo from "@/components/ToolLogo";
 import { MetaTiles, MetaTile } from "@/components/MetaTiles";
@@ -110,31 +110,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               </MetaTiles>
             )}
 
-            {/* Hero cover — nested-box treatment: more room above the
-                image, equal on the other three sides, rounded corners on
-                both the outer card and the inner image layer. */}
-            <div
-              style={{
-                background: "var(--surface-opaque)",
-                borderRadius: "24px",
-                padding: "28px 10px 10px",
-                boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.12)",
-                marginBottom: "64px",
-              }}
-            >
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  aspectRatio: "16/10",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  background: project.tintHex + "33",
-                }}
-              >
-                <Image src={project.images[0].src} alt={project.images[0].alt} fill className="object-cover" sizes="900px" priority />
-              </div>
-            </div>
+            {/* Hero cover — shares the "Image Card" dial values (padding,
+                corner radius) with every image/image-grid block in
+                CaseStudyContent.tsx below, via CaseStudyCover.tsx. */}
+            <CaseStudyCover src={project.images[0].src} alt={project.images[0].alt} tintHex={project.tintHex} />
 
             {caseStudy ? (
               caseStudy.sections.map((section, i) => (
