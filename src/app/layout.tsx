@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif, Shadows_Into_Light } from "next/font/google";
 import "./globals.css";
+import "dialkit/styles.css";
 import Header  from "@/components/Header";
 import DotGrid from "@/components/DotGrid";
 import FloatingThemeToggle from "@/components/FloatingThemeToggle";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
+import { DialRoot } from "dialkit";
 
 /*
  * Self-hosted via next/font/google instead of a manual <link> to
@@ -105,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </div>
           <FloatingThemeToggle />
+          <DialRoot />
         </ThemeProvider>
       </body>
     </html>
