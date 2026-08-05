@@ -32,10 +32,6 @@ export function useImageCardDials() {
       cardRadius: [21, 0, 48],
     },
   }, { id: "case-study-image-card", persist: true });
-  // TEMP DEBUG — remove once the flash-of-old-values report is diagnosed.
-  if (typeof window !== "undefined") {
-    console.log("[dial]", performance.now().toFixed(1), JSON.stringify(imageCard));
-  }
   return imageCard;
 }
 
