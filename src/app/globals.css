@@ -72,6 +72,16 @@
   --surface-opaque: rgba(255,255,255,0.94);
 
   /*
+   * Case-study image/gallery card fill — was riding on --surface-opaque
+   * (near-white), which read as a plain white border/frame around every
+   * photo. This warm off-white sits closer to --col-bg so the card frame
+   * feels like a considered neutral rather than "just white." Dark theme
+   * keeps riding on --surface-opaque below since #E9E7E1 would look like
+   * a mistake on a near-black page.
+   */
+  --case-card-bg: #E9E7E1;
+
+  /*
    * A partially see-through card face — for surfaces sitting on top of a
    * vividly-coloured backing (the "about me" fan cards) that should still
    * mute the colour a little for text legibility without fully hiding it.
@@ -160,6 +170,11 @@
      from --col-bg (#111113), so opaque cards had no visible "floor" to
      sit on. Now they read as a raised surface even before border/bevel. */
   --surface-opaque: rgba(32,32,37,0.97);
+
+  /* See the :root comment — #E9E7E1 is a light-theme-only warm neutral,
+     so dark mode falls back to the same raised-surface tone every other
+     opaque card here uses instead of introducing a third surface color. */
+  --case-card-bg: var(--surface-opaque);
 
   /* Much more see-through than --surface-opaque so the vivid backing
      colour on the "about me" cards stays visible, not muddy-dark */

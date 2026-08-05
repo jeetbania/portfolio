@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useDialKit } from "dialkit";
 import type { ContentBlock } from "@/data/caseStudies";
+import { CASE_STUDY_STYLE } from "@/lib/caseStudyStyles";
 import QuoteBlock from "./QuoteBlock";
 
 /**
@@ -13,22 +14,28 @@ import QuoteBlock from "./QuoteBlock";
  * never ships to real visitors. `persist: true` + a stable `id` keeps the
  * values in localStorage and reconnects every CaseStudyContent instance on
  * the page (there's one per nav section) — and CaseStudyCover.tsx's hero
- * banner — to the SAME "Image Card" folder, instead of spawning a separate
- * panel per section. Exported so CaseStudyCover.tsx can reconnect to it too.
+ * banner, and CaseStudyShell.tsx's container — to the SAME "Image Card"
+ * folder, instead of spawning a separate panel per mount. Exported so those
+ * other components can reconnect to it too.
+ *
+ * Only gap/padding/cardRadius remain here — columns/rows and the "which
+ * whole-page layout" dropdown that used to live alongside them were both
+ * exploration-only controls. Now that the layout (Wide Editorial, see
+ * src/lib/caseStudyStyles.ts) and the image counts/arrangement (fixed per
+ * block — see caseStudies.ts) are both settled, image-grid slot count comes
+ * straight from real content instead of a slider preview.
  *
  * Defaults below are the tuned values from the first dial-tweaking pass
- * (gap 18 / padding 5 / columns 2 / rows 1 / cardRadius 21) — not the
- * original design's numbers. Moving a slider only changes the live preview
- * in your browser; landing on numbers you like again means asking for them
- * to be baked in here the same way.
+ * (gap 18 / padding 5 / cardRadius 21) — not the original design's numbers.
+ * Moving a slider only changes the live preview in your browser; landing on
+ * numbers you like again means asking for them to be baked in here the same
+ * way.
  */
 export function useImageCardDials() {
   const { imageCard } = useDialKit("Case Study", {
     imageCard: {
       gap: [18, 0, 40],
       padding: [5, 0, 40],
-      columns: [2, 1, 6, 1],
-      rows: [1, 1, 6, 1],
       cardRadius: [21, 0, 48],
     },
   }, { id: "case-study-image-card", persist: true });
@@ -38,40 +45,27 @@ export function useImageCardDials() {
 export type ImageCardValues = ReturnType<typeof useImageCardDials>;
 
 /**
- * White "placeholder card" wrapper — the shell every image/image-grid block
- * sits in: rounded card, soft shadow, small inset padding, with the actual
- * image (or a flat placeholder tone until real images land) inside a
- * rounded inner box. Matches the Paper.design case-study template.
- *
- * `dial.padding` and `dial.cardRadius` come straight from the "Image Card"
- * DialKit folder above. The outer padding keeps its original asymmetric
- * shape (more room above the image than the other three sides) by adding
- * a fixed +18px on top of the dialed value, instead of baking in a second
- * hardcoded number — so the nested-box look survives however far the
- * slider gets pushed. The inner image box's radius is derived from the
- * outer one (-8px, floored at 0) so it keeps reading as "nested" instead
- * of the two radii drifting apart as cardRadius moves.
+ * "Placeholder card" wrapper — the shell every image/image-grid block sits
+ * in. CASE_STUDY_STYLE's cardStyle is "flush" (Wide Editorial): no frame,
+ * padding, or shadow — the image itself gets `dial.cardRadius` directly,
+ * for a denser, edge-to-edge grid. (The alternate "boxed" nested-frame
+ * look — `--case-card-bg` fill, soft shadow, inset padding — lived here
+ * before Wide Editorial was chosen; resurrect it from git history if a
+ * boxed variant is ever wanted again.)
  */
 export function PlaceholderCard({
   children, aspectRatio = "16/10", dial, innerBackground = "var(--col-bg)",
 }: { children?: React.ReactNode; aspectRatio?: string; dial: ImageCardValues; innerBackground?: string }) {
   return (
     <div style={{
-      background: "var(--surface-opaque)",
+      position: "relative",
+      width: "100%",
+      aspectRatio,
       borderRadius: `${dial.cardRadius}px`,
-      padding: `${dial.padding + 18}px ${dial.padding}px ${dial.padding}px`,
-      boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.12)",
+      overflow: "hidden",
+      background: innerBackground,
     }}>
-      <div style={{
-        position: "relative",
-        width: "100%",
-        aspectRatio,
-        borderRadius: `${Math.max(dial.cardRadius - 8, 0)}px`,
-        overflow: "hidden",
-        background: innerBackground,
-      }}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
@@ -107,10 +101,11 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
         </p>
       );
 
-    case "image":
+    case "image": {
+      const aspectRatio = block.wide ? CASE_STUDY_STYLE.wideImageAspect : CASE_STUDY_STYLE.gridImageAspect;
       return (
         <figure style={{ margin: 0 }}>
-          <PlaceholderCard aspectRatio={block.wide ? "16/9" : "4/3"} dial={dial}>
+          <PlaceholderCard aspectRatio={aspectRatio} dial={dial}>
             <Image src={block.src} alt={block.alt} fill className="object-cover" sizes="(max-width: 900px) 100vw, 720px" />
           </PlaceholderCard>
           {block.caption && (
@@ -123,24 +118,23 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
           )}
         </figure>
       );
+    }
 
     case "imageGrid": {
-      /* Slot count comes from the "Image Card" dials, not block.images.length
-         — dial.columns × dial.rows is a live layout preview (up to 6×6) so a
-         2-or-3-image placeholder set can still stand in for a bigger future
-         gallery grid. Slots beyond the real image list cycle back through
-         it (i % length) rather than going blank, so every slider position
-         still previews real photography instead of empty tone boxes. */
-      const slotCount = dial.columns * dial.rows;
-      const slots = Array.from({ length: slotCount }, (_, i) => block.images[i % block.images.length]);
+      /* Columns come straight from the block's own image count now (2
+         images = 2 side by side) — this used to be an exploratory preview
+         driven by "Image Card" columns/rows sliders (cycling through fewer
+         real images to fill however many slots you dragged to); now that
+         the case-study template's image slots are fixed content, the real
+         list is the whole story. */
       return (
         <div style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${dial.columns}, 1fr)`,
+          gridTemplateColumns: `repeat(${block.images.length}, 1fr)`,
           gap: `${dial.gap}px`,
         }}>
-          {slots.map((img, i) => (
-            <PlaceholderCard key={i} aspectRatio="4/3" dial={dial}>
+          {block.images.map((img, i) => (
+            <PlaceholderCard key={i} aspectRatio={CASE_STUDY_STYLE.gridImageAspect} dial={dial}>
               <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="(max-width: 900px) 50vw, 340px" />
             </PlaceholderCard>
           ))}

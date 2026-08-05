@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import CaseStudyNav from "@/components/CaseStudyNav";
 import CaseStudyContent from "@/components/CaseStudyContent";
 import CaseStudyCover from "@/components/CaseStudyCover";
+import CaseStudyShell from "@/components/CaseStudyShell";
 import NextProjectLink from "@/components/NextProjectLink";
 import ToolLogo from "@/components/ToolLogo";
 import { MetaTiles, MetaTile } from "@/components/MetaTiles";
@@ -31,14 +32,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
   return (
     <main>
-      <div
-        style={{
-          minHeight: "100svh",
-          padding: "clamp(110px, 15vh, 160px) clamp(24px, 5vw, 64px) clamp(24px, 5vw, 64px)",
-          maxWidth: "1160px",
-          margin: "0 auto",
-        }}
-      >
+      <CaseStudyShell>
         {/* ── Two-column grid: Back + TOC rail (left) | everything else
             (right) — the title, hero, and every section share ONE left
             edge that's indented from the TOC, not flush with it. ──── */}
@@ -128,7 +122,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <NextProjectLink project={nextProject} />
           </div>
         </div>
-      </div>
+      </CaseStudyShell>
 
       <RoundedCap />
       <Footer />

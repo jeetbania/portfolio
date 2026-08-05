@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { PlaceholderCard, useImageCardDials } from "./CaseStudyContent";
+import { CASE_STUDY_STYLE } from "@/lib/caseStudyStyles";
 
 /**
  * The big hero image at the top of a case-study page — was previously its
@@ -16,6 +17,9 @@ import { PlaceholderCard, useImageCardDials } from "./CaseStudyContent";
  * Split into its own client component because page.tsx (the Server
  * Component that renders it) can't call the useImageCardDials hook
  * directly.
+ *
+ * `heroAspect` comes from the baked-in Wide Editorial style (see
+ * src/lib/caseStudyStyles.ts).
  */
 export default function CaseStudyCover({
   src, alt, tintHex,
@@ -24,7 +28,7 @@ export default function CaseStudyCover({
 
   return (
     <div style={{ marginBottom: "64px" }}>
-      <PlaceholderCard aspectRatio="16/10" dial={dial} innerBackground={`${tintHex}33`}>
+      <PlaceholderCard aspectRatio={CASE_STUDY_STYLE.heroAspect} dial={dial} innerBackground={`${tintHex}33`}>
         <Image src={src} alt={alt} fill className="object-cover" sizes="900px" priority />
       </PlaceholderCard>
     </div>

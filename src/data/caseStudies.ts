@@ -105,6 +105,11 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
+        /* Image slot 2 of 9 (1 = the hero cover on page.tsx). This
+           template is fixed at 9 image slots total, in this exact order:
+           hero → this single → Showcase's pair + 2 singles → Design
+           System's pair + 1 single. See CaseStudyContent.tsx/caseStudies.ts
+           if that count ever needs to change. */
         id: "approach",
         label: "Approach",
         blocks: [
@@ -112,10 +117,12 @@ export const caseStudies: CaseStudy[] = [
             type: "paragraph",
             text: "Placeholder — how the problem was approached: research method, key constraints, the first few directions explored before landing on this one.",
           },
-          { type: "image", src: "/cover.png", alt: "Approach placeholder", wide: true },
+          { type: "image", src: "/tech-1.jpg", alt: "Approach placeholder", wide: true },
         ],
       },
       {
+        /* Image slots 3–6 of 9: a side-by-side pair, then two full-width
+           singles. */
         id: "showcase",
         label: "Showcase",
         blocks: [
@@ -126,14 +133,17 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "imageGrid",
             images: [
-              { src: "/tech-1.jpg", alt: "Showcase placeholder 1" },
-              { src: "/chip.png", alt: "Showcase placeholder 2" },
+              { src: "/chip.png", alt: "Showcase placeholder 1" },
+              { src: "/screen-1.jpg", alt: "Showcase placeholder 2" },
             ],
           },
-          { type: "image", src: "/screen-1.jpg", alt: "Showcase placeholder 3", wide: true },
+          { type: "image", src: "/tech-2.jpg", alt: "Showcase placeholder 3", wide: true },
+          { type: "image", src: "/service-1.jpg", alt: "Showcase placeholder 4", wide: true },
         ],
       },
       {
+        /* Image slots 7–9 of 9: a side-by-side pair, then one full-width
+           single. */
         id: "design-system",
         label: "Design System",
         blocks: [
@@ -145,9 +155,10 @@ export const caseStudies: CaseStudy[] = [
             type: "imageGrid",
             images: [
               { src: "/screen-2.jpg", alt: "Design system placeholder 1" },
-              { src: "/service-1.jpg", alt: "Design system placeholder 2" },
+              { src: "/service-2.jpg", alt: "Design system placeholder 2" },
             ],
           },
+          { type: "image", src: "/service-3.jpg", alt: "Design system placeholder 3", wide: true },
         ],
       },
       {
