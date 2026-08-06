@@ -8,10 +8,6 @@
  * - Wide container (1560px) with more room than the original 1160px.
  * - "flush" cards: the image fills the card edge-to-edge (radius applied
  *   directly, no padding/fill/shadow frame) for a denser, magazine feel.
- *
- * Gap/padding/cardRadius stay live-tunable via the "Image Card" DialKit
- * folder (see useImageCardDials in CaseStudyContent.tsx) — those are still
- * useful spacing/radius knobs independent of which layout was chosen.
  */
 export const CASE_STUDY_STYLE = {
   containerWidth: 1560,
@@ -32,4 +28,19 @@ export const CASE_STUDY_STYLE = {
      CSS-upscaling them. Keep this in sync if containerWidth/the rail/gap
      ever change again. */
   contentColumnWidth: 1200,
+};
+
+/**
+ * The image-card gap/padding/corner-radius numbers — previously a live
+ * DialKit panel ("Image Card": gap/padding/cardRadius sliders) for tuning
+ * these by eye; removed once the values below were settled and no longer
+ * needed ongoing tweaking. These are exactly what that panel's sliders
+ * were last set to. Passed into PlaceholderCard (CaseStudyContent.tsx)
+ * the same way the live dial values used to be — same shape, just a plain
+ * constant instead of a hook now.
+ */
+export const IMAGE_CARD_STYLE = {
+  gap: 18,
+  padding: 5,
+  cardRadius: 21,
 };

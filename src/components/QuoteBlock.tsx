@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { EditableText } from "@/lib/contentEditor";
 
 /**
  * Neutral, code-block-like quote card (deliberately not the old
@@ -55,7 +56,9 @@ const toolbarBtnStyle: React.CSSProperties = {
   transition: "background 140ms var(--ease-out), color 140ms var(--ease-out)",
 };
 
-export default function QuoteBlock({ text, attribution }: { text: string; attribution?: string }) {
+export default function QuoteBlock({
+  text, attribution, textId, attributionId,
+}: { text: string; attribution?: string; textId: string; attributionId?: string }) {
   const [copiedPlain, setCopiedPlain] = useState(false);
   const [copiedMd, setCopiedMd] = useState(false);
 
@@ -109,18 +112,21 @@ export default function QuoteBlock({ text, attribution }: { text: string; attrib
       }}>
         &ldquo;
       </span>
-      <p style={{
-        fontFamily: "var(--font-mono)",
-        fontSize: "clamp(14.5px, 1.6vw, 16px)",
-        lineHeight: 1.7,
-        color: "var(--col-fg)",
-        margin: 0,
-      }}>
-        {text}
-      </p>
-      {attribution && (
+      <EditableText
+        id={textId}
+        baseValue={text}
+        as="p"
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "clamp(14.5px, 1.6vw, 16px)",
+          lineHeight: 1.7,
+          color: "var(--col-fg)",
+          margin: 0,
+        }}
+      />
+      {attribution && attributionId && (
         <p style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)", marginTop: "12px" }}>
-          — {attribution}
+          — <EditableText id={attributionId} baseValue={attribution} as="span" />
         </p>
       )}
     </blockquote>

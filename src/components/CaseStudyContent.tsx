@@ -1,52 +1,12 @@
 "use client";
 
-import { useDialKit } from "dialkit";
 import type { ContentBlock } from "@/data/caseStudies";
-import { CASE_STUDY_STYLE } from "@/lib/caseStudyStyles";
+import { CASE_STUDY_STYLE, IMAGE_CARD_STYLE } from "@/lib/caseStudyStyles";
 import { AnchoredImage } from "@/lib/imageAnchor";
+import { EditableText } from "@/lib/contentEditor";
 import QuoteBlock from "./QuoteBlock";
 
-/**
- * Live-tunable numbers for the image/image-grid cards below, exposed as a
- * DialKit panel (see the floating dial icon — bottom-right by default —
- * once `<DialRoot />` from layout.tsx is on screen). Purely a design/dev
- * tool: DialKit hides itself in production builds automatically, so this
- * never ships to real visitors. `persist: true` + a stable `id` keeps the
- * values in localStorage and reconnects every CaseStudyContent instance on
- * the page (there's one per nav section) — and CaseStudyCover.tsx's hero
- * banner, and CaseStudyShell.tsx's container — to the SAME "Image Card"
- * folder, instead of spawning a separate panel per mount. Exported so those
- * other components can reconnect to it too.
- *
- * Only gap/padding/cardRadius remain here — columns/rows and the "which
- * whole-page layout" dropdown that used to live alongside them were both
- * exploration-only controls. Now that the layout (Wide Editorial, see
- * src/lib/caseStudyStyles.ts) and the image counts/arrangement (fixed per
- * block — see caseStudies.ts) are both settled, image-grid slot count comes
- * straight from real content instead of a slider preview.
- *
- * Defaults below are the tuned values from the first dial-tweaking pass
- * (gap 18 / padding 5 / cardRadius 21) — not the original design's numbers.
- * Moving a slider only changes the live preview in your browser; landing on
- * numbers you like again means asking for them to be baked in here the same
- * way.
- *
- * Per-image crop position is a separate dev tool, not a DialKit panel — see
- * src/lib/imageAnchor.tsx (its floating "🎯 Anchor images" button lives
- * bottom-left, this panel is bottom-right).
- */
-export function useImageCardDials() {
-  const { imageCard } = useDialKit("Case Study", {
-    imageCard: {
-      gap: [18, 0, 40],
-      padding: [5, 0, 40],
-      cardRadius: [21, 0, 48],
-    },
-  }, { id: "case-study-image-card", persist: true });
-  return imageCard;
-}
-
-export type ImageCardValues = ReturnType<typeof useImageCardDials>;
+export type ImageCardValues = typeof IMAGE_CARD_STYLE;
 
 /**
  * "Placeholder card" wrapper — the shell every image/image-grid block sits
@@ -56,6 +16,11 @@ export type ImageCardValues = ReturnType<typeof useImageCardDials>;
  * look — `--case-card-bg` fill, soft shadow, inset padding — lived here
  * before Wide Editorial was chosen; resurrect it from git history if a
  * boxed variant is ever wanted again.)
+ *
+ * `dial` used to be the live values from a DialKit "Image Card" panel
+ * (gap/padding/cardRadius sliders); now that those are settled it's just
+ * `IMAGE_CARD_STYLE` (src/lib/caseStudyStyles.ts) passed straight through
+ * — same shape, so nothing downstream needed to change, just the source.
  */
 export function PlaceholderCard({
   children, aspectRatio = "16/10", dial, innerBackground = "var(--col-bg)",
@@ -74,36 +39,40 @@ export function PlaceholderCard({
   );
 }
 
-function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string; dial: ImageCardValues }) {
+const PARAGRAPH_STYLE: React.CSSProperties = {
+  fontFamily: "var(--font-sans)",
+  fontSize: "clamp(17px, 1.9vw, 22px)",
+  fontWeight: 500,
+  lineHeight: 1.4,
+  letterSpacing: "-0.03em",
+  color: "var(--col-muted)",
+};
+
+const HEADING_STYLE: React.CSSProperties = {
+  fontFamily: "var(--font-sans)",
+  fontSize: "clamp(19px, 2.4vw, 22px)",
+  fontWeight: 600,
+  letterSpacing: "-0.02em",
+  marginTop: "4px",
+};
+
+function Block({
+  block, tintHex, dial, sectionId, blockIndex,
+}: { block: ContentBlock; tintHex: string; dial: ImageCardValues; sectionId: string; blockIndex: number }) {
+  // Every editable field's id is self-describing — sectionId + block
+  // index (+ sub-index for list/stats items) — so the copy tool's export
+  // (src/lib/contentEditor.tsx) never needs to know ContentBlock's shape,
+  // just where in it a given string lives.
+  const blockId = `${sectionId}.blocks[${blockIndex}]`;
+
   switch (block.type) {
     case "heading":
       /* Sub-headings within a section — Sans Semibold, same rule as the
          About page: Serif is reserved for the one big hero headline only. */
-      return (
-        <h3 style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "clamp(19px, 2.4vw, 22px)",
-          fontWeight: 600,
-          letterSpacing: "-0.02em",
-          marginTop: "4px",
-        }}>
-          {block.text}
-        </h3>
-      );
+      return <EditableText id={`${blockId}.text`} baseValue={block.text} as="h3" style={HEADING_STYLE} />;
 
     case "paragraph":
-      return (
-        <p style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "clamp(17px, 1.9vw, 22px)",
-          fontWeight: 500,
-          lineHeight: 1.4,
-          letterSpacing: "-0.03em",
-          color: "var(--col-muted)",
-        }}>
-          {block.text}
-        </p>
-      );
+      return <EditableText id={`${blockId}.text`} baseValue={block.text} as="p" style={PARAGRAPH_STYLE} />;
 
     case "image": {
       const aspectRatio = block.wide ? CASE_STUDY_STYLE.wideImageAspect : CASE_STUDY_STYLE.gridImageAspect;
@@ -154,7 +123,14 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
     }
 
     case "quote":
-      return <QuoteBlock text={block.text} attribution={block.attribution} />;
+      return (
+        <QuoteBlock
+          text={block.text}
+          attribution={block.attribution}
+          textId={`${blockId}.text`}
+          attributionId={block.attribution ? `${blockId}.attribution` : undefined}
+        />
+      );
 
     case "stats":
       /* Metric tiles — one white card, tiles inside laid out in a row.
@@ -169,8 +145,8 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
           padding: "8px",
           boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.12)",
         }}>
-          {block.items.map(item => (
-            <div key={item.label} style={{
+          {block.items.map((item, i) => (
+            <div key={i} style={{
               flex: "1 1 150px",
               padding: "20px 18px",
               borderRadius: "16px",
@@ -179,12 +155,18 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
               flexDirection: "column",
               gap: "6px",
             }}>
-              <div style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(24px,3vw,32px)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--col-fg)" }}>
-                {item.value}
-              </div>
-              <div style={{ fontFamily: "var(--font-sans)", fontSize: "15px", letterSpacing: "-0.03em", color: "var(--col-muted)", lineHeight: 1.3 }}>
-                {item.label}
-              </div>
+              <EditableText
+                id={`${blockId}.items[${i}].value`}
+                baseValue={item.value}
+                as="div"
+                style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(24px,3vw,32px)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--col-fg)" }}
+              />
+              <EditableText
+                id={`${blockId}.items[${i}].label`}
+                baseValue={item.label}
+                as="div"
+                style={{ fontFamily: "var(--font-sans)", fontSize: "15px", letterSpacing: "-0.03em", color: "var(--col-muted)", lineHeight: 1.3 }}
+              />
             </div>
           ))}
         </div>
@@ -200,7 +182,7 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
               display: "flex", gap: "10px",
             }}>
               <span aria-hidden="true" style={{ color: tintHex, flexShrink: 0 }}>✦</span>
-              {item}
+              <EditableText id={`${blockId}.items[${i}]`} baseValue={item} as="span" />
             </li>
           ))}
         </ul>
@@ -216,8 +198,6 @@ export default function CaseStudyContent({
 }: {
   id: string; label: string; blocks: ContentBlock[]; tintHex: string; index: number;
 }) {
-  const dial = useImageCardDials();
-
   return (
     <section
       id={id}
@@ -233,17 +213,20 @@ export default function CaseStudyContent({
         gap: "16px",
       }}
     >
-      <h2 style={{
-        fontFamily: "var(--font-sans)",
-        fontSize: "clamp(24px, 3.2vw, 32px)",
-        fontWeight: 600,
-        letterSpacing: "-0.02em",
-        textTransform: "capitalize",
-      }}>
-        {label}
-      </h2>
+      <EditableText
+        id={`${id}.label`}
+        baseValue={label}
+        as="h2"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "clamp(24px, 3.2vw, 32px)",
+          fontWeight: 600,
+          letterSpacing: "-0.02em",
+          textTransform: "capitalize",
+        }}
+      />
       {blocks.map((block, i) => (
-        <Block key={i} block={block} tintHex={tintHex} dial={dial} />
+        <Block key={i} block={block} tintHex={tintHex} dial={IMAGE_CARD_STYLE} sectionId={id} blockIndex={i} />
       ))}
     </section>
   );
