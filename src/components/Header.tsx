@@ -7,10 +7,14 @@ import { animate } from "motion";
 import { useTheme } from "@/lib/theme";
 import { useIsMobile } from "@/lib/useIsMobile";
 
-/* Sections that get auto-highlighted as user scrolls */
+/* Nav links. Only `/#...` hrefs are in-page anchors on the homepage and
+   get scroll-spy auto-highlighted (see the sectionIds filter below) —
+   Playground points at its own real route now (a "Coming Soon" stub for
+   now), not the homepage's Playground section, so it never highlights
+   while scrolling past that section anymore. */
 const SECTIONS = [
   { id: "about",      href: "/about",       label: "About",      side: "left"  },
-  { id: "playground", href: "/#playground", label: "Playground", side: "left"  },
+  { id: "playground", href: "/playground",  label: "Playground", side: "left"  },
   { id: "work",       href: "/work",        label: "Work",       side: "right" },
   { id: "blog",       href: "/blog",        label: "Blog",       side: "right" },
   { id: "contact",    href: "/#contact",    label: "Contact",    side: "right" },
@@ -86,7 +90,7 @@ function useHeaderState() {
 
   useEffect(() => {
     if (!isHome) return;
-    const sectionIds = SECTIONS.map(s => s.id);
+    const sectionIds = SECTIONS.filter(s => s.href.startsWith("/#")).map(s => s.id);
     const els = sectionIds.map(id => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (els.length === 0) return;
 

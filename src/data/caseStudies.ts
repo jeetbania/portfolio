@@ -197,18 +197,21 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "yap-global",
     meta: {
-      role: "UX Designer, Motion",
-      timeline: "2024",
-      tools: ["Figma", "After Effects"],
+      /* Below is real content, from a source doc Jeet supplied (Aug 2026)
+         — not placeholder. Tools intentionally stays Figma-only: the
+         source doc explicitly flags the production platform as
+         unconfirmed ("worth confirming and filling in yourself") rather
+         than guessing, so nothing's been invented here either. */
+      role: "UX Design, Content Strategy & IA",
+      timeline: "May 2025 — Jun 2025",
+      team: "Natural Eye Media — small internal team",
+      tools: ["Figma"],
     },
-    /* Same 9-image template as InCore (see the comment on that entry
-       above): hero (page.tsx, via projects.ts's images[0]) → 1 single
-       (Approach) → pair + 2 singles (Showcase) → pair + 1 single (Design
-       System). Filenames follow yap-{section}[-n].webp — drop compressed
-       originals straight into public/ under these names and everything
-       here just lights up. Each image/imageGrid entry below has a
-       `focalPoint` slot ready for the anchor tool (src/lib/imageAnchor.tsx)
-       — omitted for now, so every image starts centered until anchored. */
+    /* Same 9-image template as InCore: hero (page.tsx, via projects.ts's
+       images[0]) → 1 single (Approach) → pair + 2 singles (Showcase) →
+       pair + 1 single (Design System). Every image below already has a
+       `focalPoint` baked in from the anchor tool (src/lib/imageAnchor.tsx)
+       — Jeet's tuned crop/zoom values, not defaults. */
     sections: [
       {
         id: "overview",
@@ -216,11 +219,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — the 2–3 sentence framing of what this project was and why it mattered. YAP Global needed an event experience that felt as alive online as the gatherings themselves.",
+            text: "YAP Global is an international PR and communications agency for crypto, DeFi, and Web3 companies, founded in 2018 by former journalist Samantha Yap. By 2025 the agency had just been through a full brand refresh — new logo, new colors, new identity — but the website hadn't caught up.",
           },
           {
             type: "paragraph",
-            text: "Placeholder — a second paragraph on the shape of the solution and what changed once it shipped.",
+            text: "I led the redesign at Natural Eye Media, the agency handling the project, covering UX, IA, content strategy, and copy across the homepage, service pages, case studies, careers, and a redesigned newsletter section called The Context — all built to a hard deadline: launch before EthCC, a major Web3 conference, on June 30, 2025.",
           },
         ],
       },
@@ -231,10 +234,10 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "stats",
             items: [
-              { value: "Placeholder", label: "Timeline" },
-              { value: "Placeholder", label: "Reduction in drop-off" },
-              { value: "Placeholder", label: "Events launched" },
-              { value: "Placeholder", label: "Core flows redesigned" },
+              { value: "Jun 2025", label: "Shipped on schedule, ahead of EthCC" },
+              { value: "3 → 1", label: "Competing homepage directions merged into one" },
+              { value: "7", label: "Site sections redesigned, home to a rebuilt newsletter" },
+              { value: "2026", label: "Still an active account — new assets shipping past launch" },
             ],
           },
         ],
@@ -245,11 +248,21 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — the sharpest version of the problem, stated plainly. What was broken, for whom, and why the existing experience couldn't scale.",
+            text: "The rebrand had already happened — new logo, new colors, new identity — but the site hadn't caught up, and the client felt it: cluttered, forgettable, and not converting. A glossary section meant to explain crypto terms was working against them; they wanted to read as a serious international PR agency, not a Web3 101 course.",
+          },
+          {
+            type: "list",
+            items: [
+              "Cluttered and not memorable",
+              "Visitors weren't taking action on the site",
+              "A glossary section that undercut the positioning they wanted",
+              "No consistent way to show proof of past work",
+            ],
           },
           {
             type: "quote",
-            text: "Placeholder problem statement — the single sentence that framed everything downstream.",
+            text: "We'd rather have low traffic and high intent vs low intent and high traffic.",
+            attribution: "YAP Global",
           },
         ],
       },
@@ -259,9 +272,13 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — how the problem was approached: research method, key constraints, the first few directions explored before landing on this one.",
+            text: "I started from an internal discovery questionnaire, adapted for a rebrand context, and had the client fill it out across two separate passes plus a call — cross-referencing all three and treating the most recent answers as the ones that mattered when they conflicted. That surfaced five distinct audiences the site had to speak to: business leads, newsletter subscribers, industry peers, journalists, and job seekers, each needing something different from the page.",
           },
-          { type: "image", src: "/yap-approach.webp", alt: "YAP Global approach placeholder", wide: true, focalPoint: { x: 52.03, y: 71.65, zoom: 1.28 } },
+          {
+            type: "paragraph",
+            text: "For content, the client pointed me to a competitor's homepage they liked and asked for a copy read, not a visual one — so I pulled out what was actually working there (a confident opening line, benefits-led service copy, credibility placed high) and rebuilt that structure in YAP's own voice. Since the goal was conversion, not discovery, the IA followed the same logic: hero, trust signals, case studies, services, newsletter, contact — getting a high-intent visitor to proof as fast as possible.",
+          },
+          { type: "image", src: "/yap-approach.webp", alt: "YAP Global website, tablet mockup — approach", wide: true, focalPoint: { x: 52.03, y: 71.65, zoom: 1.28 } },
         ],
       },
       {
@@ -270,17 +287,21 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — walk through the 2–4 flows that mattered most.",
+            text: "Three homepage directions went in front of the client, and instead of picking a single winner, I took their detailed, section-by-section feedback — what to keep from each — and merged the strongest pieces into one: the wins section and tile motif from one direction, the services structure and landing layout from another, the testimonial treatment from a third.",
+          },
+          {
+            type: "paragraph",
+            text: "The rebrand centered on a quotation-mark symbol tied to the agency's name — a nod to \"yapping,\" their own word for storytelling. Instead of treating it as a static logo mark, I used it as a recurring visual anchor between sections, signaling continuity as the page scrolled from one part of the story to the next.",
           },
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-showcase-1.webp", alt: "YAP Global showcase placeholder 1", focalPoint: { x: 57.24, y: 35.70, zoom: 1.21 } },
-              { src: "/yap-showcase-2.webp", alt: "YAP Global showcase placeholder 2", focalPoint: { x: 51.33, y: 16.06, zoom: 1.33 } },
+              { src: "/yap-showcase-1.webp", alt: "YAP Global newsfeed page, tablet mockup among fruit", focalPoint: { x: 57.24, y: 35.70, zoom: 1.21 } },
+              { src: "/yap-showcase-2.webp", alt: "YAP Global \"We Yap With Purpose\" values page, tablet mockup", focalPoint: { x: 51.33, y: 16.06, zoom: 1.33 } },
             ],
           },
-          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global showcase placeholder 3", wide: true, focalPoint: { x: 51.93, y: 50.36 } },
-          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global showcase placeholder 4", wide: true, focalPoint: { x: 70.77, y: 14.04, zoom: 1.13 } },
+          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global website, tablet mockup — showcase", wide: true, focalPoint: { x: 51.93, y: 50.36 } },
+          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global website, tablet mockup — showcase", wide: true, focalPoint: { x: 70.77, y: 14.04, zoom: 1.13 } },
         ],
       },
       {
@@ -289,16 +310,20 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — the components, tokens, or patterns built to keep this scalable across future features.",
+            text: "The client had used a physical newspaper prop at a conference to represent their newsletter, The Context — I carried that straight onto the site, building the section as an actual open-newspaper spread instead of a generic email signup block, so the physical brand moment and the digital one matched.",
+          },
+          {
+            type: "paragraph",
+            text: "Two problems came up in launch week. The client wanted \"learn more\" arrows removed from service items pointing to pages that weren't built yet — dead links are worse than no links — so I replaced them with small descriptive tags instead of reintroducing a link that led nowhere. And with a handful of internal pages still incomplete the day before launch, I reused the site's already-approved 404 page styling to build a coming-soon page fast, instead of pushing the whole launch back.",
           },
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-design-1.webp", alt: "YAP Global design system placeholder 1", focalPoint: { x: 48.28, y: 71.45, zoom: 1.08 } },
-              { src: "/yap-design-2.webp", alt: "YAP Global design system placeholder 2", focalPoint: { x: 40.22, y: 52.53, zoom: 1.33 } },
+              { src: "/yap-design-1.webp", alt: "YAP Global website, tablet mockup — design details", focalPoint: { x: 48.28, y: 71.45, zoom: 1.08 } },
+              { src: "/yap-design-2.webp", alt: "YAP Global website, tablet mockup — design details", focalPoint: { x: 40.22, y: 52.53, zoom: 1.33 } },
             ],
           },
-          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global design system placeholder 3", wide: true, focalPoint: { x: 50.79, y: 49.81 } },
+          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global website, tablet mockup — design details", wide: true, focalPoint: { x: 50.79, y: 49.81 } },
         ],
       },
       {
@@ -307,7 +332,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — what shipped, what it changed, and what you'd do differently next time.",
+            text: "The site launched on schedule ahead of EthCC, coming-soon page and all. The founder's reaction to the 404 page was positive enough that the team reused its style under deadline pressure, and the relationship didn't end at launch — I was still producing new branded assets for YAP Global more than a year later. I don't have post-launch traffic or conversion numbers to share, so I'm leaving that out rather than guessing.",
+          },
+          {
+            type: "paragraph",
+            text: "The real lesson was learning to edit across three competing, client-approved directions instead of refining just one — merging documented, specific feedback into a single coherent system rather than defending any one direction as \"the\" answer. If I did this again, I'd flag page-readiness risk earlier in the timeline, instead of solving it with a coming-soon page the day before launch.",
           },
         ],
       },

@@ -49,7 +49,7 @@ export const projects: Project[] = [
   {
     slug: "yap-global",
     title: "YAP Global",
-    description: "Event experience platform redefining how communities gather and celebrate.",
+    description: "International PR agency for crypto and Web3 companies, rebranded and rebuilt against a hard conference deadline.",
     tint: "var(--folder-yap)",
     tintHex: "#B8CEF5",
     /* images[0] is also the case-study hero (page.tsx reads it directly) —
@@ -61,7 +61,7 @@ export const projects: Project[] = [
       { src: "/yap-showcase-1.webp", alt: "YAP Global showcase 1" },
       { src: "/yap-showcase-3.webp", alt: "YAP Global showcase 3" },
     ],
-    tags: ["UX Design", "Motion"],
+    tags: ["UX Design", "Brand Identity"],
   },
   {
     slug: "fourth-project",

@@ -224,11 +224,13 @@ export default function CaseStudyContent({
       data-case-study-section
       style={{
         scrollMarginTop: "100px",
-        paddingTop: index === 0 ? 0 : "20px",
-        paddingBottom: "56px",
+        // Tightened (was 20/56/20) — the old spacing read as too airy
+        // between sections and between a heading and what follows it.
+        paddingTop: index === 0 ? 0 : "16px",
+        paddingBottom: "40px",
         display: "flex",
         flexDirection: "column",
-        gap: "20px",
+        gap: "16px",
       }}
     >
       <h2 style={{
