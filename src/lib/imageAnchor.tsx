@@ -28,7 +28,22 @@ import {
  * identically whether anchor mode is on or off.
  */
 
-export type FocalPoint = { x: number; y: number };
+/**
+ * `zoom` is optional and defaults to 1 (today's plain object-position pan,
+ * no extra crop) — existing persisted/baked anchors with no `zoom` field
+ * keep working unchanged. Added after a real case: a shallow-depth-of-field
+ * photo can have its sharp subject in one corner and soft background
+ * bokeh everywhere else — panning alone can only choose WHICH part shows,
+ * it can't crop tighter to exclude the soft parts around it. Zoom does.
+ */
+export type FocalPoint = { x: number; y: number; zoom?: number };
+
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 4;
+// Tuned so one mouse-wheel notch (~deltaY 100) reads as roughly a 0.2x
+// step, and trackpad pinch (many small deltaY events) feels proportionally
+// smooth rather than jumpy.
+const ZOOM_WHEEL_SENSITIVITY = 0.002;
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
@@ -142,6 +157,7 @@ export function AnchoredImage({
   const draggingRef = useRef(false);
 
   const current = anchors[src] ?? defaultFocalPoint ?? { x: 50, y: 50 };
+  const zoom = current.zoom ?? 1;
 
   const updateFromPointer = useCallback((clientX: number, clientY: number) => {
     const el = containerRef.current;
@@ -150,13 +166,18 @@ export function AnchoredImage({
     setAnchor(src, {
       x: clamp(((clientX - rect.left) / rect.width) * 100, 0, 100),
       y: clamp(((clientY - rect.top) / rect.height) * 100, 0, 100),
+      zoom: current.zoom,
     });
-  }, [src, setAnchor]);
+  }, [src, setAnchor, current.zoom]);
+
+  const setZoom = useCallback((nextZoom: number) => {
+    setAnchor(src, { x: current.x, y: current.y, zoom: clamp(nextZoom, ZOOM_MIN, ZOOM_MAX) });
+  }, [src, setAnchor, current.x, current.y]);
 
   return (
     <div
       ref={containerRef}
-      style={{ position: "absolute", inset: 0 }}
+      style={{ position: "absolute", inset: 0, overflow: "hidden" }}
       onPointerDown={anchorModeOn ? (e) => {
         e.preventDefault();
         draggingRef.current = true;
@@ -168,6 +189,12 @@ export function AnchoredImage({
         updateFromPointer(e.clientX, e.clientY);
       } : undefined}
       onPointerUp={anchorModeOn ? () => { draggingRef.current = false; } : undefined}
+      onWheel={anchorModeOn ? (e) => {
+        // Handles both a plain mouse wheel and trackpad pinch-to-zoom —
+        // Chrome/Safari both report pinch gestures as wheel events.
+        e.preventDefault();
+        setZoom(zoom - e.deltaY * ZOOM_WHEEL_SENSITIVITY);
+      } : undefined}
     >
       <Image
         src={src}
@@ -177,7 +204,15 @@ export function AnchoredImage({
         priority={priority}
         quality={85}
         className={className}
-        style={{ objectPosition: focalPointToCss(current) }}
+        style={{
+          objectPosition: focalPointToCss(current),
+          // Cropping in tighter than the natural object-fit:cover crop —
+          // scaling the already-cover-fit, already-positioned image around
+          // the SAME focal-point percentage as its transform-origin keeps
+          // that point visually anchored while zooming in around it.
+          transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+          transformOrigin: focalPointToCss(current),
+        }}
       />
       {anchorModeOn && (
         <>
@@ -199,18 +234,41 @@ export function AnchoredImage({
           }} />
           <div style={{
             position: "absolute", bottom: "6px", right: "6px",
+            display: "flex", alignItems: "center", gap: "4px",
             background: "rgba(0,0,0,0.72)", color: "#fff",
             fontFamily: "var(--font-mono)", fontSize: "11px",
-            padding: "3px 6px", borderRadius: "5px",
-            pointerEvents: "none",
+            padding: "3px 4px 3px 6px", borderRadius: "5px",
           }}>
-            {Math.round(current.x)}%, {Math.round(current.y)}%
+            <span style={{ pointerEvents: "none" }}>
+              {Math.round(current.x)}%, {Math.round(current.y)}% · {zoom.toFixed(2)}×
+            </span>
+            <button
+              onClick={() => setZoom(zoom - 0.2)}
+              title="Zoom out (or scroll on the image)"
+              style={zoomBtnStyle}
+            >−</button>
+            <button
+              onClick={() => setZoom(zoom + 0.2)}
+              title="Zoom in (or scroll on the image)"
+              style={zoomBtnStyle}
+            >+</button>
+            <button
+              onClick={() => setAnchor(src, { x: 50, y: 50, zoom: 1 })}
+              title="Reset this image's crop"
+              style={zoomBtnStyle}
+            >↺</button>
           </div>
         </>
       )}
     </div>
   );
 }
+
+const zoomBtnStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.16)", color: "#fff", border: "none",
+  borderRadius: "3px", width: "16px", height: "16px", lineHeight: "16px",
+  padding: 0, cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "11px",
+};
 
 const anchorBtnStyle: React.CSSProperties = {
   background: "rgba(255,255,255,0.12)", color: "#fff", border: "none",
@@ -254,7 +312,7 @@ export function AnchorToggle() {
           display: "flex", flexDirection: "column", gap: "8px",
           width: "190px", boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
         }}>
-          <div style={{ lineHeight: 1.4 }}>Click or drag any image to set its focal point.</div>
+          <div style={{ lineHeight: 1.4 }}>Click/drag to pan. Scroll, pinch, or use +/− to zoom in.</div>
           <div style={{ opacity: 0.7 }}>{count} custom anchor{count === 1 ? "" : "s"}</div>
           <div style={{ display: "flex", gap: "6px" }}>
             <button onClick={handleCopy} style={anchorBtnStyle}>{copied ? "Copied!" : "Copy JSON"}</button>
