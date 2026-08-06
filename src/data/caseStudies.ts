@@ -196,20 +196,120 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "yap-global",
-    meta: { role: "UX Designer, Motion", timeline: "2024", tools: ["Figma", "After Effects"] },
+    meta: {
+      role: "UX Designer, Motion",
+      timeline: "2024",
+      tools: ["Figma", "After Effects"],
+    },
+    /* Same 9-image template as InCore (see the comment on that entry
+       above): hero (page.tsx, via projects.ts's images[0]) → 1 single
+       (Approach) → pair + 2 singles (Showcase) → pair + 1 single (Design
+       System). Filenames follow yap-{section}[-n].jpg — drop compressed
+       originals straight into public/ under these names and everything
+       here just lights up. Each image/imageGrid entry below has a
+       `focalPoint` slot ready for the anchor tool (src/lib/imageAnchor.tsx)
+       — omitted for now, so every image starts centered until anchored. */
     sections: [
       {
         id: "overview",
         label: "Overview",
         blocks: [
-          { type: "paragraph", text: "Placeholder overview for YAP Global — an event experience platform redefining how communities gather." },
-          { type: "stats", items: [{ value: "Placeholder", label: "Timeline" }, { value: "UX Designer, Motion", label: "Role" }] },
+          {
+            type: "paragraph",
+            text: "Placeholder — the 2–3 sentence framing of what this project was and why it mattered. YAP Global needed an event experience that felt as alive online as the gatherings themselves.",
+          },
+          {
+            type: "paragraph",
+            text: "Placeholder — a second paragraph on the shape of the solution and what changed once it shipped.",
+          },
+        ],
+      },
+      {
+        id: "tldr",
+        label: "TL;DR",
+        blocks: [
+          {
+            type: "stats",
+            items: [
+              { value: "Placeholder", label: "Timeline" },
+              { value: "Placeholder", label: "Reduction in drop-off" },
+              { value: "Placeholder", label: "Events launched" },
+              { value: "Placeholder", label: "Core flows redesigned" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "problem-statement",
+        label: "Problem Statement",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder — the sharpest version of the problem, stated plainly. What was broken, for whom, and why the existing experience couldn't scale.",
+          },
+          {
+            type: "quote",
+            text: "Placeholder problem statement — the single sentence that framed everything downstream.",
+          },
+        ],
+      },
+      {
+        id: "approach",
+        label: "Approach",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder — how the problem was approached: research method, key constraints, the first few directions explored before landing on this one.",
+          },
+          { type: "image", src: "/yap-approach.jpg", alt: "YAP Global approach placeholder", wide: true },
+        ],
+      },
+      {
+        id: "showcase",
+        label: "Showcase",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder — walk through the 2–4 flows that mattered most.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/yap-showcase-1.jpg", alt: "YAP Global showcase placeholder 1" },
+              { src: "/yap-showcase-2.jpg", alt: "YAP Global showcase placeholder 2" },
+            ],
+          },
+          { type: "image", src: "/yap-showcase-3.jpg", alt: "YAP Global showcase placeholder 3", wide: true },
+          { type: "image", src: "/yap-showcase-4.jpg", alt: "YAP Global showcase placeholder 4", wide: true },
+        ],
+      },
+      {
+        id: "design-system",
+        label: "Design System",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder — the components, tokens, or patterns built to keep this scalable across future features.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/yap-design-1.jpg", alt: "YAP Global design system placeholder 1" },
+              { src: "/yap-design-2.jpg", alt: "YAP Global design system placeholder 2" },
+            ],
+          },
+          { type: "image", src: "/yap-design-3.jpg", alt: "YAP Global design system placeholder 3", wide: true },
         ],
       },
       {
         id: "conclusion",
         label: "Conclusion",
-        blocks: [{ type: "paragraph", text: "Placeholder conclusion." }],
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder — what shipped, what it changed, and what you'd do differently next time.",
+          },
+        ],
       },
     ],
   },

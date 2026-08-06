@@ -52,10 +52,14 @@ export const projects: Project[] = [
     description: "Event experience platform redefining how communities gather and celebrate.",
     tint: "var(--folder-yap)",
     tintHex: "#B8CEF5",
+    /* images[0] is also the case-study hero (page.tsx reads it directly) —
+       set its `focalPoint` once you've anchored it, and it applies there
+       too. Folder.tsx only reads the first 3 for the homepage folder-card
+       stack; the full 9-image set lives in caseStudies.ts's blocks below. */
     images: [
-      { src: "/event-1.jpg",  alt: "Live event crowd" },
-      { src: "/event-2.jpg",  alt: "Conference audience" },
-      { src: "/screen-1.jpg", alt: "Dashboard UI" },
+      { src: "/yap-hero.jpg",       alt: "YAP Global hero" },
+      { src: "/yap-showcase-1.jpg", alt: "YAP Global showcase 1" },
+      { src: "/yap-showcase-3.jpg", alt: "YAP Global showcase 3" },
     ],
     tags: ["UX Design", "Motion"],
   },
