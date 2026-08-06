@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  images: {
+    /* Next's Image Optimization re-encodes every served image at
+       `quality: 75` by default — even when the source is an already-
+       compressed WebP — which was visibly softening the YAP Global case
+       study photos on top of their own compression. Next 16 requires any
+       non-default quality used by an `<Image quality={N}>` to be listed
+       here first. 75 stays allowed since most `<Image>`s across the site
+       don't pass `quality` explicitly and fall back to it; 85 is what
+       AnchoredImage (src/lib/imageAnchor.tsx) — the shared renderer for
+       every case-study image — asks for instead. */
+    qualities: [75, 85],
+  },
 };
 
 export default nextConfig;

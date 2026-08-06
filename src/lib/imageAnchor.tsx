@@ -175,6 +175,7 @@ export function AnchoredImage({
         fill
         sizes={sizes}
         priority={priority}
+        quality={85}
         className={className}
         style={{ objectPosition: focalPointToCss(current) }}
       />

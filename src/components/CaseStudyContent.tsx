@@ -110,7 +110,7 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
       return (
         <figure style={{ margin: 0 }}>
           <PlaceholderCard aspectRatio={aspectRatio} dial={dial}>
-            <AnchoredImage src={block.src} alt={block.alt} sizes="(max-width: 900px) 100vw, 720px" defaultFocalPoint={block.focalPoint} />
+            <AnchoredImage src={block.src} alt={block.alt} sizes={`(max-width: 900px) 100vw, ${CASE_STUDY_STYLE.contentColumnWidth}px`} defaultFocalPoint={block.focalPoint} />
           </PlaceholderCard>
           {block.caption && (
             <figcaption style={{
@@ -131,15 +131,22 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
          real images to fill however many slots you dragged to); now that
          the case-study template's image slots are fixed content, the real
          list is the whole story. */
+      const n = block.images.length;
+      // Each tile's real desktop CSS width: the content column split N
+      // ways, minus the (n-1) gaps between tiles. Mobile keeps every tile
+      // side by side too (no responsive column collapse here), so the vw
+      // fraction mirrors that instead of assuming a stack.
+      const tileWidth = Math.round((CASE_STUDY_STYLE.contentColumnWidth - dial.gap * (n - 1)) / n);
+      const tileSizes = `(max-width: 900px) ${Math.round(100 / n)}vw, ${tileWidth}px`;
       return (
         <div style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${block.images.length}, 1fr)`,
+          gridTemplateColumns: `repeat(${n}, 1fr)`,
           gap: `${dial.gap}px`,
         }}>
           {block.images.map((img, i) => (
             <PlaceholderCard key={i} aspectRatio={CASE_STUDY_STYLE.gridImageAspect} dial={dial}>
-              <AnchoredImage src={img.src} alt={img.alt} sizes="(max-width: 900px) 50vw, 340px" defaultFocalPoint={img.focalPoint} />
+              <AnchoredImage src={img.src} alt={img.alt} sizes={tileSizes} defaultFocalPoint={img.focalPoint} />
             </PlaceholderCard>
           ))}
         </div>

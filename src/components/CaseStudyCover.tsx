@@ -29,7 +29,13 @@ export default function CaseStudyCover({
   return (
     <div style={{ marginBottom: "64px" }}>
       <PlaceholderCard aspectRatio={CASE_STUDY_STYLE.heroAspect} dial={dial} innerBackground={`${tintHex}33`}>
-        <AnchoredImage src={src} alt={alt} sizes="900px" priority defaultFocalPoint={focalPoint} />
+        <AnchoredImage
+          src={src}
+          alt={alt}
+          sizes={`(max-width: 900px) 100vw, ${CASE_STUDY_STYLE.contentColumnWidth}px`}
+          priority
+          defaultFocalPoint={focalPoint}
+        />
       </PlaceholderCard>
     </div>
   );
