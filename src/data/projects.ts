@@ -1,6 +1,12 @@
+import type { FocalPoint } from "@/lib/imageAnchor";
+
 export interface ProjectImage {
   src: string;
   alt: string;
+  /** Where CaseStudyCover.tsx anchors this image inside its (usually
+   * cropped) hero frame — see src/lib/imageAnchor.tsx. Omit for dead
+   * center. */
+  focalPoint?: FocalPoint;
 }
 
 export interface Project {

@@ -32,7 +32,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
   return (
     <main>
-      <CaseStudyShell>
+      <CaseStudyShell slug={slug}>
         {/* ── Two-column grid: Back + TOC rail (left) | everything else
             (right) — the title, hero, and every section share ONE left
             edge that's indented from the TOC, not flush with it. ──── */}
@@ -107,7 +107,12 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Hero cover — shares the "Image Card" dial values (padding,
                 corner radius) with every image/image-grid block in
                 CaseStudyContent.tsx below, via CaseStudyCover.tsx. */}
-            <CaseStudyCover src={project.images[0].src} alt={project.images[0].alt} tintHex={project.tintHex} />
+            <CaseStudyCover
+              src={project.images[0].src}
+              alt={project.images[0].alt}
+              tintHex={project.tintHex}
+              focalPoint={project.images[0].focalPoint}
+            />
 
             {caseStudy ? (
               caseStudy.sections.map((section, i) => (

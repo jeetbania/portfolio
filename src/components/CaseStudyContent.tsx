@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useDialKit } from "dialkit";
 import type { ContentBlock } from "@/data/caseStudies";
 import { CASE_STUDY_STYLE } from "@/lib/caseStudyStyles";
+import { AnchoredImage } from "@/lib/imageAnchor";
 import QuoteBlock from "./QuoteBlock";
 
 /**
@@ -30,6 +30,10 @@ import QuoteBlock from "./QuoteBlock";
  * Moving a slider only changes the live preview in your browser; landing on
  * numbers you like again means asking for them to be baked in here the same
  * way.
+ *
+ * Per-image crop position is a separate dev tool, not a DialKit panel — see
+ * src/lib/imageAnchor.tsx (its floating "🎯 Anchor images" button lives
+ * bottom-left, this panel is bottom-right).
  */
 export function useImageCardDials() {
   const { imageCard } = useDialKit("Case Study", {
@@ -106,7 +110,7 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
       return (
         <figure style={{ margin: 0 }}>
           <PlaceholderCard aspectRatio={aspectRatio} dial={dial}>
-            <Image src={block.src} alt={block.alt} fill className="object-cover" sizes="(max-width: 900px) 100vw, 720px" />
+            <AnchoredImage src={block.src} alt={block.alt} sizes="(max-width: 900px) 100vw, 720px" defaultFocalPoint={block.focalPoint} />
           </PlaceholderCard>
           {block.caption && (
             <figcaption style={{
@@ -135,7 +139,7 @@ function Block({ block, tintHex, dial }: { block: ContentBlock; tintHex: string;
         }}>
           {block.images.map((img, i) => (
             <PlaceholderCard key={i} aspectRatio={CASE_STUDY_STYLE.gridImageAspect} dial={dial}>
-              <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="(max-width: 900px) 50vw, 340px" />
+              <AnchoredImage src={img.src} alt={img.alt} sizes="(max-width: 900px) 50vw, 340px" defaultFocalPoint={img.focalPoint} />
             </PlaceholderCard>
           ))}
         </div>

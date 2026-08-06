@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { PlaceholderCard, useImageCardDials } from "./CaseStudyContent";
 import { CASE_STUDY_STYLE } from "@/lib/caseStudyStyles";
+import { AnchoredImage, type FocalPoint } from "@/lib/imageAnchor";
 
 /**
  * The big hero image at the top of a case-study page — was previously its
@@ -22,14 +22,14 @@ import { CASE_STUDY_STYLE } from "@/lib/caseStudyStyles";
  * src/lib/caseStudyStyles.ts).
  */
 export default function CaseStudyCover({
-  src, alt, tintHex,
-}: { src: string; alt: string; tintHex: string }) {
+  src, alt, tintHex, focalPoint,
+}: { src: string; alt: string; tintHex: string; focalPoint?: FocalPoint }) {
   const dial = useImageCardDials();
 
   return (
     <div style={{ marginBottom: "64px" }}>
       <PlaceholderCard aspectRatio={CASE_STUDY_STYLE.heroAspect} dial={dial} innerBackground={`${tintHex}33`}>
-        <Image src={src} alt={alt} fill className="object-cover" sizes="900px" priority />
+        <AnchoredImage src={src} alt={alt} sizes="900px" priority defaultFocalPoint={focalPoint} />
       </PlaceholderCard>
     </div>
   );

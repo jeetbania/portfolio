@@ -14,6 +14,8 @@
  * template (Aug 2026 Paper.design pass).
  */
 
+import type { FocalPoint } from "@/lib/imageAnchor";
+
 export interface CaseStudyMeta {
   role: string;
   timeline: string;
@@ -30,8 +32,8 @@ export interface CaseStudyMeta {
 export type ContentBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; text: string }
-  | { type: "image"; src: string; alt: string; caption?: string; wide?: boolean }
-  | { type: "imageGrid"; images: { src: string; alt: string }[] }
+  | { type: "image"; src: string; alt: string; caption?: string; wide?: boolean; focalPoint?: FocalPoint }
+  | { type: "imageGrid"; images: { src: string; alt: string; focalPoint?: FocalPoint }[] }
   | { type: "quote"; text: string; attribution?: string }
   | { type: "stats"; items: { label: string; value: string }[] }
   | { type: "list"; items: string[] };
