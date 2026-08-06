@@ -36,7 +36,18 @@ export type ContentBlock =
   | { type: "imageGrid"; images: { src: string; alt: string; focalPoint?: FocalPoint }[] }
   | { type: "quote"; text: string; attribution?: string }
   | { type: "stats"; items: { label: string; value: string }[] }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  /** Draggable before/after comparison — full content-column width, same
+   * card treatment as a `wide: true` image (see BeforeAfterSlider.tsx).
+   * Not every case study needs one; use it only where there's a real
+   * before/after image pair. */
+  | {
+      type: "beforeAfter";
+      before: { src: string; alt: string };
+      after: { src: string; alt: string };
+      beforeLabel?: string;
+      afterLabel?: string;
+    };
 
 export interface CaseStudySection {
   /** Anchor id + nav key. Keep it short, kebab-case. */
@@ -57,10 +68,16 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "incore",
     meta: {
-      role: "Lead Product Designer",
-      timeline: "Jun 2024 — Nov 2024",
-      team: "2 designers, 4 engineers, 1 PM",
-      tools: ["Figma", "Framer", "Notion"],
+      /* Real content, from a source doc Jeet supplied (Aug 2026), not
+         placeholder. `tools` is a reasonable assumption (Figma is about
+         as close to a universal design tool as exists), not something
+         the source doc explicitly confirms the way it does for the CMS/
+         email stack (WordPress + Bricks Builder, Brevo/SendGrid) that
+         doesn't belong in a "design tools" tile. No em dashes anywhere in
+         this case study's copy, per Jeet's request. */
+      role: "UX Design, IA & Content Strategy",
+      timeline: "Feb 2024 — Jul 2025 (ongoing)",
+      tools: ["Figma"],
     },
     sections: [
       {
@@ -69,11 +86,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — the 2–3 sentence framing of what this project was and why it mattered. Engineering teams licensing RISC-V chips had no connected workflow — everything lived across spreadsheets, PDFs, and email threads.",
+            text: "InCore Semiconductors is a Chennai-based fabless semiconductor company building customizable RISC-V processor IP. It grew out of the SHAKTI processor program at IIT Madras and is backed by Peak XV Partners. InCore licenses processor cores and SoC design tools to chip companies instead of manufacturing chips itself, charging a license fee plus an optional royalty tied to volume.",
           },
           {
             type: "paragraph",
-            text: "Placeholder — a second paragraph on the shape of the solution and what changed once it shipped.",
+            text: "I worked on InCore's website through a design agency, on and off, from early 2024 through mid-2025. It wasn't a single redesign and launch. The engagement started with brand discovery and a first pass at product page structure, returned about a year later for a full homepage rebuild driven by a shift in product strategy, and continued after that with SEO fixes, new landing pages, and ongoing content support.",
           },
         ],
       },
@@ -84,10 +101,10 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "stats",
             items: [
-              { value: "6 months", label: "From kickoff to launch" },
-              { value: "40%", label: "Placeholder — reduction in onboarding time" },
-              { value: "12", label: "Placeholder — engineering teams onboarded" },
-              { value: "3", label: "Placeholder — core flows redesigned" },
+              { value: "Feb 2024", label: "Engagement started, still ongoing today" },
+              { value: "125%", label: "Rise in clicks to the SoC Generator page after the rebuild" },
+              { value: "2", label: "Milestones: first product pages, then a full homepage rebuild" },
+              { value: "0", label: "In-house developers, every decision had to be non-technical-proof" },
             ],
           },
         ],
@@ -98,11 +115,25 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — the sharpest version of the problem, stated plainly. What was broken, for whom, and why the existing workflow couldn't scale.",
+            text: "InCore's own list of problems with their site was specific and unglamorous: not enough product information for engineers trying to evaluate them, a broken enquiry form, and no in-house developer to keep any of it updated. The stakes were higher than a typical B2B site too, since InCore's buyers are SoC architects and chip design engineers who can't afford to pick the wrong vendor.",
+          },
+          {
+            type: "list",
+            items: [
+              "Not enough product information for evaluating engineers",
+              "No working way to submit an enquiry, the form was broken",
+              "Information going stale quickly as the company evolved",
+              "No in-house developer to maintain anything built",
+            ],
           },
           {
             type: "quote",
-            text: "Placeholder problem statement — the single sentence that framed everything downstream.",
+            text: "Cautious about technology vendors to work with, since mistakes are very costly in the semicon industry.",
+            attribution: "InCore Semiconductors",
+          },
+          {
+            type: "paragraph",
+            text: "About a year in, a second problem emerged. InCore had built an internal automation platform, the SoC Generator, that let one engineer do in minutes what used to take a team of three or four several months. Internally this became the company's real differentiator, but the site still presented it as one of several roughly equal offerings. Bounce rate was rising and sessions were falling, data suggesting visitors weren't getting the message either.",
           },
         ],
       },
@@ -117,9 +148,13 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — how the problem was approached: research method, key constraints, the first few directions explored before landing on this one.",
+            text: "I worked from a structured brand and audience questionnaire the client filled out directly. Two details shaped everything downstream: the target buyer is highly risk-averse, since choosing the wrong CPU vendor is a costly, career-relevant decision for them, and the company had zero in-house technical capacity to maintain a website, which meant every design decision also had to be realistic for a non-developer to keep updated.",
           },
-          { type: "image", src: "/tech-1.jpg", alt: "Approach placeholder", wide: true },
+          {
+            type: "paragraph",
+            text: "The first real deliverable was structuring the product section around a flow the client already had in their head but hadn't put into a page hierarchy: Build Your Own Core through a core generator, Buy a Core across two core-hub tiers, and Buy a Full Chip across SoC options, each leading to a sales enquiry, plus a documentation area for brochures and specs. I wrote the section copy and page structure directly from that flow instead of inventing a new one.",
+          },
+          { type: "image", src: "/incore-approach.webp", alt: "InCore website, approach mockup", wide: true },
         ],
       },
       {
@@ -130,17 +165,21 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — walk through the 2–4 flows that mattered most.",
+            text: "About a year later, the client's own team had shifted strategy internally. SoC Generator, not the individual IP cores, was becoming the company's flagship product, the thing they wanted every visitor to understand first. That wasn't a request to make the homepage look better, it was a request to change what the homepage was fundamentally organized around. I rebuilt the structure so SoC Generator anchored the hero and the product overview, with the RISC-V cores (renamed Core-Hubs to avoid confusion with \"generator\" language) and reference designs repositioned as supporting offerings underneath it.",
+          },
+          {
+            type: "paragraph",
+            text: "Because a full rebuild takes time and the strategy shift was urgent, the work split into two passes: a fast, one-week update to surface SoC Generator messaging on the existing site, followed by a fuller homepage rebuild the next month. That let the business-critical message go live quickly without waiting on the complete redesign.",
           },
           {
             type: "imageGrid",
             images: [
-              { src: "/chip.png", alt: "Showcase placeholder 1" },
-              { src: "/screen-1.jpg", alt: "Showcase placeholder 2" },
+              { src: "/incore-showcase-1.webp", alt: "InCore website, showcase mockup" },
+              { src: "/incore-showcase-2.webp", alt: "InCore website, showcase mockup" },
             ],
           },
-          { type: "image", src: "/tech-2.jpg", alt: "Showcase placeholder 3", wide: true },
-          { type: "image", src: "/service-1.jpg", alt: "Showcase placeholder 4", wide: true },
+          { type: "image", src: "/incore-showcase-3.webp", alt: "InCore website, showcase mockup", wide: true },
+          { type: "image", src: "/incore-showcase-4.webp", alt: "InCore website, showcase mockup", wide: true },
         ],
       },
       {
@@ -151,16 +190,20 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — the components, tokens, or patterns built to keep this scalable across future features.",
+            text: "Once the new homepage was live, I kept iterating based on real SEO and performance reports the client shared every few months, not fresh brainstorming each time. That included fixing Core Web Vitals issues, addressing keyword cannibalization between pages competing for the same search terms, and adjusting internal linking to the SoC Generator page after a report showed its clicks were climbing while its overall traffic was falling.",
+          },
+          {
+            type: "paragraph",
+            text: "Some of the most useful fixes were mundane but real: a gated brochure stuck on the client's OneDrive that visitors couldn't reliably access, moved into the site's own documentation page with a proper download link, and a broken document form caused by an expired API key, which also surfaced a case for the redundant email setup they'd already been planning. As InCore kept shipping new products and press coverage, I kept producing supporting material too: landing pages, documentation entries, and newsroom summaries written in the company's own voice.",
           },
           {
             type: "imageGrid",
             images: [
-              { src: "/screen-2.jpg", alt: "Design system placeholder 1" },
-              { src: "/service-2.jpg", alt: "Design system placeholder 2" },
+              { src: "/incore-design-1.webp", alt: "InCore website, design details mockup" },
+              { src: "/incore-design-2.webp", alt: "InCore website, design details mockup" },
             ],
           },
-          { type: "image", src: "/service-3.jpg", alt: "Design system placeholder 3", wide: true },
+          { type: "image", src: "/incore-design-3.webp", alt: "InCore website, design details mockup", wide: true },
         ],
       },
       {
@@ -169,7 +212,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Placeholder — what shipped, what it changed, and what you'd do differently next time.",
+            text: "The site went through two concrete milestones: a working product-page structure in 2024, and a full homepage rebuild in January 2025 that repositioned SoC Generator as the flagship product, presented and defended directly to the client on a call. Real SEO reports afterward showed a mixed but informative picture: clicks to the SoC Generator page rose sharply while overall traffic to that page dipped, and engagement improved even as total sessions declined. I used that data to keep adjusting internal linking, CTA placement, and technical performance rather than treating the rebuild as a finished, one-time deliverable. I don't have lead-volume or conversion numbers from the enquiry form itself, so I'm leaving that claim out.",
+          },
+          {
+            type: "paragraph",
+            text: "The main lesson here is that a homepage redesign request can actually be a business-strategy request wearing a design costume. When InCore asked for a refresh, the real change underneath it was that the company had decided what it wanted to be known for, and the old structure was working against that decision. The other lesson was how useful it was to treat the site as something to keep tuning against real data instead of a project with one finish line.",
           },
         ],
       },

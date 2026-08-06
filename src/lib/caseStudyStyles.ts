@@ -12,7 +12,11 @@
 export const CASE_STUDY_STYLE = {
   containerWidth: 1560,
   cardStyle: "flush" as const,
-  heroAspect: "21/9",
+  // Was 21/9 (a very wide, short letterbox strip) — taller now, and
+  // deliberately matches wideImageAspect exactly: 16/9 is also the
+  // standard export ratio for video, so a hero video (see
+  // CaseStudyCover.tsx) never needs letterboxing or an awkward crop.
+  heroAspect: "16/9",
   wideImageAspect: "16/9",
   gridImageAspect: "1/1",
   /* Real max CSS width of the content column images actually render into

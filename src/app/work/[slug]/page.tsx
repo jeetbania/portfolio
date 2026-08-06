@@ -112,6 +112,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               alt={project.images[0].alt}
               tintHex={project.tintHex}
               focalPoint={project.images[0].focalPoint}
+              heroVideo={project.heroVideo}
             />
 
             {caseStudy ? (

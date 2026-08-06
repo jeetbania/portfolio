@@ -298,6 +298,15 @@ body {
   }
 }
 
+/* Case-study hero video (HeroVideo.tsx) — hidden for reduced-motion
+   visitors, revealing the plain poster <img> it always sits on top of
+   underneath. A CSS rule rather than a JS matchMedia check: the video
+   never even starts autoplaying for these visitors, instead of playing
+   for a moment then getting paused. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-video { display: none; }
+}
+
 /* ─── Tooltip (transitions.dev) — used for icon-only hovers: tool
    logos, social icons, theme toggle. Colors ride the theme tokens
    (inverted fg/bg) so light/dark mode both get proper contrast without

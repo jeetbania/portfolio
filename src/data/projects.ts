@@ -17,21 +17,39 @@ export interface Project {
   tintHex: string;       // Raw hex for inline acrylic tint
   images: ProjectImage[];
   tags: string[];
+  /**
+   * Optional autoplay/muted/looping hero video (CaseStudyCover.tsx),
+   * shown instead of images[0] at the top of the case-study page.
+   * images[0] still MUST exist and be a real photo regardless — it's
+   * the video's `poster` (visible while the video loads, and permanently
+   * for prefers-reduced-motion visitors and the homepage folder-card
+   * thumbnail, which never plays video). See src/components/HeroVideo.tsx
+   * for encoding requirements (MP4/H.264, no audio track, short loop).
+   */
+  heroVideo?: string;
 }
 
 export const projects: Project[] = [
   {
     slug: "incore",
     title: "InCore",
-    description: "RISC-V SoC design platform for next-generation chip licensing.",
+    description: "Chennai-based RISC-V processor IP company, redesigned around a new flagship product.",
     tint: "var(--folder-incore)",
     tintHex: "#B8F0D8",
+    /* images[0] is also the case-study hero (page.tsx reads it directly)
+       and, if/when heroVideo below gets a real file, the video's poster
+       frame too. incore-approach.webp standing in as the hero/folder-card
+       image for now, since a hero video is planned instead of a hero
+       photo and no dedicated poster frame exists yet (see chat, Aug
+       2026) — swap this for a real one anytime; every case-study page
+       reads it straight from here. */
     images: [
-      { src: "/cover.png",  alt: "InCore product cover" },
-      { src: "/chip.png",   alt: "Semiconductor chip" },
-      { src: "/tech-1.jpg", alt: "Circuit board close-up" },
+      { src: "/incore-approach.webp",   alt: "InCore website, approach mockup" },
+      { src: "/incore-showcase-1.webp", alt: "InCore website, showcase mockup" },
+      { src: "/incore-showcase-3.webp", alt: "InCore website, showcase mockup" },
     ],
-    tags: ["Product Design", "Design System"],
+    tags: ["UX Design", "Content Strategy"],
+    // heroVideo: "/incore-hero.mp4", // uncomment once the compressed video file is in public/
   },
   {
     slug: "migrateful",

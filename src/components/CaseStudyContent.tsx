@@ -5,6 +5,7 @@ import { CASE_STUDY_STYLE, IMAGE_CARD_STYLE } from "@/lib/caseStudyStyles";
 import { AnchoredImage } from "@/lib/imageAnchor";
 import { EditableText } from "@/lib/contentEditor";
 import QuoteBlock from "./QuoteBlock";
+import BeforeAfterSlider from "./BeforeAfterSlider";
 
 export type ImageCardValues = typeof IMAGE_CARD_STYLE;
 
@@ -186,6 +187,17 @@ function Block({
             </li>
           ))}
         </ul>
+      );
+
+    case "beforeAfter":
+      return (
+        <BeforeAfterSlider
+          before={block.before}
+          after={block.after}
+          beforeLabel={block.beforeLabel}
+          afterLabel={block.afterLabel}
+          editableId={blockId}
+        />
       );
 
     default:
