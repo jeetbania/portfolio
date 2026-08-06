@@ -409,20 +409,154 @@ export const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    slug: "fifth-project",
-    meta: { role: "TBD", timeline: "TBD", tools: ["Figma"] },
+    slug: "arc-studio",
+    meta: {
+      /* Real content, from a source doc Jeet supplied (Aug 2026), not
+         placeholder. No em dashes anywhere in this case study's copy,
+         same standing preference as InCore's. */
+      role: "UX Design, Brand & Art Direction",
+      timeline: "Mar 2025 — Jul 2025",
+      tools: ["Figma", "Photoshop"],
+    },
     sections: [
       {
         id: "overview",
         label: "Overview",
         blocks: [
-          { type: "paragraph", text: "Placeholder — real case study content coming soon." },
+          {
+            type: "paragraph",
+            text: "Arc Studio is a creative agency focused entirely on Web3 and crypto companies, offering branding, podcast production, social media, and website design. This case study covers the agency's own website, not a client project.",
+          },
+          {
+            type: "paragraph",
+            text: "I led the design work myself, developing the site's visual identity, information architecture, and page templates, working closely with an internal stakeholder who reviewed and shaped the direction throughout. The project started in March 2025 and continued through mid-2025 as internal pages (About, service templates, case study pages) were built out.",
+          },
+        ],
+      },
+      {
+        id: "tldr",
+        label: "TL;DR",
+        blocks: [
+          {
+            type: "stats",
+            items: [
+              { value: "Mar 2025", label: "Design work started, wrapped by mid-2025" },
+              { value: "10+", label: "Page types unified under one visual system" },
+              { value: "4", label: "Service page templates built from one repeatable structure" },
+              { value: "1", label: "Design language: literally the shape of an arc, everywhere" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "problem-statement",
+        label: "Problem Statement",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Most web3 marketing agency websites look alike. Before starting any design work, I mapped the direct competitor landscape (Coinbound, Lunar Strategy, MarketAcross, Crowdcreate, Serotonin, Coinband) and found the same pattern repeating: a bold hero statement, a strip of client logos, a testimonial carousel, a services grid. None of it was wrong, but none of it gave a visitor a reason to remember one agency over another.",
+          },
+          {
+            type: "list",
+            items: [
+              "A homepage, four service templates, a case study template, an About page, and a blog, all needing to feel like one coherent brand",
+              "A name, Arc, that gave a hook, but not yet a design system to build from",
+              "Ten-plus page types to design against copy that was still evolving",
+            ],
+          },
+          {
+            type: "quote",
+            text: "The ribbons felt too heavy, and the colosseum read as meme-ish rather than telling an actual story.",
+            attribution: "Internal feedback, on an early hero concept",
+          },
+          {
+            type: "paragraph",
+            text: "There was also a practical production problem. With ten-plus page types to design and copy still evolving, designing every page from scratch against a moving target would have meant constant rework.",
+          },
+        ],
+      },
+      {
+        /* Image slot 2 of 9 (1 = the hero cover on page.tsx). This
+           template is fixed at 9 image slots total, in this exact order:
+           hero → this single → Showcase's pair + 2 singles → Design
+           System's pair + 1 single. See CaseStudyContent.tsx/caseStudies.ts
+           if that count ever needs to change. */
+        id: "approach",
+        label: "Approach",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Instead of treating Arc as a one-line metaphor for the hero section, I used it as the entire creative brief. An arc is also a physical shape that shows up across cultures and history: Roman archways, Japanese torii gates, the arc of a falling apple, the curve of a story. That gave the identity a source to pull from for nearly every page, rather than needing a new concept invented from zero each time.",
+          },
+          {
+            type: "paragraph",
+            text: "An early hero version used heavy orange marquee ribbons alongside a colosseum image, but that didn't survive feedback. The idea that stuck was using the Arc de Triomphe itself as the hero visual, with the inside of the arch masked so that scrolling creates a parallax effect of moving through it, literally walking the visitor through the arc. The agency's own name became an interactive piece of the page instead of just a word in the logo.",
+          },
+          { type: "image", src: "/arc-approach.webp", alt: "Arc Studio site, approach mockup", wide: true },
+        ],
+      },
+      {
+        /* Image slots 3–6 of 9: a side-by-side pair, then two full-width
+           singles. */
+        id: "showcase",
+        label: "Showcase",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The orange accent color came under specific scrutiny more than once for being visually too strong, particularly in the ribbon banners and background blocks. Rather than abandoning the color, since it stayed the throughline accent across the whole site, I moved to a lighter shade in the places it was overpowering the content around it.",
+          },
+          {
+            type: "paragraph",
+            text: "For the About page, the brief was a set of handwritten notes from a call: Japanese gates, arcs, Newton, cave art from India, no religious notes. I turned that loose list into a structured, section-by-section image brief: a torii gate as a portal motif in the hero, a Roman archway merging into a torii gate to represent the blend of cultures, a modernized Newton's apple tree with an orange apple falling toward an arc shape, and imagery inspired by Indian cave art transitioning into digital linework, deliberately avoiding any religious iconography as instructed.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/arc-showcase-1.webp", alt: "Arc Studio site, showcase mockup" },
+              { src: "/arc-showcase-2.webp", alt: "Arc Studio site, showcase mockup" },
+            ],
+          },
+          { type: "image", src: "/arc-showcase-3.webp", alt: "Arc Studio site, showcase mockup", wide: true },
+          { type: "image", src: "/arc-showcase-4.webp", alt: "Arc Studio site, showcase mockup", wide: true },
+        ],
+      },
+      {
+        /* Image slots 7–9 of 9: a side-by-side pair, then one full-width
+           single. */
+        id: "design-system",
+        label: "Design System",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Rather than custom-designing four separate service pages, I built a single repeatable structure (hero statement, service breakdown, the Arc Studio edge, selected work, FAQ, CTA) and applied it to branding, podcast production, website design, and social media, changing only the copy and supporting visuals per page. The same approach applied to the case study template, which followed a consistent challenge, approach, results, gallery structure across every client project featured.",
+          },
+          {
+            type: "paragraph",
+            text: "For the internal pages, I laid out the intended content structure for each page first, sent that ahead of final copy, and only moved into visual design once real copy existed against that structure, which kept the design work from chasing a moving target every time messaging changed. For the Work and Case Study pages specifically, I looked at a studio called Off-Mind's own site as a structural reference for its challenge-to-results narrative flow, then rebuilt that flow in Arc Studio's own classical-meets-digital visual language rather than copying its look.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/arc-design-1.webp", alt: "Arc Studio site, design details mockup" },
+              { src: "/arc-design-2.webp", alt: "Arc Studio site, design details mockup" },
+            ],
+          },
+          { type: "image", src: "/arc-design-3.webp", alt: "Arc Studio site, design details mockup", wide: true },
         ],
       },
       {
         id: "conclusion",
         label: "Conclusion",
-        blocks: [{ type: "paragraph", text: "Placeholder conclusion." }],
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The clearest checkpoint I have is a direct one: after the hero and homepage iterations, the internal stakeholder confirmed the final design was approved, with only copy adjustments and small image swaps requested afterward, rather than another structural round. The same visual language (the classical art references, the orange accent, the tone of voice) held up well enough to be reused consistently across service page templates and the About page months later, which suggests the identity worked as an actual system rather than a one-off hero concept. I don't have launch dates, traffic, or lead numbers for the live site, so I'm leaving out a performance claim.",
+          },
+          {
+            type: "paragraph",
+            text: "The main thing this project taught me was to take a name seriously as a design constraint instead of a marketing throwaway. Once arc became a literal, physical shape with real historical and cultural range to draw from, almost every design decision had somewhere to start from, instead of needing a brand-new concept invented from scratch for every page. The other real skill this project exercised was translating loose, informal input into a structured, page-by-page art direction brief, closer to editing someone else's half-formed instinct into something buildable than generating creative ideas in the abstract.",
+          },
+        ],
       },
     ],
   },

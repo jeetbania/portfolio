@@ -95,17 +95,22 @@ export const projects: Project[] = [
     tags: ["UX Research", "UI Design"],
   },
   {
-    slug: "fifth-project",
-    title: "Fifth Project",
-    description: "Placeholder — a real case study will replace this soon.",
-    tint: "var(--folder-fifth)",
-    tintHex: "#F5C6DC",
+    slug: "arc-studio",
+    title: "Arc Studio",
+    description: "Web3 creative agency's own site, redesigned around the literal shape of its name.",
+    tint: "var(--folder-arc)",
+    tintHex: "#F2A65A",
+    /* images[0] is also the case-study hero (page.tsx reads it directly)
+       and, if a hero video gets added later (Jeet's planning one, not
+       uploaded yet — see src/components/HeroVideo.tsx), its poster
+       frame too. arc-approach.webp standing in as the hero/folder-card
+       image for now. */
     images: [
-      { src: "/album-cover.jpg", alt: "Placeholder cover" },
-      { src: "/service-1.jpg",   alt: "Placeholder detail" },
-      { src: "/service-2.jpg",   alt: "Placeholder detail" },
+      { src: "/arc-approach.webp",   alt: "Arc Studio site, approach mockup" },
+      { src: "/arc-showcase-1.webp", alt: "Arc Studio site, showcase mockup" },
+      { src: "/arc-showcase-3.webp", alt: "Arc Studio site, showcase mockup" },
     ],
-    tags: ["Branding", "UI Design"],
+    tags: ["Brand Identity", "Art Direction"],
   },
   {
     slug: "sixth-project",

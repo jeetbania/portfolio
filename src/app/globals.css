@@ -98,7 +98,13 @@
   --folder-migrateful:#D4C9F5;
   --folder-yap:       #B8CEF5;
   --folder-fourth:    #F5D4B8;
-  --folder-fifth:     #F5C6DC;
+  /* Was --folder-fifth (a generic placeholder pink) — renamed and
+     recolored now that this slot is a real project: Arc Studio's actual
+     brand accent is orange (see the case study's own copy, "the orange
+     accent... stayed the throughline accent across the whole site"), and
+     a warmer, more saturated orange than --folder-fourth's pale peach
+     keeps the two folders visually distinct sitting side by side. */
+  --folder-arc:       #F2A65A;
   --folder-sixth:     #C8E6C0;
 
   /* Typography — --font-serif/--font-sans/--font-hand are NOT defined
