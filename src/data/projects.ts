@@ -113,16 +113,25 @@ export const projects: Project[] = [
     tags: ["Brand Identity", "Art Direction"],
   },
   {
-    slug: "sixth-project",
-    title: "Sixth Project",
-    description: "Placeholder — a real case study will replace this soon.",
+    slug: "dealsage",
+    title: "DealSage",
+    description: "Placeholder: AI finance company, design system and positioning work.",
+    /* Tint/color untouched for now (still the old --folder-sixth green) —
+       unlike Arc Studio's real confirmed orange brand accent, there's no
+       real DealSage brand color to go on yet, so this stays a genuine
+       placeholder rather than a guess. */
     tint: "var(--folder-sixth)",
     tintHex: "#C8E6C0",
+    /* images[0] is also the case-study hero (page.tsx reads it directly).
+       Only 6 of the 7 images below are in public/ so far (dealsage-
+       showcase-3.webp is still pending) — that one block will show a
+       broken image until it's added, same as InCore/Arc Studio's hero
+       did while waiting on theirs. */
     images: [
-      { src: "/book-cover.png", alt: "Placeholder cover" },
-      { src: "/service-3.jpg",  alt: "Placeholder detail" },
-      { src: "/tech-1.jpg",     alt: "Placeholder detail" },
+      { src: "/dealsage-hero.webp",       alt: "DealSage site, mockup" },
+      { src: "/dealsage-approach.webp",   alt: "DealSage site, mockup" },
+      { src: "/dealsage-showcase-1.webp", alt: "DealSage site, mockup" },
     ],
-    tags: ["Product Design", "Motion"],
+    tags: ["Product Design", "Design System"],
   },
 ];

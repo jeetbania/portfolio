@@ -561,20 +561,131 @@ export const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    slug: "sixth-project",
-    meta: { role: "TBD", timeline: "TBD", tools: ["Figma"] },
+    /* Rough placeholder, not sourced from a real doc like InCore/YAP
+       Global/Arc Studio were — Jeet gave a quick narrative outline
+       (Aug 2026) instead of a source doc, to be replaced once one exists.
+       No em dashes, same standing preference as the other case studies. */
+    slug: "dealsage",
+    meta: {
+      role: "Design System & Positioning",
+      timeline: "2025",
+      tools: ["Figma"],
+    },
     sections: [
       {
         id: "overview",
         label: "Overview",
         blocks: [
-          { type: "paragraph", text: "Placeholder — real case study content coming soon." },
+          {
+            type: "paragraph",
+            text: "Placeholder: DealSage is an AI-powered finance company that came to us early, wanting help with product design and how the company should be positioned in the market.",
+          },
+          {
+            type: "paragraph",
+            text: "Placeholder: we led the design and positioning work and shipped a full design system. DealSage's own team later used that system, working with Claude, to build out the rest of the website themselves.",
+          },
+        ],
+      },
+      {
+        id: "tldr",
+        label: "TL;DR",
+        blocks: [
+          {
+            type: "stats",
+            items: [
+              { value: "2025", label: "Placeholder: engagement timeline" },
+              { value: "1", label: "Placeholder: design system shipped, reused across the site" },
+              { value: "AI Finance", label: "Placeholder: industry, an AI-native product" },
+              { value: "Claude", label: "Placeholder: what DealSage used to build the rest of the site" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "problem-statement",
+        label: "Problem Statement",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder: DealSage needed a credible design foundation and a clear market position before building out its product site, without an in-house design team to define either.",
+          },
+          {
+            type: "list",
+            items: [
+              "Placeholder: no consistent visual identity yet",
+              "Placeholder: needed help with product and brand positioning",
+              "Placeholder: wanted to keep building and iterating independently after launch",
+            ],
+          },
+        ],
+      },
+      {
+        /* Image slot 2 of 7 (1 = the hero cover on page.tsx). Trimmed from
+           the usual 9-image template to fit 7 real images: Showcase drops
+           to a pair plus 1 single (not 2), and Design System drops its
+           trailing single entirely (pair only). See CaseStudyContent.tsx/
+           caseStudies.ts if the count ever needs to change again. */
+        id: "approach",
+        label: "Approach",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder: we started with brand and product positioning, working out how DealSage wanted to be understood in the AI finance space before any visual design began.",
+          },
+          {
+            type: "paragraph",
+            text: "Placeholder: from there we built a full design system, components, patterns, and guidelines DealSage's team could apply consistently as they kept building.",
+          },
+          { type: "image", src: "/dealsage-approach.webp", alt: "DealSage site, approach mockup", wide: true },
+        ],
+      },
+      {
+        /* Image slots 3–5 of 7: a side-by-side pair, then one full-width
+           single. */
+        id: "showcase",
+        label: "Showcase",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder: the design system covered the core pages and components DealSage needed most, ready to extend as the product grew.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/dealsage-showcase-1.webp", alt: "DealSage site, showcase mockup" },
+              { src: "/dealsage-showcase-2.webp", alt: "DealSage site, showcase mockup" },
+            ],
+          },
+          { type: "image", src: "/dealsage-showcase-3.webp", alt: "DealSage site, showcase mockup", wide: true },
+        ],
+      },
+      {
+        /* Image slots 6–7 of 7: a side-by-side pair, no trailing single. */
+        id: "design-system",
+        label: "Design System",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder: once the system shipped, DealSage's own team used it, working with Claude, to build out the rest of the website themselves.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/dealsage-design-1.webp", alt: "DealSage site, design details mockup" },
+              { src: "/dealsage-design-2.webp", alt: "DealSage site, design details mockup" },
+            ],
+          },
         ],
       },
       {
         id: "conclusion",
         label: "Conclusion",
-        blocks: [{ type: "paragraph", text: "Placeholder conclusion." }],
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Placeholder: real outcome and metrics coming once they're available.",
+          },
+        ],
       },
     ],
   },
