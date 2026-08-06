@@ -261,7 +261,7 @@ export const caseStudies: CaseStudy[] = [
             type: "paragraph",
             text: "Placeholder — how the problem was approached: research method, key constraints, the first few directions explored before landing on this one.",
           },
-          { type: "image", src: "/yap-approach.webp", alt: "YAP Global approach placeholder", wide: true },
+          { type: "image", src: "/yap-approach.webp", alt: "YAP Global approach placeholder", wide: true, focalPoint: { x: 52.03, y: 71.65, zoom: 1.28 } },
         ],
       },
       {
@@ -275,12 +275,12 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-showcase-1.webp", alt: "YAP Global showcase placeholder 1" },
-              { src: "/yap-showcase-2.webp", alt: "YAP Global showcase placeholder 2" },
+              { src: "/yap-showcase-1.webp", alt: "YAP Global showcase placeholder 1", focalPoint: { x: 57.24, y: 35.70, zoom: 1.21 } },
+              { src: "/yap-showcase-2.webp", alt: "YAP Global showcase placeholder 2", focalPoint: { x: 51.33, y: 16.06, zoom: 1.33 } },
             ],
           },
-          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global showcase placeholder 3", wide: true },
-          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global showcase placeholder 4", wide: true },
+          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global showcase placeholder 3", wide: true, focalPoint: { x: 51.93, y: 50.36 } },
+          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global showcase placeholder 4", wide: true, focalPoint: { x: 70.77, y: 14.04, zoom: 1.13 } },
         ],
       },
       {
@@ -294,11 +294,11 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-design-1.webp", alt: "YAP Global design system placeholder 1" },
-              { src: "/yap-design-2.webp", alt: "YAP Global design system placeholder 2" },
+              { src: "/yap-design-1.webp", alt: "YAP Global design system placeholder 1", focalPoint: { x: 48.28, y: 71.45, zoom: 1.08 } },
+              { src: "/yap-design-2.webp", alt: "YAP Global design system placeholder 2", focalPoint: { x: 40.22, y: 52.53, zoom: 1.33 } },
             ],
           },
-          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global design system placeholder 3", wide: true },
+          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global design system placeholder 3", wide: true, focalPoint: { x: 50.79, y: 49.81 } },
         ],
       },
       {
