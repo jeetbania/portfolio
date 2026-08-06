@@ -204,7 +204,7 @@ export const caseStudies: CaseStudy[] = [
     /* Same 9-image template as InCore (see the comment on that entry
        above): hero (page.tsx, via projects.ts's images[0]) → 1 single
        (Approach) → pair + 2 singles (Showcase) → pair + 1 single (Design
-       System). Filenames follow yap-{section}[-n].jpg — drop compressed
+       System). Filenames follow yap-{section}[-n].webp — drop compressed
        originals straight into public/ under these names and everything
        here just lights up. Each image/imageGrid entry below has a
        `focalPoint` slot ready for the anchor tool (src/lib/imageAnchor.tsx)
@@ -261,7 +261,7 @@ export const caseStudies: CaseStudy[] = [
             type: "paragraph",
             text: "Placeholder — how the problem was approached: research method, key constraints, the first few directions explored before landing on this one.",
           },
-          { type: "image", src: "/yap-approach.jpg", alt: "YAP Global approach placeholder", wide: true },
+          { type: "image", src: "/yap-approach.webp", alt: "YAP Global approach placeholder", wide: true },
         ],
       },
       {
@@ -275,12 +275,12 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-showcase-1.jpg", alt: "YAP Global showcase placeholder 1" },
-              { src: "/yap-showcase-2.jpg", alt: "YAP Global showcase placeholder 2" },
+              { src: "/yap-showcase-1.webp", alt: "YAP Global showcase placeholder 1" },
+              { src: "/yap-showcase-2.webp", alt: "YAP Global showcase placeholder 2" },
             ],
           },
-          { type: "image", src: "/yap-showcase-3.jpg", alt: "YAP Global showcase placeholder 3", wide: true },
-          { type: "image", src: "/yap-showcase-4.jpg", alt: "YAP Global showcase placeholder 4", wide: true },
+          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global showcase placeholder 3", wide: true },
+          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global showcase placeholder 4", wide: true },
         ],
       },
       {
@@ -294,11 +294,11 @@ export const caseStudies: CaseStudy[] = [
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-design-1.jpg", alt: "YAP Global design system placeholder 1" },
-              { src: "/yap-design-2.jpg", alt: "YAP Global design system placeholder 2" },
+              { src: "/yap-design-1.webp", alt: "YAP Global design system placeholder 1" },
+              { src: "/yap-design-2.webp", alt: "YAP Global design system placeholder 2" },
             ],
           },
-          { type: "image", src: "/yap-design-3.jpg", alt: "YAP Global design system placeholder 3", wide: true },
+          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global design system placeholder 3", wide: true },
         ],
       },
       {
