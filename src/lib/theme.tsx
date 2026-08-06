@@ -39,6 +39,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try { localStorage.setItem(STORAGE_KEY, t); } catch { /* ignore */ }
   }, []);
 
+  useEffect(() => {
+    // Keeps a visitor who's never explicitly toggled (no stored
+    // preference) in sync if their OS theme changes while the tab is
+    // open — e.g. macOS's sunset/sunrise auto dark mode. Once they DO
+    // toggle, `applyTheme` above persists that explicit choice and this
+    // listener stops mattering for them (checked fresh on every fire, not
+    // just at mount, so it stays correct even if they toggle mid-session).
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(STORAGE_KEY); } catch { /* ignore */ }
+    if (stored === "light" || stored === "dark") return;
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = (e: MediaQueryListEvent) => {
+      let currentStored: string | null = null;
+      try { currentStored = localStorage.getItem(STORAGE_KEY); } catch { /* ignore */ }
+      if (currentStored === "light" || currentStored === "dark") return;
+      const next: Theme = e.matches ? "dark" : "light";
+      setThemeState(next);
+      document.documentElement.setAttribute("data-theme", next);
+    };
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
   const toggle = useCallback(() => {
     applyTheme(theme === "dark" ? "light" : "dark");
   }, [theme, applyTheme]);
@@ -65,15 +89,22 @@ export function useTheme(): ThemeContextValue {
  * Inline script string, injected once in layout.tsx <head>.
  * Runs synchronously before React hydrates, so the correct theme is
  * already on <html> for the very first paint — no flash of the wrong
- * theme. Always defaults to light on a first visit — deliberately does
- * NOT follow the OS's prefers-color-scheme, only an explicit prior
- * toggle (stored in localStorage) switches it to dark.
+ * theme. An explicit prior toggle (stored in localStorage) always wins;
+ * otherwise follows the OS's prefers-color-scheme (previously always
+ * defaulted to light regardless of system setting — changed since a
+ * visitor's own system preference is a reasonable, expected default,
+ * and it only applies before they've ever chosen for themselves).
  */
 export const THEME_INIT_SCRIPT = `
 (function() {
   try {
     var stored = localStorage.getItem('${STORAGE_KEY}');
-    var theme = stored === 'dark' ? 'dark' : 'light';
+    var theme;
+    if (stored === 'dark' || stored === 'light') {
+      theme = stored;
+    } else {
+      theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
     document.documentElement.setAttribute('data-theme', theme);
   } catch (e) {}
 })();

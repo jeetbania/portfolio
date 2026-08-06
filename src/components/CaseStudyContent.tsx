@@ -226,7 +226,6 @@ export default function CaseStudyContent({
         scrollMarginTop: "100px",
         paddingTop: index === 0 ? 0 : "20px",
         paddingBottom: "56px",
-        borderBottom: "1px solid var(--col-hairline)",
         display: "flex",
         flexDirection: "column",
         gap: "20px",
