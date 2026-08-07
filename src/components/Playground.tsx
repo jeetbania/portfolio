@@ -592,7 +592,12 @@ export default function Playground() {
            geometry differ from desktop. */
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
-          gap: "12px", alignItems: "start",
+          /* columnGap is the real horizontal breathing room between the
+             two cards in a row — was 12px, tightened to sit closer to the
+             reference. rowGap barely matters since each card's own
+             negative marginTop (MOBILE_STACK) already pulls it up past
+             any gap the grid would otherwise leave. */
+          columnGap: "6px", rowGap: "12px", alignItems: "start",
           position: "relative", zIndex: 1,
         }}>
           {CARDS.filter(card => !MOBILE_HIDDEN_LABELS.has(card.label)).map((card, i) => (
