@@ -40,6 +40,15 @@
   --surface-nav:          rgba(245,244,240,0.78);
   --surface-card:         rgba(255,255,255,0.88);
   --surface-card-border:  rgba(0,0,0,0.06);
+  /* Playground canvas overlay chrome (zoom controls, pin tray, music
+     widget, background picker) — its own token, not --surface-nav
+     reused, because feedback was specific: even --surface-nav's 78%
+     read as "still so transparent, I can see through" against the
+     canvas's own busy overlapping cards, and bumping --surface-nav
+     itself would also change the real site nav bar, which nobody asked
+     for. ~92% opaque — noticeably firmer than "mostly opaque," which is
+     what "around 80%... a LOT more opaque" actually meant in practice. */
+  --canvas-glass-bg: rgba(250,249,246,0.93);
 
   /* Primary CTA (hero "Let's Talk", reset button, send button, etc.) */
   --cta-bg:            rgba(255,255,255,0.72);
@@ -179,6 +188,7 @@
   --surface-glass-strong: rgba(255,255,255,0.14);
   --surface-glass-border: rgba(255,255,255,0.22);
   --surface-nav:          rgba(22,22,24,0.72);
+  --canvas-glass-bg:      rgba(20,20,22,0.92);
   --surface-card:         rgba(255,255,255,0.06);
   --surface-card-border:  rgba(255,255,255,0.14);
 
@@ -568,7 +578,7 @@ body {
      --surface-nav is the same mostly-opaque, theme-flipping dark/light
      panel the site's own nav bar and mobile menu already use — glass
      that still reads as a solid card, not a smudge. */
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   border: 1px solid var(--surface-glass-border);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -603,7 +613,7 @@ body {
   flex-direction: row;
   border-radius: 14px;
   overflow: hidden;
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   border: 1px solid var(--surface-glass-border);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -710,7 +720,7 @@ body {
   gap: 9px;
   padding: 11px 13px;
   border-radius: 16px;
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   border: 1px solid var(--surface-glass-border);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -788,7 +798,7 @@ body {
   width: 400px;
   padding: 18px 18px 16px;
   border-radius: 20px;
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   border: 1px solid var(--surface-glass-border);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -1076,7 +1086,7 @@ body {
   padding: 9px 18px 9px 13px;
   border-radius: 999px;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 6px 18px rgba(var(--shadow-tint-rgb),0.16), var(--glass-bevel);
@@ -1121,7 +1131,7 @@ body {
   height: 30px;
   border-radius: 50%;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 3px 8px rgba(0,0,0,0.25), var(--glass-bevel);
@@ -1177,7 +1187,7 @@ body {
   gap: 8px;
   padding: 8px;
   border-radius: 999px;
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   border: 1px solid var(--surface-glass-border);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -1241,7 +1251,7 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.1), var(--glass-bevel);
@@ -1271,7 +1281,7 @@ body {
   gap: 8px;
   padding: 8px;
   border-radius: 999px;
-  background: var(--surface-nav);
+  background: var(--canvas-glass-bg);
   border: 1px solid var(--surface-glass-border);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
