@@ -211,18 +211,16 @@ export default function Folder({ project, strongGlass }: FolderProps) {
               {/* Top block — title then description. Colors are hardcoded,
                   not var(--col-fg)/var(--col-muted) — this card is a
                   theme-independent "sticker" (see CLAUDE.md), so its text
-                  shouldn't flip with the site theme either. Title stays
-                  dark (reads fine on every tint), description stays the
-                  light tone that used to only show up in dark mode — per
-                  feedback that var(--col-muted)'s light-mode value (a
-                  medium gray meant for a plain page background) was hard
-                  to read against these colorful glass tints. */}
+                  shouldn't flip with the site theme either. Both now use
+                  the light tones that used to only show up in dark mode
+                  (title was dark before this pass, per feedback) — reads
+                  fine on every tint regardless of site theme. */}
               <div className="min-w-0">
-                <p style={{ fontFamily:"var(--font-serif)", fontSize:"clamp(21px,2.6vw,28px)",
-                  fontWeight:400, lineHeight:1.15, color:"#1A1A1A", marginBottom:"6px" }}>
+                <p style={{ fontFamily:"var(--font-serif)", fontSize:"clamp(24px,3vw,32px)",
+                  fontWeight:400, lineHeight:1.15, color:"#F2F1ED", marginBottom:"6px" }}>
                   {project.title}
                 </p>
-                <p style={{ fontFamily:"var(--font-sans)", fontSize:"12px",
+                <p style={{ fontFamily:"var(--font-sans)", fontSize:"14px",
                   color:"rgba(255,255,255,0.56)", lineHeight:1.45 }}>
                   {project.description}
                 </p>
