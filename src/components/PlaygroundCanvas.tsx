@@ -218,7 +218,7 @@ export default function PlaygroundCanvas() {
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech2")} {...card("photo-tech2")} zIndex={5}>
-        <PhotoNote id="photo-tech2" src="/playground-image-3.jpg" alt="Selfie with a friend" title="my favourite hooman" subtitle="she makes things better" aspectRatio="5875/4406" />
+        <PhotoNote id="photo-tech2" src="/playground-image-3.jpg" alt="Selfie with a friend" title="my favourite hooman" subtitle="she makes everything better 🥰" aspectRatio="5875/4406" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-event1")} {...card("photo-event1")} zIndex={4}>
