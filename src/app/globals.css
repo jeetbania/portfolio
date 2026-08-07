@@ -768,9 +768,16 @@ body {
 /* Wraps the Browse/NowPlaying swap — its own height is measured off
    whichever view is showing (see MusicWidget.tsx's useLayoutEffect) and
    animated with a plain height transition, so the card resizes smoothly
-   between the two views' very different heights without snapping. */
+   between the two views' very different heights without snapping.
+   Deliberately NOT overflow:hidden — that was here originally (to keep
+   the animating height tidy) and it was a real bug: the album row's own
+   hover-lift (translateY(-10px), plus each cover's rotation) and its
+   drop shadows routinely paint outside this box's resting height, and
+   clipping them cropped covers and cut box-shadows off in a visible
+   straight line. Nothing here needs the clip — Browse/NowPlaying content
+   fully remounts on each swap (see the `key` in MusicWidget.tsx), so
+   there's never old + new content simultaneously visible to hide. */
 .music-widget-body {
-  overflow: hidden;
   transition: height 320ms cubic-bezier(0.22,1,0.36,1);
 }
 .music-widget-fade {
@@ -837,17 +844,33 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.25), var(--glass-bevel);
 }
 /* Picked: every OTHER album in the row drops away and fades out quickly
-   (see the `pickedIndex` phase in MusicWidget.tsx) while the picked one
-   is left sitting untouched in place for a beat — its own cover then
-   continues into the now-playing layout via a shared layoutId (Motion's
-   `layoutId`, matched against NowPlaying's art), which animates it
-   smoothly into its new position/size on its own. No local animation is
-   applied to the picked album here — that hand-off IS the animation. */
+   while the picked one flips on its Y axis in place (like turning a
+   sleeve over) — see the matching EXIT_PHASE_MS in MusicWidget.tsx,
+   tuned to the flip's own duration below. Once that finishes, the view
+   swaps to NowPlaying, which cross-fades in (.music-widget-fade). */
 .music-album-exit {
   opacity: 0;
   transform: rotate(var(--album-rotate, 0deg)) translateY(30px) scale(0.94);
   pointer-events: none;
   transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+
+/* The picked album itself — a self-contained flip on the album element,
+   not a shared-layout animation across the view swap (that approach
+   caused the height-jump bug fixed in .music-widget-body above; this one
+   never touches anything outside Browse's own layout, so it can't cause
+   that class of problem again). */
+.music-album-flip-pick {
+  animation: music-album-flip-pick 420ms cubic-bezier(0.45,0,0.55,1) forwards;
+  z-index: 40 !important;
+  pointer-events: none;
+}
+@keyframes music-album-flip-pick {
+  0%   { transform: rotate(var(--album-rotate,0deg)) translateY(-10px) scale(1.08) rotateY(0deg); }
+  100% { transform: rotate(var(--album-rotate,0deg)) translateY(-10px) scale(1.08) rotateY(100deg); opacity: 0.5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-album-flip-pick { animation: none; opacity: 0.5; }
 }
 
 .music-album-tooltip {
@@ -940,12 +963,22 @@ body {
 @media (max-width: 767px) {
   /* Back to the top-right corner on mobile, and dropped BELOW the pin
      tray (which lives up in that same corner's row) rather than beside
-     it — bottom-right collides with the zoom controls (now
-     bottom-center) and background picker (bottom-left) on a narrow
-     screen, and staying beside the pin tray at this width would collide
-     with that too. Kept close to its desktop width since the now-playing
-     layout (art + vinyl + track text side by side) needs the room. */
-  .music-widget { top: 78px; right: 16px; bottom: auto; width: min(320px, 84vw); padding: 15px 15px 13px; }
+     it — bottom-right is the zoom controls at this width (see
+     .canvas-controls below), and staying beside the pin tray would
+     collide with that too. Kept close to its desktop width since the
+     now-playing layout (art + vinyl + track text side by side) needs the
+     room. Top offset bumped further down from the pin tray (was 78px,
+     read as "too close" per feedback) — the tray's own real height plus
+     a real gap, not just clearing its lowest pixel. */
+  .music-widget { top: 108px; right: 16px; bottom: auto; width: min(320px, 84vw); padding: 15px 15px 13px; }
+
+  /* Zoom controls move to bottom-right — bottom-center (desktop) sits
+     right on top of the background picker's expanded panel and the pin
+     tray's drop zone on a narrow screen. The background picker collapses
+     to a single trigger in the opposite corner (bottom-left) instead of
+     needing this space at all — see .bg-picker-mobile above. */
+  .canvas-controls { left: auto; right: 16px; bottom: 16px; transform: none; }
+  .canvas-hint { bottom: 20px; }
 }
 
 /* ─── Card resize (transitions.dev) — tweens width/height changes instead
@@ -997,6 +1030,55 @@ body {
   border-color: var(--canvas-ink-strong);
   transform: scale(1.12);
 }
+
+/* Mobile-only trigger + expanding panel (BackgroundPicker.tsx swaps to
+   this structure via useIsMobile — the desktop row above doesn't fit
+   next to the zoom controls at this width). Same bottom-left corner as
+   the desktop row; the zoom controls move to bottom-right at this
+   breakpoint too (see .canvas-controls' mobile override below) so the
+   two never compete for the same space. */
+.bg-picker-mobile {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 6;
+}
+.bg-picker-trigger {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--surface-glass-border);
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.1), var(--glass-bevel);
+  display: grid;
+  place-items: center;
+  color: var(--col-muted);
+  cursor: pointer;
+}
+.bg-picker-panel-wrap {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  width: max-content;
+  pointer-events: none;
+}
+.bg-picker-panel {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 999px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--surface-glass-border);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 10px 26px rgba(var(--shadow-tint-rgb),0.18), var(--glass-bevel);
+  transform-origin: bottom left;
+  opacity: 0;
+  transform: scale(0.9) translateY(8px);
+}
+.bg-picker-panel .bg-picker-swatch { width: 26px; height: 26px; }
 
 /* ══════════════════════════════════════════════════════════════════
    MOBILE — pure CSS layout overrides only (no JS, no hydration risk).

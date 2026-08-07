@@ -27,13 +27,16 @@ const WORLD_WIDTH = 3000;
 const WORLD_HEIGHT = 1800;
 const INITIAL_CENTER = { x: 1560, y: 990 };
 
-/* The card cluster's own bounding box (world units) — deliberately
-   smaller than WORLD_WIDTH/HEIGHT, which is the whole pannable area, not
-   "the board." InfiniteCanvas uses this to auto-fit its initial zoom so
-   a narrow (mobile) viewport starts zoomed out enough to actually show
-   more than one column, instead of starting at 100% and cropping most of
-   the board off-screen — see the fitWidth/fitHeight prop below. */
-const CONTENT_BOUNDS = { width: 1500, height: 1180 };
+/* NOT the card cluster's full bounding box (that's closer to 1500x1180) —
+   deliberately smaller, roughly "a column and a bit." InfiniteCanvas uses
+   this to auto-fit its initial zoom on a narrow (mobile) viewport, and
+   fitting the ENTIRE board in was tried first and came back too zoomed
+   out to read anything (per feedback) — this fits a comfortably legible
+   slice instead and lets panning reach the rest, same as a map app opens
+   on your general area, not the whole continent zoomed to fit. On a wide
+   desktop viewport this is a no-op either way (already bigger than even
+   the full board, clamps back to 1). */
+const CONTENT_BOUNDS = { width: 620, height: 760 };
 
 /* Hue-rotate degrees applied to the real pin.svg asset (a purple pin) —
    see Pin.tsx for why this is a hue shift rather than hand-edited

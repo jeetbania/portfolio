@@ -62,10 +62,11 @@ const TRACKS: Track[] = [
   { artist: "Nova & Wren", title: "Static Bloom", colors: ["#2563C7", "#6FA8F5", "#12245C"] },
 ];
 
-/* How long the "other albums drop away" phase gets to finish (matches
-   .music-album-exit's own transition duration, plus a small buffer)
-   before the view actually swaps to NowPlaying. */
-const EXIT_PHASE_MS = 210;
+/* How long the pick phase gets to finish before the view actually swaps
+   to NowPlaying — matches .music-album-flip-pick's own animation
+   duration (the OTHER albums' drop-away is quicker and comfortably
+   finishes within this window too). */
+const EXIT_PHASE_MS = 420;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -143,7 +144,11 @@ function Browse({
         {tracks.map((track, i) => (
           <button
             key={track.artist + track.title}
-            className={`music-album ${pickedIndex !== null && pickedIndex !== i ? "music-album-exit" : ""}`}
+            className={`music-album ${
+              pickedIndex === i ? "music-album-flip-pick"
+                : pickedIndex !== null ? "music-album-exit"
+                : ""
+            }`}
             onClick={() => onPick(i)}
             disabled={pickedIndex !== null}
             style={{

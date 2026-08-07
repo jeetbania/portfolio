@@ -33,13 +33,11 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
  * re-rendering every card on every zoom tick too.
  */
 
-/* Was 0.5 — too high a floor for the fitWidth/fitHeight auto-fit zoom
-   (see below) to actually work on a narrow phone: fitting a ~1500px-wide
-   content cluster into a ~380px-wide viewport needs a zoom around 0.24,
-   which used to get clamped straight back up to 0.5 (roughly 2 columns'
-   worth still off-screen). Lower floor fixes that, and also just gives
-   manual pinch/wheel zoom-out a bit more room on desktop. */
-const ZOOM_MIN = 0.22;
+/* An ABSOLUTE last-resort floor only — in practice dynamicZoomMin() below
+   (world size vs. the container's actual size) is almost always the real,
+   higher floor a visitor hits first. This constant just guards against a
+   pathological container measurement (e.g. 0 during a layout thrash). */
+const ZOOM_MIN = 0.15;
 const ZOOM_MAX = 2;
 const ZOOM_WHEEL_SENSITIVITY = 0.0016;
 const ZOOM_BUTTON_STEP = 1.25;
@@ -159,6 +157,22 @@ export function InfiniteCanvas({
      alone. Set from handlePointerDown/zoomBy/onWheel below. */
   const userTookOverRef = useRef(false);
 
+  /* The REAL zoom-out floor: never let a visitor zoom out past the point
+     where the world (at that zoom) would no longer fully cover the
+     container — past that point there's nothing left to see in the gap
+     but the container's own plain backdrop, which has no dot grid on it
+     (the dots are a background-image on .canvas-world itself, sized
+     exactly to worldWidth/worldHeight — see globals.css). Recomputed off
+     the container's actual current size each time, not cached, since it
+     changes with the window/device. */
+  const dynamicZoomMin = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return ZOOM_MIN;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return ZOOM_MIN;
+    return clamp(Math.max(rect.width / worldWidth, rect.height / worldHeight), ZOOM_MIN, ZOOM_MAX);
+  }, [worldWidth, worldHeight]);
+
   /* See the fitWidth/fitHeight prop doc — picks a zoom that fits that
      content box inside the CURRENT container size, never zooming in past
      100% (a desktop viewport that's already bigger than the content just
@@ -168,8 +182,8 @@ export function InfiniteCanvas({
     if (!fitWidth || !fitHeight || !el) return 1;
     const rect = el.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return 1;
-    return clamp(Math.min(rect.width / fitWidth, rect.height / fitHeight) * 0.94, ZOOM_MIN, 1);
-  }, [fitWidth, fitHeight]);
+    return clamp(Math.min(rect.width / fitWidth, rect.height / fitHeight) * 0.94, dynamicZoomMin(), 1);
+  }, [fitWidth, fitHeight, dynamicZoomMin]);
 
   /* Center on mount — but ALSO whenever the container's own size changes
      up until a visitor first interacts. A single mount-time
@@ -205,12 +219,12 @@ export function InfiniteCanvas({
     const py = cy ?? rect.height / 2;
     const worldX = (px - panRef.current.x) / zoomRef.current;
     const worldY = (py - panRef.current.y) / zoomRef.current;
-    zoomRef.current = clamp(zoomRef.current * factor, ZOOM_MIN, ZOOM_MAX);
+    zoomRef.current = clamp(zoomRef.current * factor, dynamicZoomMin(), ZOOM_MAX);
     panRef.current.x = px - worldX * zoomRef.current;
     panRef.current.y = py - worldY * zoomRef.current;
     clampPan();
     applyTransform();
-  }, [clampPan, applyTransform, zoomRef]);
+  }, [clampPan, applyTransform, zoomRef, dynamicZoomMin]);
 
   /* Native (non-React) wheel listener, added with {passive:false} —
      React marks its synthetic onWheel as passive at the root listener in
