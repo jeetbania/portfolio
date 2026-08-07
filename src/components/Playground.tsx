@@ -88,6 +88,23 @@ const FAN = [
   { rotate: 10,   y: 11 },
 ];
 
+/* Mobile stack geometry — the reference (a "scrapbook" collage of
+   photos/cards, tossed onto the page at slightly different angles,
+   corners tucked under one another) instead of the neat, evenly-aligned
+   grid the first pass landed on. Each card gets its own small independent
+   rotation (alternating sign so neighbors visibly cant against each
+   other, not all leaning the same way) plus a small x/y nudge that pulls
+   it slightly toward whichever card it should tuck under — negative
+   marginTop does the real work of the row-to-row overlap (see FanCard),
+   this x/y is just the finishing "scattered" touch on top of that. */
+const MOBILE_STACK = [
+  { rotate: -4,   x: 2,  y: 0,  marginTop: 0   },
+  { rotate: 3,    x: -3, y: 6,  marginTop: 0   },
+  { rotate: -2.5, x: 4,  y: -4, marginTop: -18 },
+  { rotate: 3.5,  x: -4, y: 2,  marginTop: -12 },
+  { rotate: -2,   x: 0,  y: -3, marginTop: -16 },
+];
+
 /* ══════════════════════════════════════════════════════════════════
    Canned "quick ask" responses
    ══════════════════════════════════════════════════════════════════ */
@@ -124,12 +141,14 @@ function FanCard({ card, index, mounted, isMobile, gridSpanFull }: { card: CardD
   /*
    * Mobile no longer tries to squeeze into the same overlapping/rotated
    * fan as desktop — at fan-card width (~76px) that overlap read as
-   * skewed and cramped. Instead mobile renders these upright, full-width-
-   * of-their-grid-cell, in a 2-column stack (see Playground's mobile
-   * branch below) — same card content/design, just given room to breathe
-   * instead of being squashed into a tilted sliver. Desktop branch
-   * (clamp-based fan) is untouched.
+   * skewed and cramped. Instead mobile renders these full-width-of-their-
+   * grid-cell in a 2-column stack (see Playground's mobile branch below),
+   * but per the reference, still leans into its own small rotation and
+   * tucks slightly under its neighbor (MOBILE_STACK above) — a scrapbook
+   * pile, not a perfectly-aligned grid. Desktop branch (clamp-based fan)
+   * is untouched.
    */
+  const mobileGeo = MOBILE_STACK[index];
   const cardWidth   = isMobile ? "100%" : "clamp(122px, 15vw, 168px)";
   const overlap     = isMobile ? "0px" : "clamp(-24px,-3vw,-14px)";
   const cardPadding = isMobile ? "14px 14px 18px" : "14px 13px 34px";
@@ -149,9 +168,14 @@ function FanCard({ card, index, mounted, isMobile, gridSpanFull }: { card: CardD
         position: "relative",
         width: cardWidth,
         marginLeft: isMobile ? 0 : (index === 0 ? 0 : overlap),
+        /* Negative marginTop is what actually creates the row-to-row
+           overlap/tuck on mobile — rotation alone only pokes corners out
+           a few px, this is what makes a card genuinely slide up under
+           the row above it, like the reference. */
+        marginTop: isMobile ? `${mobileGeo.marginTop}px` : undefined,
         gridColumn: isMobile && gridSpanFull ? "1 / -1" : undefined,
         transform: isMobile
-          ? `translateY(${mounted ? 0 : 20}px)`
+          ? `rotate(${mobileGeo.rotate}deg) translate(${mobileGeo.x}px, ${(mounted ? mobileGeo.y : mobileGeo.y + 20)}px)`
           : (mounted
               ? `rotate(${geo.rotate}deg) translateY(${hovered ? geo.y - 18 : geo.y}px)`
               : `rotate(${geo.rotate}deg) translateY(${geo.y + 40}px)`),
@@ -160,7 +184,7 @@ function FanCard({ card, index, mounted, isMobile, gridSpanFull }: { card: CardD
         transition: mounted
           ? "transform 160ms cubic-bezier(0.34,1.3,0.64,1), box-shadow 160ms var(--ease-out)"
           : `transform 420ms cubic-bezier(0.34,1.15,0.64,1) ${index * 60}ms, opacity 420ms ease-out ${index * 60}ms`,
-        zIndex: hovered ? 50 : restingZ,
+        zIndex: isMobile ? index : (hovered ? 50 : restingZ),
         cursor: "default",
       }}
     >
