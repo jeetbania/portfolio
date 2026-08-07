@@ -564,8 +564,8 @@ body {
   border-radius: 999px;
   background: var(--surface-glass-strong);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
   font-family: var(--font-sans);
   font-size: 12.5px;
@@ -599,9 +599,10 @@ body {
   overflow: hidden;
   background: var(--surface-glass-strong);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
 .canvas-controls button {
   width: 36px;
@@ -705,9 +706,10 @@ body {
   border-radius: 16px;
   background: var(--surface-glass-strong);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
 .pin-tray-label {
   font-family: var(--font-sans);
@@ -761,7 +763,13 @@ body {
    element's own real content width) instead of fixed px math computed
    in MusicWidget.tsx guessing at what that width would be — that
    guessing is what caused the covers to first read as cramped, then
-   later overflow the card outright, after this width changed twice. */
+   later overflow the card outright, after this width changed twice.
+   Background is real frosted glass (--surface-glass-strong + blur), not
+   the opaque --canvas-mount-bg the "mounted paper" cards (StickyNote,
+   TodoWidgetCard) use — this widget is persistent floating chrome like
+   the pin tray/zoom controls, not a card sitting IN the canvas world,
+   and per feedback it read as flat/solid next to those, which are all
+   genuinely glass. */
 .music-widget {
   position: absolute;
   right: 16px;
@@ -770,11 +778,14 @@ body {
   width: 400px;
   padding: 18px 18px 16px;
   border-radius: 20px;
-  background: var(--canvas-mount-bg);
-  outline: 2px solid var(--canvas-mount-outline);
-  box-shadow: var(--canvas-mount-shadow);
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--surface-glass-border);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 24px rgba(var(--shadow-tint-rgb),0.16), var(--glass-bevel);
   container-type: inline-size;
   container-name: music-widget;
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
 
 /* Wraps the Browse/NowPlaying swap — its own height is measured off
@@ -804,6 +815,22 @@ body {
   .music-widget-fade { animation: none; }
 }
 
+/* Gentle entrance for the mobile teaser <-> full-widget swap — that
+   toggle used to be a hard instant snap (a conditional unmount/remount
+   in MusicWidget.tsx, no transition at all). Applied to whichever one
+   just mounted; plays once per mount, including the very first page
+   load, so it's also just a soft opening reveal on desktop. */
+.music-widget-morph-in {
+  animation: music-widget-morph-in 260ms var(--ease-out) both;
+}
+@keyframes music-widget-morph-in {
+  from { opacity: 0; transform: scale(0.94) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-widget-morph-in { animation: none; }
+}
+
 .music-pill {
   display: inline-flex;
   align-items: center;
@@ -811,9 +838,9 @@ body {
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-glass);
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
   box-shadow: var(--glass-bevel);
   color: var(--canvas-ink-strong);
   font-family: var(--font-sans);
@@ -1032,12 +1059,17 @@ body {
   align-items: center;
   gap: 10px;
   max-width: min(240px, 68vw);
-  padding: 8px 16px 8px 8px;
+  /* Left padding bumped up from 8px — the art sat almost flush against
+     the pill's own rounded edge with barely any breathing room, per
+     feedback. Right stays roomier since the chevron needs less margin
+     than a whole album cover does. */
+  padding: 9px 18px 9px 13px;
   border-radius: 999px;
-  border: none;
-  background: var(--canvas-mount-bg);
-  outline: 2px solid var(--canvas-mount-outline);
-  box-shadow: var(--canvas-mount-shadow);
+  border: 1px solid var(--surface-glass-border);
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px) saturate(170%);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  box-shadow: 0 6px 18px rgba(var(--shadow-tint-rgb),0.16), var(--glass-bevel);
   cursor: pointer;
 }
 .music-widget-collapsed-art {
@@ -1137,9 +1169,10 @@ body {
   border-radius: 999px;
   background: var(--surface-glass-strong);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
 .bg-picker-swatch {
   width: 22px;
@@ -1166,12 +1199,17 @@ body {
   border-radius: 50%;
   border: 1px solid var(--col-hairline);
   background: var(--surface-glass);
+  /* Had no backdrop-filter at all before — every neighboring control
+     (the swatches' own pill, the zoom controls, the pin tray) is real
+     glass; this one was flat by oversight, not by design. */
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
   display: grid;
   place-items: center;
   padding: 0;
   color: var(--col-muted);
   cursor: pointer;
-  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out), opacity 160ms var(--ease-out);
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out), opacity 160ms var(--ease-out), backdrop-filter 160ms var(--ease-out);
 }
 .bg-picker-reset:hover:not(:disabled) { transform: scale(1.12); background: var(--surface-glass-strong); }
 .bg-picker-reset:disabled { opacity: 0.35; cursor: default; }
@@ -1194,13 +1232,14 @@ body {
   border-radius: 50%;
   border: 1px solid var(--surface-glass-border);
   background: var(--surface-glass-strong);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.1), var(--glass-bevel);
   display: grid;
   place-items: center;
   color: var(--col-muted);
   cursor: pointer;
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out);
 }
 .bg-picker-panel-wrap {
   position: absolute;
@@ -1216,8 +1255,8 @@ body {
   border-radius: 999px;
   background: var(--surface-glass-strong);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 10px 26px rgba(var(--shadow-tint-rgb),0.18), var(--glass-bevel);
   transform-origin: bottom left;
   opacity: 0;

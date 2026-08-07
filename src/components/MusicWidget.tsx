@@ -193,7 +193,7 @@ export function MusicWidget() {
       <div ref={wrapRef} onPointerDown={e => e.stopPropagation()}>
         <button
           type="button"
-          className="music-widget-collapsed"
+          className="music-widget-collapsed music-widget-morph-in"
           onClick={() => setMobileExpanded(true)}
           aria-label={active ? `Now playing: ${active.title} by ${active.artist}. Tap to open.` : "Open the music widget"}
         >
@@ -210,7 +210,7 @@ export function MusicWidget() {
   }
 
   return (
-    <div ref={wrapRef} className="music-widget" onPointerDown={e => e.stopPropagation()}>
+    <div ref={wrapRef} className="music-widget music-widget-morph-in" onPointerDown={e => e.stopPropagation()}>
       {isMobile && (
         <button type="button" className="music-widget-minimize" onClick={() => setMobileExpanded(false)} aria-label="Minimize the music widget">
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
