@@ -36,6 +36,10 @@ const INITIAL_TASKS: Task[] = [
   { text: "Touch grass", emoji: "🌱", checked: false },
 ];
 
+/* Keeps this a quick "today, probably" list rather than a real task
+   manager — a card this size stops reading as a note past 3-4 rows. */
+const MAX_TASKS = 3;
+
 export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
   const { theme } = useTheme();
   const palette = derivePalette(seed, theme === "dark");
@@ -54,7 +58,7 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
 
   const commitAdd = () => {
     const text = draft.trim();
-    if (text) setTasks(t => [...t, { text, emoji: "✏️", checked: false }]);
+    if (text) setTasks(t => (t.length < MAX_TASKS ? [...t, { text, emoji: "✏️", checked: false }] : t));
     setDraft("");
     setAdding(false);
   };
@@ -92,7 +96,7 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
             </span>
             <span style={{ position: "relative", fontFamily: "var(--font-sans)", fontSize: "13.5px", color: palette.text }}>
               {task.text} {task.emoji}
-              <ScribbleStrike active={task.checked} color={palette.ink} />
+              <ScribbleStrike active={task.checked} color={palette.ink} variant={i} />
             </span>
           </button>
         ))}
@@ -116,7 +120,7 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
               fontFamily: "var(--font-sans)", fontSize: "13.5px", color: palette.text,
             }}
           />
-        ) : (
+        ) : tasks.length < MAX_TASKS ? (
           <button
             onClick={startAdding}
             onPointerDown={e => e.stopPropagation()}
@@ -140,15 +144,29 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
               Add a task
             </span>
           </button>
-        )}
+        ) : null}
       </InnerCard>
     </MountFrame>
   );
 }
 
+/* A few different strike shapes — not every crossed-off task should look
+   like it was struck the same way twice. Includes straighter, more
+   confident single-pass lines alongside the original wavy ones, and one
+   double-pass "went over it twice" variant, per feedback. Each is still
+   run through the same pencil-texture filter below, so even the
+   "straight" ones come out with a hand-drawn wobble, not a ruler edge. */
+const SCRIBBLE_VARIANTS = [
+  "M4 20 C 34 6, 62 32, 96 16 S 150 4, 180 18 S 210 24, 216 16",
+  "M5 24 L 213 11",
+  "M4 14 Q 110 30 216 17",
+  "M6 26 L 214 9 M9 11 L 210 25",
+];
+
 /**
- * The hand-drawn strike-through — one wavy SVG path, its length measured
- * at runtime (`getTotalLength`) so the draw-on animation (stroke-dashoffset
+ * The hand-drawn strike-through — the base shape picked from
+ * SCRIBBLE_VARIANTS (see `variant` below), its length measured at
+ * runtime (`getTotalLength`) so the draw-on animation (stroke-dashoffset
  * eased down to 0) actually traces the real path instead of an estimate.
  * Textured via an SVG filter (feTurbulence + feDisplacementMap, the same
  * technique the pin.svg asset uses for its own noise) instead of a plain
@@ -156,14 +174,15 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
  * line — a unique filter id per instance (useId) since multiple todo
  * cards can be on the canvas at once and SVG filter ids are global.
  */
-function ScribbleStrike({ active, color }: { active: boolean; color: string }) {
+function ScribbleStrike({ active, color, variant = 0 }: { active: boolean; color: string; variant?: number }) {
   const pathRef = useRef<SVGPathElement>(null);
   const [len, setLen] = useState(240);
   const filterId = `pencil-texture-${useId()}`;
+  const d = SCRIBBLE_VARIANTS[variant % SCRIBBLE_VARIANTS.length];
 
   useEffect(() => {
     if (pathRef.current) setLen(pathRef.current.getTotalLength());
-  }, []);
+  }, [d]);
 
   return (
     <svg
@@ -174,13 +193,13 @@ function ScribbleStrike({ active, color }: { active: boolean; color: string }) {
     >
       <defs>
         <filter id={filterId} x="-20%" y="-60%" width="140%" height="220%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.045 0.9" numOctaves="2" seed="4" result="noise" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.045 0.9" numOctaves="2" seed={4 + variant} result="noise" />
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </defs>
       <path
         ref={pathRef}
-        d="M4 20 C 34 6, 62 32, 96 16 S 150 4, 180 18 S 210 24, 216 16"
+        d={d}
         fill="none"
         stroke={color}
         strokeWidth="4.5"

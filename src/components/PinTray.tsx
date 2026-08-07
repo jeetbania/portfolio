@@ -87,7 +87,6 @@ export function PinTray({
   return (
     <>
       <div className="pin-tray">
-        <span className="pin-tray-label">Drag a pin onto a card</span>
         <div className="pin-tray-pins">
           {hues.map(hueRotate => (
             <div

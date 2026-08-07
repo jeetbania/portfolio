@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTheme } from "@/lib/theme";
 
 /**
  * A calendar widget — reworked twice now per feedback: first to drop the
@@ -28,6 +29,8 @@ const AGENDA: { time: string; label: string; dot: string }[] = [
 ];
 
 export function CalendarCard() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [reminderSet, setReminderSet] = useState(false);
   const [done, setDone] = useState<boolean[]>(() => AGENDA.map(() => false));
   // Starts null rather than `new Date()` — the server renders this
@@ -141,8 +144,14 @@ export function CalendarCard() {
           border: "none",
           cursor: "pointer",
           fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "12.5px",
-          background: reminderSet ? "color-mix(in srgb, #F6D949 35%, var(--canvas-mount-bg))" : "var(--surface-glass)",
-          color: reminderSet ? "#8A5B0A" : "var(--canvas-ink-strong)",
+          // The "set" state used to blend gold into --canvas-mount-bg for
+          // both themes — fine in light mode, but in dark mode that mix
+          // lands on a muddy dark olive with barely-legible text. A solid,
+          // fully-saturated gold with dark ink reads clearly regardless of
+          // what's behind it, so dark mode gets its own values instead of
+          // reusing light mode's softer blend.
+          background: reminderSet ? (isDark ? "#F0B429" : "#FDECC8") : "var(--surface-glass)",
+          color: reminderSet ? (isDark ? "#2E1F03" : "#8A5B0A") : "var(--canvas-ink-strong)",
           transition: "background 200ms var(--ease-out), color 200ms var(--ease-out), transform 220ms cubic-bezier(0.34,1.6,0.64,1)",
           transform: reminderSet ? "scale(1.03)" : "scale(1)",
         }}
@@ -150,7 +159,7 @@ export function CalendarCard() {
         {reminderSet ? (
           <>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2.5 7.2 5.5 10.2 11.5 3.8" stroke="#8A5B0A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2.5 7.2 5.5 10.2 11.5 3.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Reminder set
           </>

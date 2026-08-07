@@ -8,23 +8,19 @@ import { TodoWidgetCard, CoffeeCounterCard } from "./CanvasWidgetCards";
 import { CalendarCard } from "./CanvasCalendarCard";
 import { PinTray } from "./PinTray";
 import { MusicWidget } from "./MusicWidget";
+import { BackgroundPicker } from "./BackgroundPicker";
 
 /**
- * Everything on /playground lives here. No heading anymore — per
- * feedback it read as cleaner without one, so this page opens directly
- * on the canvas itself; PinTray is the only thing left in InfiniteCanvas's
- * `overlay` slot (fixed to the canvas's own corner, not the pannable
- * world).
+ * Everything on /playground lives here. Back to a contained canvas per
+ * feedback (page.tsx frames it now — see that file), and PinTray/
+ * MusicWidget/BackgroundPicker all sit in InfiniteCanvas's `overlay`
+ * slot (fixed to the canvas's own corner, not the pannable world).
  *
- * Cards are laid out in a loose ring around the world's center — that
- * gap in the middle used to matter because a fixed heading sat there;
- * now it's just breathing room, which still reads fine (an "almost
- * infinite" canvas earns a bit of open space).
- *
- * Pin state (which cards are locked down, and which pin color) lives
- * here as real React state — pinning is a deliberate, infrequent action,
- * so a normal re-render per pin is fine, and this is the natural
- * lift-state-up point since both <PinTray> and every <CanvasCard> need it.
+ * Pin state (which cards are locked down, and which pin color) and the
+ * canvas's background tint both live here as real React state — both
+ * are deliberate, infrequent actions, so a normal re-render each time is
+ * fine, and this is the natural lift-state-up point since the controls
+ * and every <CanvasCard> both need them.
  */
 
 const WORLD_WIDTH = 3000;
@@ -38,15 +34,26 @@ const PIN_HUES = [150, -60, 0];
 
 export default function PlaygroundCanvas() {
   const [pinned, setPinned] = useState<Record<string, number>>({});
+  const [bgColor, setBgColor] = useState<string | null>(null);
 
   const dropPin = (cardId: string, hueRotate: number) => {
     setPinned(p => ({ ...p, [cardId]: hueRotate }));
+  };
+
+  const unpin = (cardId: string) => {
+    setPinned(p => {
+      if (!Object.prototype.hasOwnProperty.call(p, cardId)) return p;
+      const next = { ...p };
+      delete next[cardId];
+      return next;
+    });
   };
 
   const card = (id: string) => ({
     id,
     pinned: Object.prototype.hasOwnProperty.call(pinned, id),
     pinHue: pinned[id],
+    onUnpin: unpin,
     worldWidth: WORLD_WIDTH,
     worldHeight: WORLD_HEIGHT,
   });
@@ -56,11 +63,12 @@ export default function PlaygroundCanvas() {
       worldWidth={WORLD_WIDTH}
       worldHeight={WORLD_HEIGHT}
       initialCenter={INITIAL_CENTER}
-      height="88svh"
+      backgroundColor={bgColor ?? undefined}
       overlay={
         <>
           <PinTray hues={PIN_HUES} onDropOnCard={dropPin} />
           <MusicWidget />
+          <BackgroundPicker value={bgColor} onChange={setBgColor} />
         </>
       }
     >

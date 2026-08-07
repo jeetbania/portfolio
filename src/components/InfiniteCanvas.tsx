@@ -58,6 +58,7 @@ export function InfiniteCanvas({
   worldHeight,
   initialCenter,
   height = "min(76vh, 720px)",
+  backgroundColor,
   overlay,
   children,
 }: {
@@ -66,6 +67,11 @@ export function InfiniteCanvas({
   /** World-space point centered in the viewport on first load / reset. Defaults to the world's center. */
   initialCenter?: { x: number; y: number };
   height?: string;
+  /** Overrides the canvas's own backdrop color (default var(--col-bg)) —
+   * e.g. BackgroundPicker.tsx letting a visitor pick a pastel tint. Set
+   * on the container itself, not just the world, so it still covers the
+   * whole viewport once panned past the world's own bounds. */
+  backgroundColor?: string;
   /** UI chrome that sits ON TOP of the canvas but OUTSIDE the pannable/
    * zoomable world — e.g. PinTray. Anything passed as `children` instead
    * pans and zooms with the world; anything passed here stays fixed to
@@ -233,7 +239,10 @@ export function InfiniteCanvas({
       <div
         ref={containerRef}
         className="infinite-canvas"
-        style={{ position: "relative", overflow: "hidden", height }}
+        style={{
+          position: "relative", overflow: "hidden", height,
+          ...(backgroundColor ? { background: backgroundColor, transition: "background 320ms var(--ease-out)" } : {}),
+        }}
         onPointerDown={handlePointerDown}
         onPointerDownCapture={dismissHint}
         onPointerMove={handlePointerMove}

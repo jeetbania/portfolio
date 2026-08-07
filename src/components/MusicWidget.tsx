@@ -1,19 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import GradientThumb from "./GradientThumb";
 
 /**
- * A "Listening to..." widget copied off a reference almost exactly:
- * a fanned stack of album covers that lift on hover, click one to morph
- * the whole panel into a now-playing view (album art + a vinyl record
- * peeking out behind it, track info, a Spotify link, transport
- * controls). Real audio playback isn't wired up — no licensed audio to
- * actually play, and this is a personal-site widget, not a music app —
- * but the PLAY button isn't just decorative either: it spins the vinyl
- * and ticks a real elapsed-time counter via setInterval, which gets you
- * most of the "this feels alive" payoff without needing an actual
- * <audio> element or hosted track files.
+ * A "Listening to..." widget copied off a reference almost exactly: a
+ * fanned stack of album covers that lift (now with a real frosted-glass
+ * hover, not just a bare transform) — click one and it flips on its Y
+ * axis like turning a sleeve over, then the panel morphs into a
+ * now-playing view where a vinyl record rolls out from behind the album
+ * art and spins continuously, like it just started playing.
+ *
+ * No real audio, no transport controls — per feedback, the play/pause/
+ * skip buttons were unnecessary once there's nothing to actually control;
+ * the now-playing view is just the art, the spinning vinyl, and the
+ * artist/title, which is closer to a glance-able "what's on" widget than
+ * a player anyway.
  *
  * Anchored to the canvas viewport's own corner via InfiniteCanvas's
  * `overlay` prop (see PlaygroundCanvas.tsx) — a persistent piece of
@@ -31,24 +33,22 @@ type Track = {
   artist: string;
   title: string;
   colors: readonly [string, string, string];
-  duration: number; // seconds, kept short since this is a simulated preview, not a real track
   spotifyUrl?: string;
 };
 
 const TRACKS: Track[] = [
-  { artist: "Night Static", title: "Overdrive", colors: ["#6C4FD1", "#A79AFF", "#2A1D5C"], duration: 24 },
-  { artist: "Paper Cranes", title: "Low Tide", colors: ["#1F9D55", "#6EDB98", "#0E4A28"], duration: 21 },
-  { artist: "Radio Silence", title: "Fast Forward", colors: ["#E8734A", "#F5C15A", "#7A2E12"], duration: 18 },
-  { artist: "Sunday Static", title: "Afterglow", colors: ["#C23B6B", "#F58FB0", "#5C1230"], duration: 26 },
-  { artist: "The Long Way", title: "Home Movies", colors: ["#C77D11", "#F5C15A", "#5C3A08"], duration: 22 },
-  { artist: "Nova & Wren", title: "Static Bloom", colors: ["#2563C7", "#6FA8F5", "#12245C"], duration: 20 },
+  { artist: "Night Static", title: "Overdrive", colors: ["#6C4FD1", "#A79AFF", "#2A1D5C"] },
+  { artist: "Paper Cranes", title: "Low Tide", colors: ["#1F9D55", "#6EDB98", "#0E4A28"] },
+  { artist: "Radio Silence", title: "Fast Forward", colors: ["#E8734A", "#F5C15A", "#7A2E12"] },
+  { artist: "Sunday Static", title: "Afterglow", colors: ["#C23B6B", "#F58FB0", "#5C1230"] },
+  { artist: "The Long Way", title: "Home Movies", colors: ["#C77D11", "#F5C15A", "#5C3A08"] },
+  { artist: "Nova & Wren", title: "Static Bloom", colors: ["#2563C7", "#6FA8F5", "#12245C"] },
 ];
 
-function formatTime(s: number) {
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return `${m}:${sec.toString().padStart(2, "0")}`;
-}
+/* Matches the .music-album-flip CSS animation's own duration — the
+   Browse view keeps rendering (playing the flip) for exactly this long
+   before MusicWidget swaps it out for NowPlaying. */
+const FLIP_DURATION_MS = 420;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -62,51 +62,33 @@ function shuffle<T>(arr: T[]): T[] {
 export function MusicWidget() {
   const [order, setOrder] = useState(TRACKS);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
+  const [flippingIndex, setFlippingIndex] = useState<number | null>(null);
 
   const active = activeIndex !== null ? order[activeIndex] : null;
 
-  useEffect(() => {
-    if (!playing || !active) return;
-    const id = setInterval(() => {
-      setElapsed(e => (e + 1 >= active.duration ? 0 : e + 1));
-    }, 1000);
-    return () => clearInterval(id);
-  }, [playing, active]);
-
   const pick = (i: number) => {
-    setActiveIndex(i);
-    setElapsed(0);
-    setPlaying(false);
-  };
-
-  const step = (dir: 1 | -1) => {
-    if (activeIndex === null) return;
-    const next = (activeIndex + dir + order.length) % order.length;
-    pick(next);
+    if (flippingIndex !== null) return;
+    setFlippingIndex(i);
+    setTimeout(() => {
+      setActiveIndex(i);
+      setFlippingIndex(null);
+    }, FLIP_DURATION_MS);
   };
 
   return (
     <div className="music-widget" onPointerDown={e => e.stopPropagation()}>
       {active ? (
-        <NowPlaying
-          track={active}
-          playing={playing}
-          elapsed={elapsed}
-          onBack={() => setActiveIndex(null)}
-          onTogglePlay={() => setPlaying(p => !p)}
-          onPrev={() => step(-1)}
-          onNext={() => step(1)}
-        />
+        <NowPlaying track={active} onBack={() => setActiveIndex(null)} />
       ) : (
-        <Browse tracks={order} onShuffle={() => setOrder(shuffle(order))} onPick={pick} />
+        <Browse tracks={order} flippingIndex={flippingIndex} onShuffle={() => setOrder(shuffle(order))} onPick={pick} />
       )}
     </div>
   );
 }
 
-function Browse({ tracks, onShuffle, onPick }: { tracks: Track[]; onShuffle: () => void; onPick: (i: number) => void }) {
+function Browse({
+  tracks, flippingIndex, onShuffle, onPick,
+}: { tracks: Track[]; flippingIndex: number | null; onShuffle: () => void; onPick: (i: number) => void }) {
   return (
     <>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
@@ -120,11 +102,11 @@ function Browse({ tracks, onShuffle, onPick }: { tracks: Track[]; onShuffle: () 
           Refresh
         </button>
       </div>
-      <div style={{ display: "flex", paddingBottom: "8px" }}>
+      <div className="music-album-row" style={{ display: "flex", paddingBottom: "8px" }}>
         {tracks.map((track, i) => (
           <button
             key={track.artist + track.title}
-            className="music-album"
+            className={`music-album ${flippingIndex === i ? "music-album-flipping" : ""}`}
             onClick={() => onPick(i)}
             style={{
               marginLeft: i === 0 ? 0 : "-30px",
@@ -151,12 +133,7 @@ function Browse({ tracks, onShuffle, onPick }: { tracks: Track[]; onShuffle: () 
   );
 }
 
-function NowPlaying({
-  track, playing, elapsed, onBack, onTogglePlay, onPrev, onNext,
-}: {
-  track: Track; playing: boolean; elapsed: number;
-  onBack: () => void; onTogglePlay: () => void; onPrev: () => void; onNext: () => void;
-}) {
+function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
   return (
     <>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
@@ -184,7 +161,7 @@ function NowPlaying({
         <div style={{ position: "relative", width: "108px", height: "108px", flexShrink: 0 }}>
           <div
             aria-hidden="true"
-            className={playing ? "music-vinyl music-vinyl-spinning" : "music-vinyl"}
+            className="music-vinyl music-vinyl-entering"
             style={{ position: "absolute", right: "-34px", top: "16px", width: "96px", height: "96px" }}
           />
           <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 24px rgba(0,0,0,0.32)" }}>
@@ -196,30 +173,9 @@ function NowPlaying({
           <p style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)", margin: "0 0 2px" }}>
             {track.artist}
           </p>
-          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "17px", color: "var(--canvas-ink-strong)", margin: "0 0 8px" }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "17px", color: "var(--canvas-ink-strong)", margin: 0 }}>
             {track.title}
           </p>
-          <p style={{
-            fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--col-muted)",
-            margin: "0 0 12px", fontVariantNumeric: "tabular-nums",
-          }}>
-            {formatTime(elapsed)} / {formatTime(track.duration)}
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <button className="music-transport" onClick={onPrev} aria-label="Previous track">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M4 2v10M12 3 5 7l7 4V3Z" /></svg>
-            </button>
-            <button className="music-transport music-transport-play" onClick={onTogglePlay} aria-label={playing ? "Pause" : "Play"}>
-              {playing ? (
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><rect x="3" y="2" width="3" height="10" rx="1" /><rect x="8" y="2" width="3" height="10" rx="1" /></svg>
-              ) : (
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3.5 2.3v9.4a.8.8 0 0 0 1.22.68l7.6-4.7a.8.8 0 0 0 0-1.36l-7.6-4.7a.8.8 0 0 0-1.22.68Z" /></svg>
-              )}
-            </button>
-            <button className="music-transport" onClick={onNext} aria-label="Next track">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M10 2v10M2 3l7 4-7 4V3Z" /></svg>
-            </button>
-          </div>
         </div>
       </div>
     </>

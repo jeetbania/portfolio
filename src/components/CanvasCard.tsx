@@ -48,6 +48,7 @@ export function CanvasCard({
   zIndex = 1,
   pinned = false,
   pinHue,
+  onUnpin,
   children,
   style,
 }: {
@@ -61,6 +62,8 @@ export function CanvasCard({
   zIndex?: number;
   pinned?: boolean;
   pinHue?: number;
+  /** Called when the hammer button (shown on hover while pinned) is clicked. */
+  onUnpin?: (id: string) => void;
   children: React.ReactNode;
   style?: React.CSSProperties;
 }) {
@@ -222,6 +225,18 @@ export function CanvasCard({
         <div className="canvas-card-pin">
           <Pin hueRotate={pinHue ?? 0} />
         </div>
+        {onUnpin && (
+          <button
+            type="button"
+            className="card-unpin-hammer"
+            aria-label="Remove pin"
+            title="Remove pin"
+            onPointerDown={e => e.stopPropagation()}
+            onClick={() => onUnpin(id)}
+          >
+            🔨
+          </button>
+        )}
         {children}
       </div>
     );
