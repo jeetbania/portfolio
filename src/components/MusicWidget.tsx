@@ -1,21 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import GradientThumb from "./GradientThumb";
 
 /**
- * A "Listening to..." widget copied off a reference almost exactly: a
- * fanned stack of album covers that lift (now with a real frosted-glass
- * hover, not just a bare transform) — click one and it flips on its Y
- * axis like turning a sleeve over, then the panel morphs into a
- * now-playing view where a vinyl record rolls out from behind the album
- * art and spins continuously, like it just started playing.
+ * A "Listening to..." widget: a fanned stack of album covers that lift on
+ * hover with a real frosted-glass frame — click one to switch to a
+ * now-playing view.
+ *
+ * The transition is two choreographed phases, chosen after feedback that
+ * the earlier "flip the whole card over" version felt jarring:
+ *  1. `pickedIndex` phase (plain CSS, ~180ms) — every album EXCEPT the one
+ *     just clicked drops down and fades out (.music-album-exit below),
+ *     clearing the stage. The picked cover itself is untouched here.
+ *  2. Once the stage is clear, `activeIndex` swaps the view from Browse
+ *     to NowPlaying. The picked cover carries a Motion `layoutId` shared
+ *     by its counterpart in NowPlaying, so Motion animates it smoothly
+ *     from its old grid slot into its new position on the left of the
+ *     now-playing layout, rather than either view faking that motion by
+ *     hand — this is exactly what shared layout animations are for. The
+ *     vinyl then reveals out from directly behind/inside that art and
+ *     settles to the right of it (music-vinyl-entering, in globals.css),
+ *     with the track text living in its own flex slot further right still
+ *     so nothing overlaps it regardless of how the vinyl animates.
  *
  * No real audio, no transport controls — per feedback, the play/pause/
  * skip buttons were unnecessary once there's nothing to actually control;
- * the now-playing view is just the art, the spinning vinyl, and the
- * artist/title, which is closer to a glance-able "what's on" widget than
- * a player anyway.
+ * the now-playing view is just the art, the vinyl, and the artist/title.
  *
  * Anchored to the canvas viewport's own corner via InfiniteCanvas's
  * `overlay` prop (see PlaygroundCanvas.tsx) — a persistent piece of
@@ -45,10 +57,10 @@ const TRACKS: Track[] = [
   { artist: "Nova & Wren", title: "Static Bloom", colors: ["#2563C7", "#6FA8F5", "#12245C"] },
 ];
 
-/* Matches the .music-album-flip CSS animation's own duration — the
-   Browse view keeps rendering (playing the flip) for exactly this long
-   before MusicWidget swaps it out for NowPlaying. */
-const FLIP_DURATION_MS = 420;
+/* How long the "other albums drop away" phase gets to finish (matches
+   .music-album-exit's own transition duration, plus a small buffer)
+   before the view actually swaps to NowPlaying. */
+const EXIT_PHASE_MS = 210;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -62,35 +74,45 @@ function shuffle<T>(arr: T[]): T[] {
 export function MusicWidget() {
   const [order, setOrder] = useState(TRACKS);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [flippingIndex, setFlippingIndex] = useState<number | null>(null);
+  const [pickedIndex, setPickedIndex] = useState<number | null>(null);
 
   const active = activeIndex !== null ? order[activeIndex] : null;
 
   const pick = (i: number) => {
-    if (flippingIndex !== null) return;
-    setFlippingIndex(i);
+    if (pickedIndex !== null) return;
+    setPickedIndex(i);
     setTimeout(() => {
       setActiveIndex(i);
-      setFlippingIndex(null);
-    }, FLIP_DURATION_MS);
+      setPickedIndex(null);
+    }, EXIT_PHASE_MS);
   };
 
   return (
     <div className="music-widget" onPointerDown={e => e.stopPropagation()}>
-      {active ? (
-        <NowPlaying track={active} onBack={() => setActiveIndex(null)} />
-      ) : (
-        <Browse tracks={order} flippingIndex={flippingIndex} onShuffle={() => setOrder(shuffle(order))} onPick={pick} />
-      )}
+      <LayoutGroup id="music-widget">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {active ? (
+            <NowPlaying key="playing" track={active} onBack={() => setActiveIndex(null)} />
+          ) : (
+            <Browse
+              key="browse"
+              tracks={order}
+              pickedIndex={pickedIndex}
+              onShuffle={() => setOrder(shuffle(order))}
+              onPick={pick}
+            />
+          )}
+        </AnimatePresence>
+      </LayoutGroup>
     </div>
   );
 }
 
 function Browse({
-  tracks, flippingIndex, onShuffle, onPick,
-}: { tracks: Track[]; flippingIndex: number | null; onShuffle: () => void; onPick: (i: number) => void }) {
+  tracks, pickedIndex, onShuffle, onPick,
+}: { tracks: Track[]; pickedIndex: number | null; onShuffle: () => void; onPick: (i: number) => void }) {
   return (
-    <>
+    <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
         <span style={{ fontFamily: "var(--font-serif)", fontSize: "19px", color: "var(--canvas-ink-strong)" }}>
           Listening to…
@@ -106,8 +128,9 @@ function Browse({
         {tracks.map((track, i) => (
           <button
             key={track.artist + track.title}
-            className={`music-album ${flippingIndex === i ? "music-album-flipping" : ""}`}
+            className={`music-album ${pickedIndex !== null && pickedIndex !== i ? "music-album-exit" : ""}`}
             onClick={() => onPick(i)}
+            disabled={pickedIndex !== null}
             style={{
               marginLeft: i === 0 ? 0 : "-30px",
               zIndex: i,
@@ -119,9 +142,13 @@ function Browse({
             } as React.CSSProperties}
             aria-label={`Play ${track.title} by ${track.artist}`}
           >
-            <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
+            <motion.div
+              layoutId={`cover-${track.artist}-${track.title}`}
+              layout
+              style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}
+            >
               <GradientThumb colors={track.colors} radius={9} />
-            </div>
+            </motion.div>
             <span className="music-album-tooltip">
               {track.artist}<br />
               <strong>{track.title}</strong>
@@ -129,13 +156,13 @@ function Browse({
           </button>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
 function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
   return (
-    <>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.05, duration: 0.2 } }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <button className="music-pill" onClick={onBack}>
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -157,27 +184,36 @@ function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
         </a>
       </div>
 
-      <div style={{ display: "flex", gap: "18px", alignItems: "center" }}>
-        <div style={{ position: "relative", width: "108px", height: "108px", flexShrink: 0 }}>
+      {/* Art + vinyl live inside one fixed-width slot (178px — 108 for the
+          art, plus the vinyl's full 96px-wide peek to its right) so the
+          text slot after it has a guaranteed real gap no matter how the
+          vinyl's own reveal transform moves it — that's what was
+          overlapping the track name before. */}
+      <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+        <div style={{ position: "relative", width: "178px", height: "120px", flexShrink: 0 }}>
           <div
             aria-hidden="true"
             className="music-vinyl music-vinyl-entering"
-            style={{ position: "absolute", right: "-34px", top: "16px", width: "96px", height: "96px" }}
+            style={{ position: "absolute", left: "82px", top: "12px", width: "96px", height: "96px" }}
           />
-          <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 24px rgba(0,0,0,0.32)" }}>
+          <motion.div
+            layoutId={`cover-${track.artist}-${track.title}`}
+            layout
+            style={{ position: "absolute", left: 0, top: "6px", width: "108px", height: "108px", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 24px rgba(0,0,0,0.32)", zIndex: 2 }}
+          >
             <GradientThumb colors={track.colors} radius={12} />
-          </div>
+          </motion.div>
         </div>
 
-        <div style={{ minWidth: 0 }}>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)", margin: "0 0 2px" }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)", margin: "0 0 3px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {track.artist}
           </p>
-          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "17px", color: "var(--canvas-ink-strong)", margin: 0 }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "17px", color: "var(--canvas-ink-strong)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {track.title}
           </p>
         </div>
       </div>
-    </>
+    </motion.div>
   );
 }

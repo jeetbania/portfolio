@@ -2,9 +2,8 @@
  * Shared chrome for the "mounted paper" card style — reimplemented from a
  * paper.design reference: a neutral outer mount (generous top margin,
  * like a photo mat) framing a smaller colored inner card. Used by
- * StickyNote, TodoWidgetCard, and CoffeeCounterCard so all three read as
- * the same family of object sitting on the board, not three unrelated
- * designs.
+ * StickyNote and TodoWidgetCard so both read as the same family of
+ * object sitting on the board, not two unrelated designs.
  *
  * Dark-mode-aware, unlike the homepage fan cards/folders — those are
  * deliberately fixed "stickers" per CLAUDE.md, but these were reported

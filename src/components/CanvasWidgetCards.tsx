@@ -5,22 +5,22 @@ import { useTheme } from "@/lib/theme";
 import { MountFrame, InnerCard, derivePalette } from "./CanvasCardChrome";
 
 /**
- * Two small interactive widgets for the Playground canvas, built on the
- * same MountFrame/InnerCard chrome as StickyNote (see
- * CanvasCardChrome.tsx) — "same sort of box UI," per feedback — instead
- * of their own separate flat-white style. Content sizes to fit naturally
- * rather than a fixed box, since a to-do list and a coffee counter
- * aren't the same shape as a short note.
+ * The to-do widget for the Playground canvas, built on the same
+ * MountFrame/InnerCard chrome as StickyNote (see CanvasCardChrome.tsx) —
+ * "same sort of box UI," per feedback — instead of its own separate
+ * flat-white style. Content sizes to fit naturally rather than a fixed
+ * box, since a to-do list isn't the same shape as a short note.
  *
- * Only the actual interactive CONTROLS (a checkbox, the cup, the add-task
- * input) stop pointerdown propagation, not the whole card body — an
- * earlier pass stopped propagation on the card's outer wrapper, which
- * silently made the entire card undraggable (any drag starting anywhere
- * on it, not just on a button, got eaten before CanvasCard's own drag
- * handler ever saw it). Same fix applies to CanvasCalendarCard.tsx.
+ * Only the actual interactive CONTROLS (a checkbox, the add-task input)
+ * stop pointerdown propagation, not the whole card body — an earlier pass
+ * stopped propagation on the card's outer wrapper, which silently made
+ * the entire card undraggable (any drag starting anywhere on it, not just
+ * on a button, got eaten before CanvasCard's own drag handler ever saw
+ * it). Same fix applies to CanvasCalendarCard.tsx.
+ *
+ * (The coffee-counter widget that used to live here was removed per
+ * feedback — the homepage fan card already covers that same joke.)
  */
-
-const WIDGET_ICON_COLOR = "#fff";
 
 /* ══════════════════════════════════════════════════════════════════
    To-do list — clicking a task checks it off AND draws a hand-scribbled
@@ -216,59 +216,3 @@ function ScribbleStrike({ active, color, variant = 0 }: { active: boolean; color
   );
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   Coffee counter — click the cup, count goes up, cup gives a little
-   spring-bounce. Same "coffee count" idea as the homepage fan card, just
-   an actually-clickable version here instead of a static stat.
-   ══════════════════════════════════════════════════════════════════ */
-
-export function CoffeeCounterCard({ seed = "#B8631F" }: { seed?: string }) {
-  const { theme } = useTheme();
-  const palette = derivePalette(seed, theme === "dark");
-  const [count, setCount] = useState(12);
-  const [bump, setBump] = useState(false);
-  const bumpTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const addCup = () => {
-    setCount(c => c + 1);
-    setBump(true);
-    if (bumpTimer.current) clearTimeout(bumpTimer.current);
-    bumpTimer.current = setTimeout(() => setBump(false), 280);
-  };
-
-  useEffect(() => () => { if (bumpTimer.current) clearTimeout(bumpTimer.current); }, []);
-
-  return (
-    <MountFrame>
-      <InnerCard palette={palette} style={{ padding: "20px 16px 18px", textAlign: "center" }}>
-        <span style={{ fontFamily: "var(--font-hand)", color: palette.ink, fontSize: "28px", lineHeight: "28px", display: "block", marginBottom: "10px" }}>
-          coffee count
-        </span>
-        <button
-          onClick={addCup}
-          onPointerDown={e => e.stopPropagation()}
-          aria-label="Add a cup"
-          style={{
-            width: "52px", height: "52px", borderRadius: "50%",
-            background: palette.ink,
-            border: "none", cursor: "pointer",
-            display: "grid", placeItems: "center",
-            fontSize: "22px", lineHeight: 1,
-            color: WIDGET_ICON_COLOR,
-            boxShadow: `0 4px 10px color-mix(in srgb, ${palette.ink} 45%, transparent)`,
-            transform: bump ? "scale(1.14) rotate(-6deg)" : "scale(1) rotate(0deg)",
-            transition: "transform 240ms cubic-bezier(0.34,1.6,0.64,1)",
-          }}
-        >
-          ☕
-        </button>
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "24px", fontWeight: 700, color: "var(--canvas-ink-strong)", margin: "10px 0 0", lineHeight: 1 }}>
-          {count}
-        </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "12px", color: palette.text, margin: "3px 0 0" }}>
-          cups, allegedly
-        </p>
-      </InnerCard>
-    </MountFrame>
-  );
-}

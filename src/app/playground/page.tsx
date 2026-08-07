@@ -19,8 +19,8 @@ export default function PlaygroundPage() {
   return (
     <main style={{ background: "var(--col-bg)" }}>
       <div style={{
-        maxWidth: "1240px", margin: "0 auto",
-        padding: "clamp(110px, 15vh, 160px) clamp(16px, 3vw, 40px) clamp(60px, 9vh, 100px)",
+        maxWidth: "min(1900px, 97vw)", margin: "0 auto",
+        padding: "clamp(100px, 13vh, 150px) clamp(10px, 2vw, 28px) clamp(50px, 8vh, 90px)",
       }}>
         <div style={{
           borderRadius: "clamp(20px,3vw,32px)",

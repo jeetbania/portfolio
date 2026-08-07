@@ -136,8 +136,32 @@ export function InfiniteCanvas({
     applyTransform();
   }, [clampPan, applyTransform, zoomRef]);
 
+  /* Marks the moment a visitor takes over panning/zooming themselves —
+     after that, the auto-recenter below backs off and leaves their view
+     alone. Set from handlePointerDown/zoomBy/onWheel below. */
+  const userTookOverRef = useRef(false);
+
+  /* Center on mount — but ALSO whenever the container's own size changes
+     up until a visitor first interacts. A single mount-time
+     getBoundingClientRect() measurement is not reliable here: this page
+     renders the canvas inside a clamp()-sized frame below a nav bar and
+     hero padding, and depending on font/layout timing that frame can
+     still be settling into its final size a beat after this effect's
+     first run — center the wrong (smaller/stale) rect once and the pan
+     is permanently off, with no resize listener to ever correct it. A
+     ResizeObserver re-centers on every real size change instead of just
+     the first one, which is what actually fixes that class of bug. */
   useEffect(() => {
-    centerOn(center, 1);
+    const el = containerRef.current;
+    if (!el) return;
+    const recenter = () => {
+      if (userTookOverRef.current) return;
+      centerOn(center, 1);
+    };
+    recenter();
+    const ro = new ResizeObserver(recenter);
+    ro.observe(el);
+    return () => ro.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -164,6 +188,7 @@ export function InfiniteCanvas({
     const el = containerRef.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
+      userTookOverRef.current = true;
       dismissHint();
       e.preventDefault();
       const rect = el.getBoundingClientRect();
@@ -182,6 +207,7 @@ export function InfiniteCanvas({
   }, [zoomBy, clampPan, applyTransform, dismissHint]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    userTookOverRef.current = true;
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointersRef.current.size === 1) {
       draggingRef.current = true;
@@ -259,7 +285,15 @@ export function InfiniteCanvas({
             width: worldWidth,
             height: worldHeight,
             transformOrigin: "0 0",
-          }}
+            // Dot color normally follows --dot-color, which flips with the
+            // site theme (dark dots on light bg, light dots on dark bg).
+            // But a custom canvas background is always one of the pastel
+            // swatches from BackgroundPicker — light, regardless of theme
+            // — so in dark mode the theme's own light dots go invisible
+            // against it. Override to a fixed dark dot whenever a custom
+            // background is active, independent of the theme toggle.
+            ...(backgroundColor ? { ["--dot-color" as string]: "rgba(20,18,15,0.34)" } : {}),
+          } as React.CSSProperties}
         >
           {children}
         </div>
@@ -281,17 +315,17 @@ export function InfiniteCanvas({
             clicks masked this before since a stationary pointerdown/up
             with no movement never visibly pans anything. */}
         <div className="canvas-controls">
-          <button type="button" aria-label="Zoom in" onPointerDown={e => e.stopPropagation()} onClick={() => zoomBy(ZOOM_BUTTON_STEP)}>
+          <button type="button" aria-label="Zoom in" onPointerDown={e => e.stopPropagation()} onClick={() => { userTookOverRef.current = true; zoomBy(ZOOM_BUTTON_STEP); }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 1.5V12.5M1.5 7H12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </button>
-          <button type="button" aria-label="Zoom out" onPointerDown={e => e.stopPropagation()} onClick={() => zoomBy(1 / ZOOM_BUTTON_STEP)}>
+          <button type="button" aria-label="Zoom out" onPointerDown={e => e.stopPropagation()} onClick={() => { userTookOverRef.current = true; zoomBy(1 / ZOOM_BUTTON_STEP); }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M1.5 7H12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </button>
-          <button type="button" aria-label="Reset view" onPointerDown={e => e.stopPropagation()} onClick={() => centerOn(center, 1)}>
+          <button type="button" aria-label="Reset view" onPointerDown={e => e.stopPropagation()} onClick={() => { userTookOverRef.current = false; centerOn(center, 1); }}>
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M13.5 8A5.5 5.5 0 1 1 11.9 4.1M13.5 1.5V4.6H10.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

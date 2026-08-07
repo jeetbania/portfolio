@@ -552,7 +552,10 @@ body {
 .canvas-hint {
   position: absolute;
   left: 50%;
-  bottom: 20px;
+  /* Sits above the zoom controls, which moved to bottom-center too (see
+     .canvas-controls) — this used to be the only thing anchored to the
+     bottom-middle, now it has to clear the control bar under it. */
+  bottom: 78px;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -582,13 +585,16 @@ body {
   flex-shrink: 0;
 }
 
+/* Bottom-center, like a design tool's own zoom bar — was bottom-right,
+   but that's the music widget's corner now (see .music-widget below). */
 .canvas-controls {
   position: absolute;
-  right: 16px;
+  left: 50%;
   bottom: 16px;
+  transform: translateX(-50%);
   z-index: 6;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border-radius: 14px;
   overflow: hidden;
   background: var(--surface-glass-strong);
@@ -606,10 +612,10 @@ body {
   border: none;
   color: var(--col-fg);
   cursor: pointer;
-  border-bottom: 1px solid var(--col-hairline);
+  border-right: 1px solid var(--col-hairline);
   transition: background 160ms var(--ease-out);
 }
-.canvas-controls button:last-child { border-bottom: none; }
+.canvas-controls button:last-child { border-right: none; }
 .canvas-controls button:hover { background: var(--surface-glass); }
 
 .canvas-card {
@@ -734,13 +740,18 @@ body {
 
 /* ─── Music widget (MusicWidget.tsx) — anchored to the canvas's own
    corner via InfiniteCanvas's `overlay` prop, same slot as PinTray, so
-   it never pans/zooms with the world. ─────────────────────────────── */
+   it never pans/zooms with the world. Bottom-right — was top-right, but
+   the composition reads better with the pin tray alone up top and every
+   control (zoom, background picker, this) anchored along the bottom
+   edge. Wider than before too: the now-playing view needs real room for
+   the art+vinyl group and the track text side by side without the vinyl
+   creeping into the text's space (see NowPlaying in MusicWidget.tsx). */
 .music-widget {
   position: absolute;
-  top: 16px;
   right: 16px;
+  bottom: 16px;
   z-index: 6;
-  width: 300px;
+  width: 360px;
   padding: 18px 18px 16px;
   border-radius: 20px;
   background: var(--canvas-mount-bg);
@@ -799,16 +810,18 @@ body {
   -webkit-backdrop-filter: blur(10px) saturate(160%);
   box-shadow: 0 8px 20px rgba(0,0,0,0.25), var(--glass-bevel);
 }
-/* Picked: flips the card on its Y axis (like turning a vinyl sleeve
-   over) before MusicWidget.tsx swaps the whole panel to the now-playing
-   view — see the matching setTimeout there, tuned to this duration. */
-.music-album-flipping {
-  animation: music-album-flip 420ms cubic-bezier(0.45,0,0.55,1) forwards;
-  z-index: 40 !important;
-}
-@keyframes music-album-flip {
-  0%   { transform: rotate(var(--album-rotate,0deg)) translateY(-10px) scale(1.08) rotateY(0deg); }
-  100% { transform: rotate(var(--album-rotate,0deg)) translateY(-10px) scale(1.08) rotateY(100deg); opacity: 0.4; }
+/* Picked: every OTHER album in the row drops away and fades out quickly
+   (see the `pickedIndex` phase in MusicWidget.tsx) while the picked one
+   is left sitting untouched in place for a beat — its own cover then
+   continues into the now-playing layout via a shared layoutId (Motion's
+   `layoutId`, matched against NowPlaying's art), which animates it
+   smoothly into its new position/size on its own. No local animation is
+   applied to the picked album here — that hand-off IS the animation. */
+.music-album-exit {
+  opacity: 0;
+  transform: rotate(var(--album-rotate, 0deg)) translateY(30px) scale(0.94);
+  pointer-events: none;
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
 }
 
 .music-album-tooltip {
@@ -852,31 +865,39 @@ body {
   border-radius: 50%;
   background: var(--canvas-mount-bg);
 }
-/* Entrance for the now-playing view — the disc "rolls" out from behind
-   the album art (translate + spin up to speed) and keeps spinning
-   continuously afterward, like it just started playing. Two animations
-   on one element: the roll-in plays once, the continuous spin picks up
-   exactly where it left off (both end/start at 340deg) after a delay
-   matching the roll-in's own duration. */
+/* Entrance for the now-playing view — the disc emerges from directly
+   behind/inside the album art and travels out to its resting spot on the
+   right, turning one slow 360° revolution as it goes (per feedback: the
+   reveal itself should read as an unhurried single turn, not a quick
+   spin-up). It keeps turning gently afterward as ambient detail, picking
+   up exactly where the reveal left off (both end/start at 360deg). */
 .music-vinyl-entering {
   animation:
-    music-vinyl-roll-in 550ms cubic-bezier(0.22,1,0.36,1) both,
-    music-vinyl-spin-continuous 2.6s linear infinite 550ms;
+    music-vinyl-reveal 1100ms cubic-bezier(0.22,1,0.36,1) both,
+    music-vinyl-spin-continuous 9s linear infinite 1100ms;
 }
-@keyframes music-vinyl-roll-in {
-  from { transform: translateX(-46px) rotate(0deg); opacity: 0; }
-  to   { transform: translateX(0) rotate(340deg); opacity: 1; }
+@keyframes music-vinyl-reveal {
+  from { transform: translateX(-78px) scale(0.7) rotate(0deg); opacity: 0; }
+  to   { transform: translateX(0) scale(1) rotate(360deg); opacity: 1; }
 }
 @keyframes music-vinyl-spin-continuous {
-  from { transform: translateX(0) rotate(340deg); }
-  to   { transform: translateX(0) rotate(700deg); }
+  from { transform: translateX(0) rotate(360deg); }
+  to   { transform: translateX(0) rotate(720deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .music-vinyl-entering { animation: none; transform: translateX(0) rotate(0deg); opacity: 1; }
+  .music-vinyl-entering, .music-album-exit { animation: none; transition: none; }
+  .music-vinyl-entering { transform: translateX(0) rotate(0deg); opacity: 1; }
 }
 
 @media (max-width: 767px) {
-  .music-widget { width: min(280px, 82vw); padding: 15px 15px 13px; }
+  /* Back to the top-right corner on mobile, and dropped BELOW the pin
+     tray (which lives up in that same corner's row) rather than beside
+     it — bottom-right collides with the zoom controls (now
+     bottom-center) and background picker (bottom-left) on a narrow
+     screen, and staying beside the pin tray at this width would collide
+     with that too. Kept close to its desktop width since the now-playing
+     layout (art + vinyl + track text side by side) needs the room. */
+  .music-widget { top: 78px; right: 16px; bottom: auto; width: min(320px, 84vw); padding: 15px 15px 13px; }
 }
 
 /* ─── Card resize (transitions.dev) — tweens width/height changes instead
