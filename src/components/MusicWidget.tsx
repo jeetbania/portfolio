@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { useLayoutEffect, useRef, useState } from "react";
 import GradientThumb from "./GradientThumb";
 
 /**
@@ -9,21 +8,27 @@ import GradientThumb from "./GradientThumb";
  * hover with a real frosted-glass frame — click one to switch to a
  * now-playing view.
  *
- * The transition is two choreographed phases, chosen after feedback that
- * the earlier "flip the whole card over" version felt jarring:
- *  1. `pickedIndex` phase (plain CSS, ~180ms) — every album EXCEPT the one
- *     just clicked drops down and fades out (.music-album-exit below),
- *     clearing the stage. The picked cover itself is untouched here.
- *  2. Once the stage is clear, `activeIndex` swaps the view from Browse
- *     to NowPlaying. The picked cover carries a Motion `layoutId` shared
- *     by its counterpart in NowPlaying, so Motion animates it smoothly
- *     from its old grid slot into its new position on the left of the
- *     now-playing layout, rather than either view faking that motion by
- *     hand — this is exactly what shared layout animations are for. The
- *     vinyl then reveals out from directly behind/inside that art and
- *     settles to the right of it (music-vinyl-entering, in globals.css),
- *     with the track text living in its own flex slot further right still
- *     so nothing overlaps it regardless of how the vinyl animates.
+ * The transition is two phases:
+ *  1. `pickedIndex` phase (~180ms) — every album EXCEPT the one just
+ *     clicked drops down and fades out (.music-album-exit below),
+ *     clearing the stage. The picked cover itself sits untouched here.
+ *  2. Once the stage is clear, `activeIndex` swaps Browse for NowPlaying,
+ *     which cross-fades in (.music-widget-fade) while the vinyl reveals
+ *     out from directly behind/inside the art and settles to its right
+ *     (music-vinyl-entering, in globals.css).
+ *
+ * An earlier version tried to make the picked album's cover literally fly
+ * from its grid slot into the now-playing layout using a Motion shared
+ * `layoutId` across the view swap. In testing that produced a real,
+ * ugly glitch — the card's own background box would desync from its
+ * content for a beat (visibly taller, torn away from the pills above it)
+ * before snapping to the right size, because the shared-layout animation
+ * and this auto-height, non-`layout` card were fighting over how tall the
+ * widget should be mid-transition. The fix here is deliberately boring
+ * instead: `bodyRef`'s own height is measured off the new content
+ * (`contentRef.scrollHeight`) and animated with a single plain CSS
+ * `transition: height`, no layout-projection system involved — a value
+ * that can't disagree with itself.
  *
  * No real audio, no transport controls — per feedback, the play/pause/
  * skip buttons were unnecessary once there's nothing to actually control;
@@ -75,6 +80,8 @@ export function MusicWidget() {
   const [order, setOrder] = useState(TRACKS);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [pickedIndex, setPickedIndex] = useState<number | null>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const active = activeIndex !== null ? order[activeIndex] : null;
 
@@ -87,23 +94,31 @@ export function MusicWidget() {
     }, EXIT_PHASE_MS);
   };
 
+  /* Re-measures and animates the card's own height to match whichever
+     view is now showing — see the file-level comment for why this is a
+     plain CSS height transition rather than a Motion layout animation. */
+  useLayoutEffect(() => {
+    if (bodyRef.current && contentRef.current) {
+      bodyRef.current.style.height = `${contentRef.current.scrollHeight}px`;
+    }
+  }, [active]);
+
   return (
     <div className="music-widget" onPointerDown={e => e.stopPropagation()}>
-      <LayoutGroup id="music-widget">
-        <AnimatePresence mode="popLayout" initial={false}>
+      <div ref={bodyRef} className="music-widget-body">
+        <div ref={contentRef} key={active ? "playing" : "browse"} className="music-widget-fade">
           {active ? (
-            <NowPlaying key="playing" track={active} onBack={() => setActiveIndex(null)} />
+            <NowPlaying track={active} onBack={() => setActiveIndex(null)} />
           ) : (
             <Browse
-              key="browse"
               tracks={order}
               pickedIndex={pickedIndex}
               onShuffle={() => setOrder(shuffle(order))}
               onPick={pick}
             />
           )}
-        </AnimatePresence>
-      </LayoutGroup>
+        </div>
+      </div>
     </div>
   );
 }
@@ -142,13 +157,9 @@ function Browse({
             } as React.CSSProperties}
             aria-label={`Play ${track.title} by ${track.artist}`}
           >
-            <motion.div
-              layoutId={`cover-${track.artist}-${track.title}`}
-              layout
-              style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}
-            >
+            <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
               <GradientThumb colors={track.colors} radius={9} />
-            </motion.div>
+            </div>
             <span className="music-album-tooltip">
               {track.artist}<br />
               <strong>{track.title}</strong>
@@ -162,7 +173,7 @@ function Browse({
 
 function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.05, duration: 0.2 } }}>
+    <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <button className="music-pill" onClick={onBack}>
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -196,13 +207,9 @@ function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
             className="music-vinyl music-vinyl-entering"
             style={{ position: "absolute", left: "82px", top: "12px", width: "96px", height: "96px" }}
           />
-          <motion.div
-            layoutId={`cover-${track.artist}-${track.title}`}
-            layout
-            style={{ position: "absolute", left: 0, top: "6px", width: "108px", height: "108px", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 24px rgba(0,0,0,0.32)", zIndex: 2 }}
-          >
+          <div style={{ position: "absolute", left: 0, top: "6px", width: "108px", height: "108px", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 24px rgba(0,0,0,0.32)", zIndex: 2 }}>
             <GradientThumb colors={track.colors} radius={12} />
-          </motion.div>
+          </div>
         </div>
 
         <div style={{ minWidth: 0, flex: 1 }}>
@@ -214,6 +221,6 @@ function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

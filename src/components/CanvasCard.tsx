@@ -234,7 +234,10 @@ export function CanvasCard({
             onPointerDown={e => e.stopPropagation()}
             onClick={() => onUnpin(id)}
           >
-            🔨
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3.6" y="6.6" width="11.4" height="5.4" rx="2.1" transform="rotate(-45 9.3 9.3)" fill="currentColor" />
+              <path d="M13.2 13.2 20 20" stroke="currentColor" strokeWidth="3.1" strokeLinecap="round" />
+            </svg>
           </button>
         )}
         {children}

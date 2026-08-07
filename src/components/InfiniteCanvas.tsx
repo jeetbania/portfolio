@@ -33,7 +33,13 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
  * re-rendering every card on every zoom tick too.
  */
 
-const ZOOM_MIN = 0.5;
+/* Was 0.5 — too high a floor for the fitWidth/fitHeight auto-fit zoom
+   (see below) to actually work on a narrow phone: fitting a ~1500px-wide
+   content cluster into a ~380px-wide viewport needs a zoom around 0.24,
+   which used to get clamped straight back up to 0.5 (roughly 2 columns'
+   worth still off-screen). Lower floor fixes that, and also just gives
+   manual pinch/wheel zoom-out a bit more room on desktop. */
+const ZOOM_MIN = 0.22;
 const ZOOM_MAX = 2;
 const ZOOM_WHEEL_SENSITIVITY = 0.0016;
 const ZOOM_BUTTON_STEP = 1.25;
@@ -57,6 +63,8 @@ export function InfiniteCanvas({
   worldWidth,
   worldHeight,
   initialCenter,
+  fitWidth,
+  fitHeight,
   height = "min(76vh, 720px)",
   backgroundColor,
   overlay,
@@ -66,6 +74,16 @@ export function InfiniteCanvas({
   worldHeight: number;
   /** World-space point centered in the viewport on first load / reset. Defaults to the world's center. */
   initialCenter?: { x: number; y: number };
+  /** World-space size of the actual CONTENT cluster around `initialCenter`
+   * — deliberately smaller than worldWidth/worldHeight, which is the
+   * whole pannable area, not "the board." When given, the initial/reset
+   * zoom is chosen to fit this box inside the container instead of
+   * always starting at 100%: on a wide desktop viewport that's a no-op
+   * (the content already fits, so the computed zoom clamps back to 1),
+   * but on a narrow mobile one it zooms out enough that more than a
+   * single column is ever visible. Omit to keep the old fixed-100% start. */
+  fitWidth?: number;
+  fitHeight?: number;
   height?: string;
   /** Overrides the canvas's own backdrop color (default var(--col-bg)) —
    * e.g. BackgroundPicker.tsx letting a visitor pick a pastel tint. Set
@@ -141,6 +159,18 @@ export function InfiniteCanvas({
      alone. Set from handlePointerDown/zoomBy/onWheel below. */
   const userTookOverRef = useRef(false);
 
+  /* See the fitWidth/fitHeight prop doc — picks a zoom that fits that
+     content box inside the CURRENT container size, never zooming in past
+     100% (a desktop viewport that's already bigger than the content just
+     gets 1, same as before this existed). */
+  const fitZoom = useCallback(() => {
+    const el = containerRef.current;
+    if (!fitWidth || !fitHeight || !el) return 1;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return 1;
+    return clamp(Math.min(rect.width / fitWidth, rect.height / fitHeight) * 0.94, ZOOM_MIN, 1);
+  }, [fitWidth, fitHeight]);
+
   /* Center on mount — but ALSO whenever the container's own size changes
      up until a visitor first interacts. A single mount-time
      getBoundingClientRect() measurement is not reliable here: this page
@@ -150,13 +180,15 @@ export function InfiniteCanvas({
      first run — center the wrong (smaller/stale) rect once and the pan
      is permanently off, with no resize listener to ever correct it. A
      ResizeObserver re-centers on every real size change instead of just
-     the first one, which is what actually fixes that class of bug. */
+     the first one, which is what actually fixes that class of bug — and
+     also means a device rotation or a later web-font-driven reflow
+     re-picks the right fit zoom too, not just the very first paint. */
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const recenter = () => {
       if (userTookOverRef.current) return;
-      centerOn(center, 1);
+      centerOn(center, fitZoom());
     };
     recenter();
     const ro = new ResizeObserver(recenter);
@@ -325,7 +357,7 @@ export function InfiniteCanvas({
               <path d="M1.5 7H12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </button>
-          <button type="button" aria-label="Reset view" onPointerDown={e => e.stopPropagation()} onClick={() => { userTookOverRef.current = false; centerOn(center, 1); }}>
+          <button type="button" aria-label="Reset view" onPointerDown={e => e.stopPropagation()} onClick={() => { userTookOverRef.current = false; centerOn(center, fitZoom()); }}>
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M13.5 8A5.5 5.5 0 1 1 11.9 4.1M13.5 1.5V4.6H10.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
