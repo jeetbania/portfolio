@@ -1,8 +1,9 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import GradientThumb from "./GradientThumb";
+import { ImageSkeleton } from "./ImageSkeleton";
 import { TRACKS, type Track } from "@/data/music";
 
 /**
@@ -52,21 +53,43 @@ import { TRACKS, type Track } from "@/data/music";
 
 const DEFAULT_COLORS: readonly [string, string, string] = ["#8A8A92", "#B8B8C0", "#4A4A52"];
 
-/** Real cover art if `track.cover` is set, else a gradient placeholder. */
+/** Real cover art if `track.cover` is set, else a gradient placeholder.
+ * Real covers get the same dot-morph loading skeleton used everywhere
+ * else on the site (ImageSkeleton, imageAnchor.tsx) — real photo files
+ * can take a beat, and this reads as "the photo hasn't arrived yet"
+ * instead of a blank flash. Each call site (Browse's small cover,
+ * NowPlaying's bigger one) gets its own independent load/skeleton state,
+ * since they're separate <Image> requests (usually resolved instantly
+ * from cache on the second one, but not assumed here). */
 function AlbumArt({ track, radius }: { track: Track; radius: number }) {
-  if (track.cover) {
-    return (
+  const [loaded, setLoaded] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const t = setTimeout(() => setShowSkeleton(false), 320);
+    return () => clearTimeout(t);
+  }, [loaded]);
+
+  if (!track.cover) {
+    return <GradientThumb colors={track.colors ?? DEFAULT_COLORS} radius={radius} />;
+  }
+
+  return (
+    <>
+      {showSkeleton && <ImageSkeleton visible={!loaded} />}
       <Image
         src={`/albums/${track.cover}`}
         alt={`${track.title} by ${track.artist}`}
         fill
         className="object-cover"
-        sizes="108px"
+        sizes="140px"
         draggable={false}
+        onLoad={() => setLoaded(true)}
+        style={{ opacity: loaded ? 1 : 0, transition: "opacity 280ms var(--ease-out)" }}
       />
-    );
-  }
-  return <GradientThumb colors={track.colors ?? DEFAULT_COLORS} radius={radius} />;
+    </>
+  );
 }
 
 /* Standard cross-browser line-clamp trick (Chrome/Safari/Firefox all
@@ -146,9 +169,23 @@ export function MusicWidget() {
   );
 }
 
+/* Cover size + how far each subsequent one shifts left (i.e. how much of
+   the PREVIOUS cover stays visible) — sized to fill the widget's real
+   content width (see .music-widget) rather than the old cramped 56px
+   covers, which left a lot of dead space in a much wider card. */
+const ALBUM_SIZE = 86;
+const ALBUM_STEP = 56; // px between each cover's left edge
+
 function Browse({
   tracks, pickedIndex, onShuffle, onPick,
 }: { tracks: Track[]; pickedIndex: number | null; onShuffle: () => void; onPick: (i: number) => void }) {
+  // Drives the play-button hover cue via real React state instead of a
+  // pure CSS :hover selector — belt-and-suspenders after that CSS-only
+  // version reportedly wasn't showing up for a real visitor. State tied
+  // to a plain mouse enter/leave is unambiguous: it either did or didn't
+  // fire, no cascade/selector-matching to second-guess.
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
@@ -172,9 +209,11 @@ function Browse({
                 : ""
             }`}
             onClick={() => onPick(i)}
+            onMouseEnter={() => setHoveredIndex(i)}
+            onMouseLeave={() => setHoveredIndex(h => (h === i ? null : h))}
             disabled={pickedIndex !== null}
             style={{
-              marginLeft: i === 0 ? 0 : "-30px",
+              marginLeft: i === 0 ? 0 : `${ALBUM_STEP - ALBUM_SIZE}px`,
               zIndex: i,
               // A custom property, not a literal `transform` — the hover
               // rule in globals.css needs to ADD a lift on top of this
@@ -184,14 +223,16 @@ function Browse({
             } as React.CSSProperties}
             aria-label={`Play ${track.title} by ${track.artist}`}
           >
-            <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
-              <AlbumArt track={track} radius={9} />
+            <div style={{ position: "relative", width: `${ALBUM_SIZE}px`, height: `${ALBUM_SIZE}px`, borderRadius: "14px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
+              <AlbumArt track={track} radius={14} />
               {/* Hover-only "click me" cue — replaces the old tooltip
                   (removed per feedback, wasn't needed) and the plain
                   translucent border (also removed — this reads as an
-                  actual affordance instead of just a highlighted edge). */}
-              <span className="music-album-play-hint" aria-hidden="true">
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  actual affordance instead of just a highlighted edge).
+                  opacity driven by `hoveredIndex` state, not CSS :hover —
+                  see the comment on that state above. */}
+              <span className="music-album-play-hint" aria-hidden="true" style={{ opacity: hoveredIndex === i ? 1 : 0 }}>
+                <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
                   <path d="M3.2 2 9.6 6 3.2 10V2Z" fill="#fff" />
                 </svg>
               </span>
