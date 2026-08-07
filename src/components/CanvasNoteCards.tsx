@@ -1,21 +1,21 @@
+"use client";
+
 import Image from "next/image";
+import { useTheme } from "@/lib/theme";
 import { MountFrame, InnerCard, derivePalette } from "./CanvasCardChrome";
 
 /**
  * StickyNote — a numeral (in the site's handwritten font) + a short title
  * + a longer line, inside the shared MountFrame/InnerCard chrome (see
  * CanvasCardChrome.tsx). Colors all come from ONE seed hex via
- * derivePalette — pick a new accent by picking one new color, not four.
+ * derivePalette — pick a new accent by picking one new color, not four —
+ * and the theme (light/dark) comes from useTheme() so the same seed
+ * produces a correctly-legible result in either mode.
  *
- * PhotoNote — a polaroid, not a plain bordered photo+caption. The flat
- * card version of this read as boring next to everything else on the
- * canvas; a polaroid's thick bottom mat + a handwritten-feeling caption
- * underneath is a lot more alive, and it's the same "physical object
- * pinned to a board" language the sticky notes already speak. A small
- * flat colored dot sits at the top like a thumbtack — deliberately NOT
- * the real <Pin> component (that's reserved for the actual "this card is
- * locked" mechanic; reusing it here for pure decoration would blur what
- * an actual pin means).
+ * PhotoNote — a polaroid: thick bottom mat, square photo, a handwritten-
+ * feeling caption underneath. The colored thumbtack dot from the first
+ * pass is gone per feedback (read as clutter) — the mat's own shape
+ * already sells "physical object pinned to a board" on its own.
  */
 
 export function StickyNote({
@@ -30,7 +30,8 @@ export function StickyNote({
   text: string;
   seed: string;
 }) {
-  const palette = derivePalette(seed);
+  const { theme } = useTheme();
+  const palette = derivePalette(seed, theme === "dark");
   return (
     <MountFrame>
       <InnerCard palette={palette} style={{ padding: "24px 17px 20px", display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -54,29 +55,21 @@ export function StickyNote({
 }
 
 export function PhotoNote({
-  src, alt, title, subtitle, dot,
+  src, alt, title, subtitle,
 }: {
   src: string; alt: string;
   /** Bold handwritten-style caption, e.g. "The Build" — like a name scrawled under a real polaroid. */
   title: string;
   subtitle: string;
-  /** Hex for the small thumbtack dot at the top. */
-  dot: string;
 }) {
   return (
     <div style={{
-      position: "relative",
       background: "var(--canvas-mount-bg)",
       borderRadius: "10px",
       padding: "10px 10px 18px",
       boxShadow: "var(--canvas-mount-shadow)",
       outline: "2px solid var(--canvas-mount-outline)",
     }}>
-      <span aria-hidden="true" style={{
-        position: "absolute", top: "-7px", left: "50%", transform: "translateX(-50%)",
-        width: "15px", height: "15px", borderRadius: "50%",
-        background: dot, boxShadow: "0 2px 4px rgba(0,0,0,0.35)", zIndex: 2,
-      }} />
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", borderRadius: "3px", overflow: "hidden" }}>
         <Image src={src} alt={alt} fill className="object-cover" sizes="260px" draggable={false} />
       </div>

@@ -84,6 +84,19 @@ export function CanvasCard({
     el.style.transform = `rotate(${s.rot}deg) scale(${s.scale})`;
   }, []);
 
+  // Deliberately empty deps — mount once, run forever (until unmount).
+  // worldWidth/worldHeight/width/pinned were in this array before, which
+  // seems harmless (none of them are expected to change for a given card
+  // instance) but wasn't: a card whose children re-render often enough
+  // (TodoWidgetCard's own task/input state, for instance) could tear this
+  // effect down and rebuild it faster than a single animation frame,
+  // repeatedly canceling the rAF handle before it ever got to fire —
+  // `apply()` never runs, so the card LOOKS undraggable even though
+  // onPointerMove is correctly updating its target position underneath.
+  // A pinned card doesn't need this loop at all (position is locked), but
+  // pinned/unpinned are two entirely different `return` branches below —
+  // switching between them already remounts this effect via the normal
+  // unmount/mount cycle, it doesn't need to be a dependency here too.
   useEffect(() => {
     if (pinned) return; // locked in place — no physics loop needed at all
     let raf = 0;
@@ -110,7 +123,8 @@ export function CanvasCard({
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [apply, worldWidth, worldHeight, width, pinned]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPointerDown = (e: React.PointerEvent) => {
     // Critical: stops this from also starting a canvas pan underneath.

@@ -7,6 +7,7 @@ import { StickyNote, PhotoNote } from "./CanvasNoteCards";
 import { TodoWidgetCard, CoffeeCounterCard } from "./CanvasWidgetCards";
 import { CalendarCard } from "./CanvasCalendarCard";
 import { PinTray } from "./PinTray";
+import { MusicWidget } from "./MusicWidget";
 
 /**
  * Everything on /playground lives here. No heading anymore — per
@@ -56,7 +57,12 @@ export default function PlaygroundCanvas() {
       worldHeight={WORLD_HEIGHT}
       initialCenter={INITIAL_CENTER}
       height="88svh"
-      overlay={<PinTray hues={PIN_HUES} onDropOnCard={dropPin} />}
+      overlay={
+        <>
+          <PinTray hues={PIN_HUES} onDropOnCard={dropPin} />
+          <MusicWidget />
+        </>
+      }
     >
       <CanvasCard {...card("sticky-1")} x={1050} y={550} rotate={-4} width={210} zIndex={4}>
         <StickyNote seed="#B8631F" index="01" title="On design" text="Good design disappears. Bad design apologizes." />
@@ -71,23 +77,23 @@ export default function PlaygroundCanvas() {
       </CanvasCard>
 
       <CanvasCard {...card("photo-tech1")} x={740} y={640} rotate={-6} width={210} zIndex={2}>
-        <PhotoNote src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" dot="#E8734A" />
+        <PhotoNote src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" />
       </CanvasCard>
 
       <CanvasCard {...card("photo-event1")} x={2010} y={610} rotate={5} width={200} zIndex={2}>
-        <PhotoNote src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" dot="#3E7BFA" />
+        <PhotoNote src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" />
       </CanvasCard>
 
       <CanvasCard {...card("photo-kitchen1")} x={1960} y={1080} rotate={-3} width={210} zIndex={2}>
-        <PhotoNote src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" dot="#2E9B6B" />
+        <PhotoNote src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" />
       </CanvasCard>
 
       <CanvasCard {...card("photo-tech2")} x={780} y={1080} rotate={4} width={220} zIndex={2}>
-        <PhotoNote src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" dot="#8B5CF6" />
+        <PhotoNote src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" />
       </CanvasCard>
 
       <CanvasCard {...card("photo-screen1")} x={1200} y={1320} rotate={-5} width={190} zIndex={1}>
-        <PhotoNote src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" dot="#E0527A" />
+        <PhotoNote src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" />
       </CanvasCard>
 
       <CanvasCard {...card("widget-coffee")} x={2070} y={890} rotate={3} width={180} zIndex={3}>

@@ -8,12 +8,16 @@
  *
  * Dark-mode-aware, unlike the homepage fan cards/folders — those are
  * deliberately fixed "stickers" per CLAUDE.md, but these were reported
- * looking wrong in dark mode (flat white regardless of theme). All the
- * colors below flow from CSS custom properties that flip per theme
- * (globals.css: --canvas-mount-bg, --canvas-tint-base, --canvas-ink-strong),
- * so the mount goes from an off-white mat to a dark neutral card, and
- * every note's accent color goes from a pale tint-on-white to a deep
- * muted tint-on-near-black, automatically.
+ * looking wrong in dark mode twice now: first flat white regardless of
+ * theme, then (after that fix) too dark to read — mixing each seed at
+ * just 12% into a near-black base produced a muddy near-black card with
+ * illegible same-toned text on top of it. derivePalette now takes the
+ * theme explicitly and uses a real second formula for dark mode instead
+ * of just swapping the base color into the same percentages: more seed
+ * in the fill (so the color actually reads as that color, not near-
+ * black), and body text is a flat near-white rather than a seed tint —
+ * per feedback, trying to keep muted-but-colored text legible against a
+ * dark fill wasn't worth the contrast fight light mode doesn't have.
  */
 
 export function MountFrame({ children }: { children: React.ReactNode }) {
@@ -38,26 +42,34 @@ export function MountFrame({ children }: { children: React.ReactNode }) {
 
 export type Palette = {
   seed: string;
-  /** Inner card fill — a faint tint of the seed toward the theme's mount base. */
+  /** Inner card fill — a tint of the seed. */
   bg: string;
-  /** Inner card's bottom edge — a slightly richer tint, reads as a lip/shadow line. */
+  /** Inner card's bottom edge — a richer tint, reads as a lip/shadow line. */
   borderBottom: string;
-  /** Numerals/labels — the seed boosted toward the theme's strong ink color, so it stays legible in both directions (darkened a touch in light mode, brightened in dark mode). */
+  /** Numerals/labels — the seed boosted for legibility in whichever direction the theme needs. */
   ink: string;
-  /** Body text — a mid tint, muted but still colored (not plain gray), toward the theme's mount base. */
+  /** Body text. */
   text: string;
 };
 
 /**
  * The "color logic" requested: every value below is derived from ONE seed
- * hex via color-mix, the same technique Pin.tsx's highlight/shadow uses —
- * so picking a new accent for a new card is just picking one new hex, not
- * four hand-tuned ones, and the relationship between bg/border/ink/text
- * stays consistent across every card AND across both themes, since the
- * base each one blends toward is itself a theme-flipping CSS variable
- * rather than a literal "white".
+ * hex via color-mix (the same technique Pin.tsx's highlight/shadow uses),
+ * so picking a new accent for a new card is just picking one new hex —
+ * but the FORMULA branches by theme, not just the base color, since a
+ * light card and a dark card need different amounts of seed to both read
+ * clearly as "that color" and stay legible.
  */
-export function derivePalette(seed: string): Palette {
+export function derivePalette(seed: string, isDark: boolean): Palette {
+  if (isDark) {
+    return {
+      seed,
+      bg: `color-mix(in srgb, ${seed} 40%, var(--canvas-tint-base))`,
+      borderBottom: `color-mix(in srgb, ${seed} 62%, var(--canvas-tint-base))`,
+      ink: `color-mix(in srgb, ${seed} 82%, white)`,
+      text: "rgba(255,255,255,0.88)",
+    };
+  }
   return {
     seed,
     bg: `color-mix(in srgb, ${seed} 12%, var(--canvas-tint-base))`,

@@ -695,6 +695,132 @@ body {
   filter: brightness(1.04);
 }
 
+/* ─── Music widget (MusicWidget.tsx) — anchored to the canvas's own
+   corner via InfiniteCanvas's `overlay` prop, same slot as PinTray, so
+   it never pans/zooms with the world. ─────────────────────────────── */
+.music-widget {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 6;
+  width: 300px;
+  padding: 18px 18px 16px;
+  border-radius: 20px;
+  background: var(--canvas-mount-bg);
+  outline: 2px solid var(--canvas-mount-outline);
+  box-shadow: var(--canvas-mount-shadow);
+}
+
+.music-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  background: var(--surface-glass);
+  color: var(--canvas-ink-strong);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 160ms var(--ease-out);
+}
+.music-pill:hover { background: var(--surface-glass-strong); }
+
+.music-album {
+  position: relative;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  /* Base rotation comes from --album-rotate (set inline per card, see
+     MusicWidget.tsx) — hover ADDS a lift on top of it rather than
+     replacing it, which is why this isn't just a literal `rotate(Ndeg)`
+     baked into the class. */
+  transform: rotate(var(--album-rotate, 0deg));
+  transition: transform 200ms cubic-bezier(0.22,1,0.36,1);
+}
+.music-album:hover {
+  transform: rotate(var(--album-rotate, 0deg)) translateY(-10px) scale(1.08);
+  z-index: 30;
+}
+
+.music-album-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  width: max-content;
+  max-width: 140px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  border: 1px solid var(--surface-glass-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--canvas-ink-strong);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+  z-index: 5;
+}
+.music-album:hover .music-album-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.music-transport {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface-glass);
+  color: var(--canvas-ink-strong);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.music-transport:hover { background: var(--surface-glass-strong); transform: scale(1.07); }
+.music-transport-play {
+  width: 38px;
+  height: 38px;
+  background: var(--canvas-ink-strong);
+  color: var(--canvas-mount-bg);
+}
+.music-transport-play:hover { filter: brightness(1.12); }
+
+.music-vinyl {
+  position: relative;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #1a1a1a 0px, #1a1a1a 2px, #2b2b2b 3px, #2b2b2b 4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+.music-vinyl::after {
+  content: "";
+  position: absolute;
+  inset: 42%;
+  border-radius: 50%;
+  background: var(--canvas-mount-bg);
+}
+.music-vinyl-spinning { animation: music-vinyl-spin 2.6s linear infinite; }
+@keyframes music-vinyl-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-vinyl-spinning { animation: none; }
+}
+
+@media (max-width: 767px) {
+  .music-widget { width: min(280px, 82vw); padding: 15px 15px 13px; }
+}
+
 /* ─── Card resize (transitions.dev) — tweens width/height changes instead
    of snapping. Used on MobileFloatingMenu's trigger pill: it sizes to fit
    its own label ("All" vs "06 · Design System"), so the pill itself needs

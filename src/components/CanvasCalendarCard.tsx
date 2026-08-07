@@ -1,132 +1,163 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
- * A calendar widget rebuilt off a reference screenshot: a stack of three
- * cards (two peeking behind at slight angles, one flat white card in
- * front holding the actual content) rather than the mount+inner-card
- * chrome the notes/todo/coffee cards use — this one's a genuinely
- * different composition (a photo stack, not a matted card), so it gets
- * its own layout instead of being forced into CanvasCardChrome.
+ * A calendar widget — reworked twice now per feedback: first to drop the
+ * three-card photo-stack composition down to a single flat card (it was
+ * borrowed from a different reference and didn't need to carry over),
+ * then to actually feel like a small Apple Calendar widget instead of a
+ * generic date display. What that meant concretely: a red month badge
+ * matching the real Calendar app icon's own convention, a genuinely live
+ * clock (ticks every second, not just "today's date" computed once), and
+ * a short agenda list you can tap to cross an item off — same
+ * satisfying-toggle language as the to-do list sitting next to it.
  *
- * Shows today's actual date (computed client-side at render — this is
- * already a client component, and the date only needs to be right for
- * whoever's looking at the page right now, not stable across a server
- * render). The "slightly more interactive" ask: the reminder button is a
- * real toggle, not a static label — click it and it switches to a
- * confirmed state with its own color and icon, same satisfying-toggle
- * feel as the to-do list's checkboxes next to it on the canvas.
+ * Also fixed: this card wasn't draggable at all. The bug was stopping
+ * pointerdown propagation on the whole card's root wrapper instead of
+ * just its buttons — that ate the drag gesture before CanvasCard's own
+ * handler ever saw it, for a drag starting ANYWHERE on the card, not
+ * just on a button. Same fix as CanvasWidgetCards.tsx: stopPropagation
+ * only on the actual interactive controls now.
  */
+
+const AGENDA: { time: string; label: string; dot: string }[] = [
+  { time: "9:30", label: "Standup", dot: "#3E7BFA" },
+  { time: "1:00", label: "Design review", dot: "#2E9B6B" },
+  { time: "6:00", label: "Ship it 🚀", dot: "#E8734A" },
+];
+
 export function CalendarCard() {
   const [reminderSet, setReminderSet] = useState(false);
+  const [done, setDone] = useState<boolean[]>(() => AGENDA.map(() => false));
+  // Starts null rather than `new Date()` — the server renders this
+  // component too (at whatever instant its render happens to run), and
+  // the client's first render happens at a slightly later instant, so
+  // "the current time" is never actually the same value on both sides.
+  // React hydration compares server and client markup and errors on any
+  // mismatch; starting from an identical, non-time-dependent value on
+  // both, then only ever setting the real clock inside an effect (which
+  // only runs client-side, after hydration), sidesteps that entirely.
+  const [now, setNow] = useState<Date | null>(null);
 
-  const now = new Date();
-  const weekday = now.toLocaleDateString("en-US", { weekday: "short" });
-  const day = now.getDate();
-  const month = now.toLocaleDateString("en-US", { month: "long" });
+  useEffect(() => {
+    const update = () => setNow(new Date());
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const weekday = now ? now.toLocaleDateString("en-US", { weekday: "long" }) : "";
+  const month = now ? now.toLocaleDateString("en-US", { month: "short" }).toUpperCase() : "";
+  const day = now ? now.getDate() : "";
+  const time = now ? now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" }) : "";
+
+  const toggleDone = (i: number) => setDone(d => d.map((v, idx) => (idx === i ? !v : v)));
 
   return (
-    <div style={{ position: "relative" }} onPointerDown={e => e.stopPropagation()}>
-      {/* Back layer — plain, furthest back, a few "ring binder" dots
-          visible along its exposed left edge. */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute", left: "-16px", top: "22px",
-          width: "100%", height: "88%",
-          borderRadius: "18px",
-          background: "var(--canvas-mount-bg)",
-          boxShadow: "0 6px 16px rgba(0,0,0,0.14)",
-          transform: "rotate(-8deg)",
-          zIndex: 0,
-        }}
-      >
-        <div style={{ position: "absolute", left: "14px", top: "16px", display: "flex", flexDirection: "column", gap: "9px" }}>
-          {[0, 1, 2].map(i => (
-            <span key={i} style={{ width: "13px", height: "13px", borderRadius: "50%", background: "color-mix(in srgb, var(--canvas-ink-strong) 12%, transparent)" }} />
-          ))}
+    <div style={{
+      background: "var(--canvas-mount-bg)",
+      borderRadius: "18px",
+      boxShadow: "var(--canvas-mount-shadow)",
+      outline: "2px solid var(--canvas-mount-outline)",
+      padding: "18px 18px 16px",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
+        {/* Month badge — same shape/proportion language as the real iOS
+            Calendar app icon (red header, huge date number below it). */}
+        <div style={{
+          flexShrink: 0, width: "48px", borderRadius: "11px", overflow: "hidden",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)",
+        }}>
+          <div style={{
+            background: "#E8433E", color: "#fff",
+            fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "10px",
+            letterSpacing: "0.03em", textAlign: "center", padding: "3px 0",
+          }}>
+            {month}
+          </div>
+          <div style={{
+            background: "var(--canvas-ink-strong)", color: "var(--canvas-mount-bg)",
+            fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "22px",
+            textAlign: "center", padding: "3px 0 5px", lineHeight: 1,
+          }}>
+            {day}
+          </div>
         </div>
-        <span style={{
-          position: "absolute", left: "20px", bottom: "10px",
-          fontFamily: "var(--font-hand)", fontSize: "18px", color: "var(--col-muted)",
-          transform: "rotate(2deg)",
-        }}>
-          Something fun, maybe
-        </span>
+
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "16px", color: "var(--canvas-ink-strong)", margin: 0, lineHeight: 1.2 }}>
+            {weekday}
+          </p>
+          <p style={{
+            fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--col-muted)",
+            margin: "2px 0 0", fontVariantNumeric: "tabular-nums",
+          }}>
+            {time}
+          </p>
+        </div>
       </div>
 
-      {/* Middle layer — cream-to-gold, peeking above/right of the front card. */}
-      <div
-        aria-hidden="true"
+      <div style={{ marginBottom: "14px" }}>
+        {AGENDA.map((item, i) => (
+          <button
+            key={item.label}
+            onClick={() => toggleDone(i)}
+            onPointerDown={e => e.stopPropagation()}
+            style={{
+              display: "flex", alignItems: "center", gap: "9px",
+              width: "100%", padding: "6px 0",
+              background: "none", border: "none", cursor: "pointer", textAlign: "left",
+              borderTop: i > 0 ? "1px solid var(--canvas-mount-outline)" : "none",
+              opacity: done[i] ? 0.5 : 1,
+              transition: "opacity 180ms var(--ease-out)",
+            }}
+          >
+            <span aria-hidden="true" style={{ flexShrink: 0, width: "7px", height: "7px", borderRadius: "50%", background: item.dot }} />
+            <span style={{
+              fontFamily: "var(--font-sans)", fontSize: "12.5px", color: "var(--col-muted)",
+              fontVariantNumeric: "tabular-nums", flexShrink: 0,
+            }}>
+              {item.time}
+            </span>
+            <span style={{
+              fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--canvas-ink-strong)",
+              textDecoration: done[i] ? "line-through" : "none",
+            }}>
+              {item.label}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={() => setReminderSet(s => !s)}
+        onPointerDown={e => e.stopPropagation()}
         style={{
-          position: "absolute", left: "12px", top: "-14px",
-          width: "94%", height: "86%",
-          borderRadius: "18px",
-          background: "linear-gradient(180deg, #FCF1BE 0%, #F6D949 62%)",
-          boxShadow: "0 6px 16px rgba(0,0,0,0.16)",
-          transform: "rotate(5deg)",
-          zIndex: 1,
+          width: "100%",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
+          padding: "10px 14px",
+          borderRadius: "999px",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "12.5px",
+          background: reminderSet ? "color-mix(in srgb, #F6D949 35%, var(--canvas-mount-bg))" : "var(--surface-glass)",
+          color: reminderSet ? "#8A5B0A" : "var(--canvas-ink-strong)",
+          transition: "background 200ms var(--ease-out), color 200ms var(--ease-out), transform 220ms cubic-bezier(0.34,1.6,0.64,1)",
+          transform: reminderSet ? "scale(1.03)" : "scale(1)",
         }}
       >
-        <span style={{
-          position: "absolute", top: "14px", left: "18px",
-          fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "11px",
-          letterSpacing: "0.06em", textTransform: "uppercase", color: "#B8912A",
-        }}>
-          Calendar 🛈
-        </span>
-      </div>
-
-      {/* Front layer — the actual content. */}
-      <div style={{
-        position: "relative", zIndex: 2,
-        background: "var(--canvas-mount-bg)",
-        borderRadius: "18px",
-        boxShadow: "0 10px 26px rgba(0,0,0,0.20)",
-        padding: "20px 18px 16px",
-      }}>
-        <p style={{
-          fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "11px",
-          letterSpacing: "0.06em", textTransform: "uppercase", color: "#D9A420",
-          margin: "0 0 6px",
-        }}>
-          Today
-        </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "20px", color: "var(--canvas-ink-strong)", margin: "0 0 3px", lineHeight: 1.15 }}>
-          {weekday}, {day} {month}
-        </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "12.5px", color: "var(--col-muted)", margin: "0 0 22px" }}>
-          Live from the calendar
-        </p>
-        <button
-          onClick={() => setReminderSet(s => !s)}
-          style={{
-            width: "100%",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
-            padding: "11px 14px",
-            borderRadius: "999px",
-            border: "none",
-            cursor: "pointer",
-            fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "13px",
-            background: reminderSet ? "color-mix(in srgb, #F6D949 35%, var(--canvas-mount-bg))" : "var(--surface-glass)",
-            color: reminderSet ? "#8A5B0A" : "var(--canvas-ink-strong)",
-            transition: "background 200ms var(--ease-out), color 200ms var(--ease-out), transform 220ms cubic-bezier(0.34,1.6,0.64,1)",
-            transform: reminderSet ? "scale(1.03)" : "scale(1)",
-          }}
-        >
-          {reminderSet ? (
-            <>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2.5 7.2 5.5 10.2 11.5 3.8" stroke="#8A5B0A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Reminder set
-            </>
-          ) : (
-            <>🔔 Set a reminder</>
-          )}
-        </button>
-      </div>
+        {reminderSet ? (
+          <>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2.5 7.2 5.5 10.2 11.5 3.8" stroke="#8A5B0A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Reminder set
+          </>
+        ) : (
+          <>🔔 Set a reminder</>
+        )}
+      </button>
     </div>
   );
 }
