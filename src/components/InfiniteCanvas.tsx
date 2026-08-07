@@ -114,23 +114,25 @@ export function InfiniteCanvas({
     w.style.transform = `translate(${panRef.current.x}px, ${panRef.current.y}px) scale(${zoomRef.current})`;
   }, [zoomRef]);
 
-  /* Generous overscroll margin (40% of the viewport on each side) so
-     panning to the world's edge still leaves it feeling expansive rather
-     than hitting a hard wall — "almost infinite," not literally boundless,
-     since an actually-unbounded world would mean cards can get lost with
-     no way back short of the reset button. */
+  /* Was a generous 40%-of-viewport overscroll margin on every side, so
+     panning to the world's edge still left it feeling expansive rather
+     than hitting a hard wall. Per feedback that clearly read as a bug
+     instead ("it still lets me move around places where there are no
+     dots") — the dot grid is a background-image on .canvas-world sized
+     exactly to worldWidth/worldHeight, so any margin here shows through
+     as flat, undotted backdrop. Zero margin means panning clamps exactly
+     at the point the world's own edge lines up with the container's —
+     you can reach every corner of the board, never past it. */
   const clampPan = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const scaledW = worldWidth * zoomRef.current;
     const scaledH = worldHeight * zoomRef.current;
-    const marginX = rect.width * 0.4;
-    const marginY = rect.height * 0.4;
-    const minX = Math.min(rect.width - scaledW - marginX, marginX);
-    const maxX = marginX;
-    const minY = Math.min(rect.height - scaledH - marginY, marginY);
-    const maxY = marginY;
+    const minX = Math.min(rect.width - scaledW, 0);
+    const maxX = 0;
+    const minY = Math.min(rect.height - scaledH, 0);
+    const maxY = 0;
     panRef.current.x = clamp(panRef.current.x, minX, maxX);
     panRef.current.y = clamp(panRef.current.y, minY, maxY);
   }, [worldWidth, worldHeight, zoomRef]);
