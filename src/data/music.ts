@@ -17,14 +17,45 @@ export type Track = {
   colors?: readonly [string, string, string];
 };
 
-/* Swap these for the real lineup whenever it's ready — see MusicWidget.tsx
-   for how `cover`/`colors` are used, and the Track type above for the
-   exact shape each entry needs. */
+/* The real lineup — covers live in public/albums/. */
 export const TRACKS: Track[] = [
-  { artist: "Night Static", title: "Overdrive", colors: ["#6C4FD1", "#A79AFF", "#2A1D5C"] },
-  { artist: "Paper Cranes", title: "Low Tide", colors: ["#1F9D55", "#6EDB98", "#0E4A28"] },
-  { artist: "Radio Silence", title: "Fast Forward", colors: ["#E8734A", "#F5C15A", "#7A2E12"] },
-  { artist: "Sunday Static", title: "Afterglow", colors: ["#C23B6B", "#F58FB0", "#5C1230"] },
-  { artist: "The Long Way", title: "Home Movies", colors: ["#C77D11", "#F5C15A", "#5C3A08"] },
-  { artist: "Nova & Wren", title: "Static Bloom", colors: ["#2563C7", "#6FA8F5", "#12245C"] },
+  {
+    artist: "A.R Rahman",
+    title: "Kun Faya Kun",
+    cover: "rockstar-kun-faya-kun.jpg",
+    spotifyUrl: "https://open.spotify.com/track/7F8RNvTQlvbeBLeenycvN6?si=2757015e23ac43b9",
+  },
+  {
+    artist: "John Denver",
+    title: "Country Roads",
+    cover: "country-roads.jpg",
+    spotifyUrl: "https://open.spotify.com/track/1YYhDizHx7PnDhAhko6cDS?si=52ff442c3aea4fca",
+  },
+  {
+    artist: "Goo Goo Dolls",
+    title: "Iris",
+    // Only file that landed as a .png, not .jpg — matched to the real
+    // filename in public/albums/ (this is case-/extension-sensitive on
+    // Vercel's Linux deploys, unlike a local Mac filesystem).
+    cover: "goo-goo-dolls-iris.png",
+    spotifyUrl: "https://open.spotify.com/track/6Qyc6fS4DsZjB2mRW9DsQs?si=2e70cbcfc14843ff",
+  },
+  {
+    artist: "Blue",
+    title: "One Love",
+    cover: "one-love.jpg",
+    spotifyUrl: "https://open.spotify.com/track/2W5acFzXf5FrktecuD30Or?si=15d7601a7e704765",
+  },
+  {
+    artist: "Connor Price",
+    title: "Still Hot",
+    cover: "Still-Hot-English.jpg",
+    spotifyUrl: "https://open.spotify.com/track/23IahlGF2rWghCCuJIjQNm?si=9dfb7a9af0034d59",
+  },
+  {
+    artist: "Nusrat Fateh Ali Khan",
+    title: "Shukar Manawa",
+    cover: "nustrat-fateh-khan.jpg",
+    spotifyUrl: "https://open.spotify.com/track/2t2FECruuvafe79EVo41t5?si=35346ae4b9a84c79",
+  },
 ];

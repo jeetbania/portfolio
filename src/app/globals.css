@@ -751,13 +751,17 @@ body {
    control (zoom, background picker, this) anchored along the bottom
    edge. Wider than before too: the now-playing view needs real room for
    the art+vinyl group and the track text side by side without the vinyl
-   creeping into the text's space (see NowPlaying in MusicWidget.tsx). */
+   creeping into the text's space (see NowPlaying in MusicWidget.tsx) —
+   widened further still (360px -> 380px) once real artist/track names
+   landed and some ran a lot longer than the placeholder data ever did
+   ("Nusrat Fateh Ali Khan"). The text itself wraps to 2 lines past that
+   (see lineClamp2 in MusicWidget.tsx) rather than relying on width alone. */
 .music-widget {
   position: absolute;
   right: 16px;
   bottom: 16px;
   z-index: 6;
-  width: 360px;
+  width: 380px;
   padding: 18px 18px 16px;
   border-radius: 20px;
   background: var(--canvas-mount-bg);
@@ -836,9 +840,11 @@ body {
   transform: rotate(var(--album-rotate, 0deg)) translateY(-10px) scale(1.08);
   z-index: 30;
   /* The actual "glass" — a frosted frame appears behind the cover on
-     hover instead of the hover reading as a bare, backdrop-less lift. */
+     hover instead of the hover reading as a bare, backdrop-less lift.
+     No border-color here anymore (was the flat translucent ring per
+     feedback) — .music-album-play-hint below is the hover affordance
+     now, a real "click me" cue instead of just a highlighted edge. */
   background: var(--surface-glass-strong);
-  border-color: var(--surface-glass-border);
   backdrop-filter: blur(10px) saturate(160%);
   -webkit-backdrop-filter: blur(10px) saturate(160%);
   box-shadow: 0 8px 20px rgba(0,0,0,0.25), var(--glass-bevel);
@@ -873,33 +879,34 @@ body {
   .music-album-flip-pick { animation: none; opacity: 0.5; }
 }
 
-.music-album-tooltip {
+/* Hover "click me" cue — a small glass play button centered over the
+   cover, replacing the old tooltip (removed, wasn't needed) and the
+   plain border highlight (removed too, see .music-album:hover above).
+   Sits inside the same overflow:hidden cover wrapper as AlbumArt, so it
+   never needs its own clipping/positioning math beyond inset:0. */
+.music-album-play-hint {
   position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  width: max-content;
-  max-width: 140px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: var(--surface-glass-strong);
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  border: 1px solid var(--surface-glass-border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18), var(--glass-bevel);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--canvas-ink-strong);
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
   opacity: 0;
+  transition: opacity 200ms var(--ease-out);
   pointer-events: none;
-  transform: translateX(-50%) translateY(4px);
-  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
-  z-index: 5;
 }
-.music-album:hover .music-album-tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.music-album-play-hint svg { position: relative; z-index: 1; margin-left: 1px; }
+.music-album-play-hint::before {
+  content: "";
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(20,20,24,0.4);
+  backdrop-filter: blur(6px) saturate(140%);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.32);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
+.music-album:hover .music-album-play-hint { opacity: 1; }
 
 /* A repeating-radial-gradient of plain concentric rings is fully
    rotationally symmetric — spin it and NOTHING visibly changes at any
@@ -970,7 +977,7 @@ body {
      room. Top offset bumped further down from the pin tray (was 78px,
      read as "too close" per feedback) — the tray's own real height plus
      a real gap, not just clearing its lowest pixel. */
-  .music-widget { top: 108px; right: 16px; bottom: auto; width: min(320px, 84vw); padding: 15px 15px 13px; }
+  .music-widget { top: 108px; right: 16px; bottom: auto; width: min(340px, 86vw); padding: 15px 15px 13px; }
 
   /* Zoom controls move to bottom-right — bottom-center (desktop) sits
      right on top of the background picker's expanded panel and the pin

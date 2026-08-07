@@ -69,6 +69,21 @@ function AlbumArt({ track, radius }: { track: Track; radius: number }) {
   return <GradientThumb colors={track.colors ?? DEFAULT_COLORS} radius={radius} />;
 }
 
+/* Standard cross-browser line-clamp trick (Chrome/Safari/Firefox all
+   support the -webkit- prefixed properties now, including Firefox since
+   2023) — wraps to at most 2 lines, ellipsis-truncates anything past
+   that. Takes a base style object so callers can still set their own
+   font/color/margin alongside it. */
+function lineClamp2(base: React.CSSProperties): React.CSSProperties {
+  return {
+    ...base,
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+  };
+}
+
 /* How long the pick phase gets to finish before the view actually swaps
    to NowPlaying — matches .music-album-flip-pick's own animation
    duration (the OTHER albums' drop-away is quicker and comfortably
@@ -171,11 +186,16 @@ function Browse({
           >
             <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
               <AlbumArt track={track} radius={9} />
+              {/* Hover-only "click me" cue — replaces the old tooltip
+                  (removed per feedback, wasn't needed) and the plain
+                  translucent border (also removed — this reads as an
+                  actual affordance instead of just a highlighted edge). */}
+              <span className="music-album-play-hint" aria-hidden="true">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  <path d="M3.2 2 9.6 6 3.2 10V2Z" fill="#fff" />
+                </svg>
+              </span>
             </div>
-            <span className="music-album-tooltip">
-              {track.artist}<br />
-              <strong>{track.title}</strong>
-            </span>
           </button>
         ))}
       </div>
@@ -224,11 +244,19 @@ function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
           </div>
         </div>
 
+        {/* Real artist/title text varies a lot in length ("Blue" vs.
+            "Nusrat Fateh Ali Khan") — wraps up to 2 lines and clips with
+            an ellipsis past that (the standard cross-browser line-clamp
+            technique), instead of the old single-line ellipsis, which cut
+            longer names off almost immediately. The widget's own height
+            already adapts to whatever this ends up needing (see the
+            useLayoutEffect above), so 2 lines here just means a slightly
+            taller card, not a layout break. */}
         <div style={{ minWidth: 0, flex: 1 }}>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)", margin: "0 0 3px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <p style={lineClamp2({ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)", margin: "0 0 3px", lineHeight: 1.3 })}>
             {track.artist}
           </p>
-          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "17px", color: "var(--canvas-ink-strong)", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <p style={lineClamp2({ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "17px", color: "var(--canvas-ink-strong)", margin: 0, lineHeight: 1.25 })}>
             {track.title}
           </p>
         </div>
