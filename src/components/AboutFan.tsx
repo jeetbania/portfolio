@@ -4,15 +4,16 @@ import { useRef, useEffect, useCallback } from "react";
 import { animate } from "motion";
 import Image from "next/image";
 
-/* 7 real personal photos, center one is index 3 (about-us-4, the desk
-   setup) — replaced the old stock placeholders. Order was chosen so the
-   two PILLS below (pinned at afterIndex:1 and afterIndex:5) land next to
-   a photo their label actually describes — see the note on PILLS. */
+/* 7 real personal photos, center one is index 3 (about-us-1, the river
+   selfie — kept centered per feedback) — replaced the old stock
+   placeholders. Order otherwise picked so the two PILLS below (pinned at
+   afterIndex:1 and afterIndex:5) land next to a photo their label
+   actually describes — see the note on PILLS. */
 const PHOTOS = [
-  { src: "/about-us-1.jpg", alt: "Selfie by a river at sunset" },
+  { src: "/about-us-4.jpg", alt: "Desk setup with a mechanical keyboard" },
   { src: "/about-us-7.jpg", alt: "White cat curled up asleep on a deck" },
   { src: "/about-us-5.jpg", alt: "Gateway of India monument in Mumbai" },
-  { src: "/about-us-4.jpg", alt: "Desk setup with a mechanical keyboard" },
+  { src: "/about-us-1.jpg", alt: "Selfie by a river at sunset" },
   { src: "/about-us-3.jpg", alt: "Friends gathered on a mountain cafe balcony" },
   { src: "/about-us-6.jpg", alt: "Starry night sky over a mountain guesthouse" },
   { src: "/about-us-2.jpg", alt: "A full Indian thali meal" },
