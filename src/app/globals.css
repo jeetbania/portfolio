@@ -503,6 +503,103 @@ body {
   100%  { opacity: 0.2; }
 }
 
+/* ─── Infinite canvas (Playground page) — InfiniteCanvas.tsx / CanvasCard.tsx.
+   Cursor + user-select management lives here in plain CSS rather than as
+   inline styles since it needs a `.panning` class toggle (imperative, no
+   React re-render) to swap grab->grabbing while a background drag is live. */
+.infinite-canvas {
+  cursor: grab;
+  background: var(--col-bg);
+}
+.infinite-canvas.panning { cursor: grabbing; }
+
+.canvas-world {
+  /* Same dot spacing as DotGrid.tsx's ambient canvas (28px, --dot-color)
+     but as a plain tiled background-image instead of a <canvas> — this
+     world only ever needs to pan/zoom via one CSS transform on a static
+     image, no per-frame redraw, so a canvas element would be needless
+     overhead here. */
+  background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1.6px);
+  background-size: 28px 28px;
+}
+
+.canvas-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--surface-glass-border);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--col-muted);
+  pointer-events: none;
+  transition: opacity 420ms var(--ease-out);
+  z-index: 5;
+  white-space: nowrap;
+}
+.canvas-hint-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--col-muted);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.canvas-controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--surface-glass-border);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
+}
+.canvas-controls button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  color: var(--col-fg);
+  cursor: pointer;
+  border-bottom: 1px solid var(--col-hairline);
+  transition: background 160ms var(--ease-out);
+}
+.canvas-controls button:last-child { border-bottom: none; }
+.canvas-controls button:hover { background: var(--surface-glass); }
+
+.canvas-card {
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+  transition: filter 200ms var(--ease-out);
+}
+.canvas-card.canvas-card-dragging { cursor: grabbing; }
+.canvas-card.canvas-card-dragging * { cursor: grabbing; }
+@media (hover: hover) {
+  .canvas-card:not(.canvas-card-dragging):hover {
+    filter: brightness(1.02) saturate(1.05);
+  }
+}
+
 /* ─── Card resize (transitions.dev) — tweens width/height changes instead
    of snapping. Used on MobileFloatingMenu's trigger pill: it sizes to fit
    its own label ("All" vs "06 · Design System"), so the pill itself needs
