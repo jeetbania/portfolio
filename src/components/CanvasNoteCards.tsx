@@ -1,71 +1,49 @@
 import Image from "next/image";
+import { MountFrame, InnerCard, derivePalette } from "./CanvasCardChrome";
 
 /**
- * The two "face" designs rendered inside a <CanvasCard>.
+ * StickyNote — redesigned off a paper.design reference: a numeral (in the
+ * site's handwritten font) + a short title + a longer line, inside the
+ * shared MountFrame/InnerCard chrome (see CanvasCardChrome.tsx). Colors
+ * all come from ONE seed hex via derivePalette — pick a new accent by
+ * picking one new color, not four.
  *
- * StickyNote deliberately does NOT use this site's glass treatment —
- * per feedback, glass read as generically "app UI," not a sticky note.
- * Redesigned after a reference showing flat, opaque pastel cards with a
- * soft grounded shadow (not a colored/tinted glow) and a small numeral —
- * closer to real paper lifted off a board than a translucent panel. Like
- * the homepage fan cards, these are deliberately theme-independent
- * "stickers" (see CLAUDE.md's note on Folder.tsx/Playground.tsx) — same
- * vivid pastel and fixed dark ink color in both light and dark mode,
- * which is also why the text color below is a literal hex rather than
- * var(--col-fg): that token flips to near-white in dark mode and would
- * vanish against a light pastel background.
- *
- * PhotoNote keeps the site's usual glass card frame (blur, hairline
- * border) — that wasn't called out, and it's what makes a photo read as
- * "part of this site" rather than a plain Polaroid.
+ * PhotoNote is unchanged — it keeps the site's usual glass card frame
+ * (blur, hairline border), which wasn't part of this redesign.
  */
 
 export function StickyNote({
-  text,
-  tint,
   index,
+  title,
+  text,
+  seed,
 }: {
+  /** Small numeral, e.g. "01". */
+  index: string;
+  title: string;
   text: string;
-  tint: string;
-  /** Optional small numeral in the corner, e.g. "01" — purely decorative. */
-  index?: string;
+  seed: string;
 }) {
+  const palette = derivePalette(seed);
   return (
-    <div
-      style={{
-        padding: "20px 20px 22px",
-        borderRadius: "16px",
-        background: `linear-gradient(160deg, color-mix(in srgb, ${tint} 22%, white) 0%, color-mix(in srgb, ${tint} 42%, white) 100%)`,
-        border: "1px solid rgba(0,0,0,0.06)",
-        boxShadow: "0 1px 2px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12), 0 26px 44px rgba(0,0,0,0.12)",
-      }}
-    >
-      {index && (
-        <p
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontSize: "13px",
-            fontWeight: 700,
-            letterSpacing: "0.02em",
-            color: `color-mix(in srgb, ${tint} 60%, black)`,
-            margin: "0 0 8px",
-          }}
-        >
-          {index}
+    <MountFrame>
+      <InnerCard palette={palette} style={{ padding: "24px 17px 20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          <span style={{ fontFamily: "var(--font-hand)", color: palette.ink, fontSize: "36px", lineHeight: "36px" }}>
+            {index}
+          </span>
+          <span style={{ fontFamily: "var(--font-sans)", color: "#1A1A1A", fontSize: "18px", fontWeight: 600, lineHeight: "23px" }}>
+            {title}
+          </span>
+        </div>
+        <p style={{
+          fontFamily: "var(--font-sans)", color: palette.text, fontSize: "14px",
+          letterSpacing: "-0.01em", lineHeight: "19px", margin: 0,
+        }}>
+          {text}
         </p>
-      )}
-      <p
-        style={{
-          fontFamily: "var(--font-hand)",
-          fontSize: "19px",
-          lineHeight: 1.42,
-          color: "#2B2A28",
-          margin: 0,
-        }}
-      >
-        {text}
-      </p>
-    </div>
+      </InnerCard>
+    </MountFrame>
   );
 }
 

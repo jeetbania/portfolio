@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Instrument_Sans, Instrument_Serif, Shadows_Into_Light } from "next/font/google";
+import { Instrument_Sans, Instrument_Serif, Nanum_Pen_Script } from "next/font/google";
 import "./globals.css";
 import Header  from "@/components/Header";
 import DotGrid from "@/components/DotGrid";
@@ -32,9 +32,12 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
   display: "swap",
 });
-const shadowsIntoLight = Shadows_Into_Light({
+/* Swapped from Shadows Into Light per feedback — same --font-hand token,
+   so every component already using var(--font-hand) picks this up with
+   no code change on their end, only the font behind it changes. */
+const nanumPenScript = Nanum_Pen_Script({
   subsets: ["latin"],
-  weight: "400",
+  weight: "400", // Nanum Pen Script only ships one weight
   variable: "--font-hand",
   display: "swap",
 });
@@ -84,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${instrumentSans.variable} ${instrumentSerif.variable} ${shadowsIntoLight.variable}`}
+      className={`${instrumentSans.variable} ${instrumentSerif.variable} ${nanumPenScript.variable}`}
     >
       <head>
         {/*

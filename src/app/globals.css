@@ -525,6 +525,25 @@ body {
   background-size: 28px 28px;
 }
 
+/* Heading — passed to InfiniteCanvas's `overlay` prop (PlaygroundCanvas.tsx),
+   so it's a sibling of the pannable world, not inside it: dead center of
+   the canvas viewport, always, regardless of pan/zoom. pointer-events:none
+   is what lets drags/clicks on the canvas or a card behind it still land —
+   this is a label, not a control. z-index sits above resting cards (1-5)
+   so it stays legible, but below an actively-dragged card's temporary 50
+   so a card you're actively holding still visually wins over a fixed
+   background label, same as it would over a real cork board. */
+.playground-heading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  pointer-events: none;
+  text-align: center;
+  width: min(620px, 84%);
+}
+
 .canvas-hint {
   position: absolute;
   left: 50%;
