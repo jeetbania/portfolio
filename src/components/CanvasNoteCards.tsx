@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useTheme } from "@/lib/theme";
 import { MountFrame, InnerCard, derivePalette } from "./CanvasCardChrome";
 import { EditableText } from "@/lib/contentEditor";
+import { AnchoredImage } from "@/lib/imageAnchor";
 
 /**
  * StickyNote — a numeral (in the site's handwritten font) + a short title
@@ -71,13 +71,21 @@ export function StickyNote({
 }
 
 export function PhotoNote({
-  id, src, alt, title, subtitle,
+  id, src, alt, title, subtitle, aspectRatio = "1/1",
 }: {
   id: string;
   src: string; alt: string;
   /** Bold handwritten-style caption, e.g. "The Build" — like a name scrawled under a real polaroid. */
   title: string;
   subtitle: string;
+  /** CSS aspect-ratio for the photo itself, e.g. the source image's real
+   * "2765/3686" — the polaroid's mat/caption stay fixed-shape, but this is
+   * what makes a landscape photo's card read as wider and a portrait
+   * photo's read as narrower/taller instead of every card being forced
+   * into the same square crop regardless of what the source image
+   * actually looks like. Defaults to a square for any caller that doesn't
+   * pass one. */
+  aspectRatio?: string;
 }) {
   return (
     <div style={{
@@ -87,8 +95,8 @@ export function PhotoNote({
       boxShadow: "var(--canvas-mount-shadow)",
       outline: "2px solid var(--canvas-mount-outline)",
     }}>
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", borderRadius: "3px", overflow: "hidden" }}>
-        <Image src={src} alt={alt} fill className="object-cover" sizes="260px" draggable={false} />
+      <div style={{ position: "relative", width: "100%", aspectRatio, borderRadius: "3px", overflow: "hidden" }}>
+        <AnchoredImage src={src} alt={alt} sizes="300px" />
       </div>
       <div style={{ paddingTop: "13px", textAlign: "center" }}>
         <EditableText

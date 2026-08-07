@@ -44,14 +44,23 @@ const WORLD_HEIGHT = 1800;
    needing to measure the live DOM. */
 type Layout = { x: number; y: number; rotate: number; width: number; height: number };
 
+/* Photo cards' width/height (both here and in MOBILE_LAYOUT below) are no
+   longer arbitrary — each one is sized off its actual image's aspect
+   ratio (see the aspectRatio props at each <PhotoNote> call site further
+   down), landscape photos wider, portrait photos narrower/taller, per
+   feedback that a polaroid should take its photo's real shape instead of
+   every card being forced into the same square crop. `height` here is
+   still just computeBounds()'s bounding-box ESTIMATE (mat padding +
+   caption block ~82px, added on top of each image's real height at its
+   card's width) — not a real CanvasCard prop. */
 const DESKTOP_LAYOUT: Record<string, Layout> = {
   "sticky-1": { x: 880, y: 540, rotate: -4, width: 210, height: 200 },
   "widget-todo": { x: 900, y: 900, rotate: -3, width: 220, height: 230 },
-  "photo-screen1": { x: 860, y: 1270, rotate: -5, width: 190, height: 260 },
-  "photo-tech1": { x: 1260, y: 460, rotate: 4, width: 210, height: 260 },
-  "photo-tech2": { x: 1280, y: 830, rotate: -4, width: 220, height: 260 },
-  "photo-event1": { x: 1660, y: 520, rotate: 5, width: 200, height: 260 },
-  "photo-kitchen1": { x: 1680, y: 890, rotate: -3, width: 210, height: 260 },
+  "photo-screen1": { x: 860, y: 1270, rotate: -5, width: 190, height: 335 },
+  "photo-tech1": { x: 1260, y: 460, rotate: 4, width: 250, height: 270 },
+  "photo-tech2": { x: 1280, y: 830, rotate: -4, width: 250, height: 270 },
+  "photo-event1": { x: 1660, y: 520, rotate: 5, width: 190, height: 335 },
+  "photo-kitchen1": { x: 1680, y: 890, rotate: -3, width: 180, height: 327 },
   "widget-calendar": { x: 1650, y: 1260, rotate: 3, width: 210, height: 260 },
   "sticky-2": { x: 2040, y: 480, rotate: 3, width: 210, height: 200 },
   "sticky-3": { x: 2060, y: 850, rotate: -3, width: 200, height: 200 },
@@ -64,12 +73,12 @@ const DESKTOP_LAYOUT: Record<string, Layout> = {
 const MOBILE_LAYOUT: Record<string, Layout> = {
   "sticky-1": { x: 1350, y: 398, rotate: -5, width: 210, height: 200 },
   "widget-todo": { x: 1376, y: 749, rotate: -3, width: 220, height: 230 },
-  "photo-screen1": { x: 1337, y: 1100, rotate: -6, width: 190, height: 260 },
-  "photo-tech1": { x: 1558, y: 333, rotate: 4, width: 210, height: 260 },
-  "photo-tech2": { x: 1577, y: 684, rotate: -4, width: 220, height: 260 },
+  "photo-screen1": { x: 1337, y: 1100, rotate: -6, width: 175, height: 315 },
+  "photo-tech1": { x: 1558, y: 333, rotate: 4, width: 220, height: 247 },
+  "photo-tech2": { x: 1577, y: 684, rotate: -4, width: 220, height: 247 },
   "widget-calendar": { x: 1545, y: 1035, rotate: 3, width: 210, height: 260 },
-  "photo-event1": { x: 1766, y: 372, rotate: 5, width: 200, height: 260 },
-  "photo-kitchen1": { x: 1785, y: 723, rotate: -3, width: 210, height: 260 },
+  "photo-event1": { x: 1766, y: 372, rotate: 5, width: 175, height: 315 },
+  "photo-kitchen1": { x: 1785, y: 723, rotate: -3, width: 165, height: 306 },
   "sticky-2": { x: 1753, y: 1074, rotate: 3, width: 210, height: 200 },
   "sticky-3": { x: 1557, y: 1386, rotate: -4, width: 200, height: 200 },
 };
@@ -201,23 +210,23 @@ export default function PlaygroundCanvas() {
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-screen1")} {...card("photo-screen1")} zIndex={3}>
-        <PhotoNote id="photo-screen1" src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" />
+        <PhotoNote id="photo-screen1" src="/playground-image-1.jpg" alt="Waffle and iced drinks at a cafe" title="The Treat" subtitle="waffle o'clock" aspectRatio="2765/3686" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech1")} {...card("photo-tech1")} zIndex={4}>
-        <PhotoNote id="photo-tech1" src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" />
+        <PhotoNote id="photo-tech1" src="/playground-image-2.jpg" alt="Snow-capped Himalayan mountain range" title="The View" subtitle="somewhere up there" aspectRatio="3226/2419" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech2")} {...card("photo-tech2")} zIndex={5}>
-        <PhotoNote id="photo-tech2" src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" />
+        <PhotoNote id="photo-tech2" src="/playground-image-3.jpg" alt="Selfie with a friend" title="The Duo" subtitle="usual suspects" aspectRatio="5875/4406" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-event1")} {...card("photo-event1")} zIndex={4}>
-        <PhotoNote id="photo-event1" src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" />
+        <PhotoNote id="photo-event1" src="/playground-image-4.jpg" alt="Graduation day, cap and gown" title="The Cap" subtitle="made it official" aspectRatio="2722/3629" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-kitchen1")} {...card("photo-kitchen1")} zIndex={5}>
-        <PhotoNote id="photo-kitchen1" src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" />
+        <PhotoNote id="photo-kitchen1" src="/playground-image-5.jpg" alt="Childhood photo on a bicycle" title="The Start" subtitle="before any of this" aspectRatio="1675/2277" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("widget-calendar")} {...card("widget-calendar")} zIndex={3}>

@@ -200,6 +200,12 @@ export function AnchoredImage({
       style={{ position: "absolute", inset: 0, overflow: "hidden" }}
       onPointerDown={anchorModeOn ? (e) => {
         e.preventDefault();
+        // Stops this from also bubbling up into a CanvasCard's own
+        // onPointerDown (Playground's photo cards are draggable) — without
+        // this, clicking to place an anchor point would simultaneously
+        // start dragging the whole card out from under the cursor. No-op
+        // anywhere else since this handler only exists while anchorModeOn.
+        e.stopPropagation();
         draggingRef.current = true;
         e.currentTarget.setPointerCapture(e.pointerId);
         updateFromPointer(e.clientX, e.clientY);
@@ -305,12 +311,16 @@ const anchorBtnStyle: React.CSSProperties = {
 };
 
 /** Floating "Anchor images" toggle + panel — mount once alongside
- * `<AnchorProvider>`. Renders nothing in production. */
+ * `<AnchorProvider>`. Used to bail out in NODE_ENV === "production", but
+ * that made it invisible on every Vercel deployment too (Next sets
+ * NODE_ENV=production for any `next build`, preview or not) — the only
+ * place it ever actually rendered was a local `next dev` session. Since
+ * nothing it does touches real content (edits only ever write to the
+ * visitor's own localStorage, per-slug), it now always renders; a random
+ * visitor can toggle it but can't affect anyone else's view of the site. */
 export function AnchorToggle() {
   const { anchorModeOn, setAnchorModeOn, anchors, resetAll } = useAnchorContext();
   const [copied, setCopied] = useState(false);
-
-  if (process.env.NODE_ENV === "production") return null;
 
   const count = Object.keys(anchors).length;
 

@@ -204,12 +204,17 @@ const editorBtnStyle: React.CSSProperties = {
 
 /** Floating "Edit Copy" toggle + panel — mount once alongside
  * `<ContentEditorProvider>`. Sits top-left (AnchorToggle owns bottom-left)
- * so the two dev-tool docks never collide. Renders nothing in production. */
+ * so the two dev-tool docks never collide. Used to bail out in
+ * NODE_ENV === "production", but that made it invisible on every Vercel
+ * deployment too (Next sets NODE_ENV=production for any `next build`,
+ * preview or not) — the only place it ever actually rendered was a local
+ * `next dev` session, which isn't how this gets checked day to day. Since
+ * edits only ever write to the visitor's own localStorage (per-slug),
+ * never anything server-side, it now always renders — see the identical
+ * reasoning on AnchorToggle in imageAnchor.tsx. */
 export function ContentEditorToggle() {
   const { editModeOn, setEditModeOn, overrides, resetAll } = useContentEditorContext();
   const [copied, setCopied] = useState(false);
-
-  if (process.env.NODE_ENV === "production") return null;
 
   const count = Object.keys(overrides).length;
 
