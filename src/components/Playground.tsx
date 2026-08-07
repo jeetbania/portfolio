@@ -116,29 +116,30 @@ function getResponse(query: string): string {
 /* ══════════════════════════════════════════════════════════════════
    Card
    ══════════════════════════════════════════════════════════════════ */
-function FanCard({ card, index, mounted, isMobile }: { card: CardDef; index: number; mounted: boolean; isMobile: boolean }) {
+function FanCard({ card, index, mounted, isMobile, gridSpanFull }: { card: CardDef; index: number; mounted: boolean; isMobile: boolean; gridSpanFull?: boolean }) {
   const [hovered, setHovered] = useState(false);
   const geo = FAN[index];
   const restingZ = 10 - Math.abs(index - 2);
 
   /*
-   * Mobile values are computed to match desktop's actual aspect ratio
-   * (~1.19 height:width at desktop's natural size), not picked
-   * independently — that mismatch was exactly what made the cards look
-   * vertically skewed. Font sizes have a small readability floor (~8px),
-   * everything else scales to preserve the same proportions as desktop.
-   * Desktop branch (clamp-based) is untouched either way.
+   * Mobile no longer tries to squeeze into the same overlapping/rotated
+   * fan as desktop — at fan-card width (~76px) that overlap read as
+   * skewed and cramped. Instead mobile renders these upright, full-width-
+   * of-their-grid-cell, in a 2-column stack (see Playground's mobile
+   * branch below) — same card content/design, just given room to breathe
+   * instead of being squashed into a tilted sliver. Desktop branch
+   * (clamp-based fan) is untouched.
    */
-  const cardWidth   = isMobile ? "76px" : "clamp(122px, 15vw, 168px)";
-  const overlap     = isMobile ? "-10px" : "clamp(-24px,-3vw,-14px)";
-  const cardPadding = isMobile ? "9px 7px 10px" : "14px 13px 34px";
-  const tileSize    = isMobile ? "26px" : "clamp(46px,5.4vw,56px)";
-  const tileRadius  = isMobile ? "7px" : "13px";
-  const labelSize   = isMobile ? "8px"  : "clamp(11px,1.1vw,12.5px)";
-  const valueSize   = isMobile ? "11px" : "clamp(14px,1.6vw,16px)";
-  const subSize     = isMobile ? "8.5px": "clamp(11px,1.2vw,12.5px)";
-  const labelGap    = isMobile ? "5px" : "10px";
-  const tileGap     = isMobile ? "6px" : "12px";
+  const cardWidth   = isMobile ? "100%" : "clamp(122px, 15vw, 168px)";
+  const overlap     = isMobile ? "0px" : "clamp(-24px,-3vw,-14px)";
+  const cardPadding = isMobile ? "14px 14px 18px" : "14px 13px 34px";
+  const tileSize    = isMobile ? "40px" : "clamp(46px,5.4vw,56px)";
+  const tileRadius  = isMobile ? "10px" : "13px";
+  const labelSize   = isMobile ? "10.5px" : "clamp(11px,1.1vw,12.5px)";
+  const valueSize   = isMobile ? "14px" : "clamp(14px,1.6vw,16px)";
+  const subSize     = isMobile ? "11px": "clamp(11px,1.2vw,12.5px)";
+  const labelGap    = isMobile ? "7px" : "10px";
+  const tileGap     = isMobile ? "10px" : "12px";
 
   return (
     <div
@@ -147,10 +148,13 @@ function FanCard({ card, index, mounted, isMobile }: { card: CardDef; index: num
       style={{
         position: "relative",
         width: cardWidth,
-        marginLeft: index === 0 ? 0 : overlap,
-        transform: mounted
-          ? `rotate(${geo.rotate}deg) translateY(${hovered ? geo.y - 18 : geo.y}px)`
-          : `rotate(${geo.rotate}deg) translateY(${geo.y + 40}px)`,
+        marginLeft: isMobile ? 0 : (index === 0 ? 0 : overlap),
+        gridColumn: isMobile && gridSpanFull ? "1 / -1" : undefined,
+        transform: isMobile
+          ? `translateY(${mounted ? 0 : 20}px)`
+          : (mounted
+              ? `rotate(${geo.rotate}deg) translateY(${hovered ? geo.y - 18 : geo.y}px)`
+              : `rotate(${geo.rotate}deg) translateY(${geo.y + 40}px)`),
         opacity: mounted ? 1 : 0,
         transformOrigin: "bottom center",
         transition: mounted
@@ -555,14 +559,35 @@ export default function Playground() {
           The horizontal safety net now lives on <body> instead (see
           globals.css), a level that has no vertical hover effects to
           protect, so it can safely force overflow-x without side effects. */}
-      <div style={{
-        display: "flex", justifyContent: "center", alignItems: "flex-end",
-        paddingTop: "32px", position: "relative", zIndex: 1,
-      }}>
-        {CARDS.map((card, i) => (
-          <FanCard key={card.label} card={card} index={i} mounted={mounted} isMobile={isMobile} />
-        ))}
-      </div>
+      {isMobile ? (
+        /* Mobile: a plain 2-column stack instead of the desktop fan —
+           squeezing 5 rotated, overlapping cards into a narrow viewport
+           read as skewed/cramped rather than playful. Upright cards in a
+           grid (same content/visual design, just full-width-of-cell) fix
+           that. Odd count (5) — last card spans both columns rather than
+           leaving a lopsided gap next to an empty cell. */
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr 1fr",
+          gap: "12px", alignItems: "start",
+          position: "relative", zIndex: 1,
+        }}>
+          {CARDS.map((card, i) => (
+            <FanCard
+              key={card.label} card={card} index={i} mounted={mounted} isMobile={isMobile}
+              gridSpanFull={i === CARDS.length - 1 && CARDS.length % 2 === 1}
+            />
+          ))}
+        </div>
+      ) : (
+        <div style={{
+          display: "flex", justifyContent: "center", alignItems: "flex-end",
+          paddingTop: "32px", position: "relative", zIndex: 1,
+        }}>
+          {CARDS.map((card, i) => (
+            <FanCard key={card.label} card={card} index={i} mounted={mounted} isMobile={isMobile} />
+          ))}
+        </div>
+      )}
 
       <QuickAsk mounted={mounted} />
     </section>
