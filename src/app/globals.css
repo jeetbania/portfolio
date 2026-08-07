@@ -562,10 +562,16 @@ body {
   gap: 10px;
   padding: 9px 16px;
   border-radius: 999px;
-  background: var(--surface-glass-strong);
+  /* --surface-nav, not --surface-glass-strong — that read as genuinely
+     see-through once blurred (it's a LIGHT tint at low opacity even in
+     dark mode, so there's barely any own color to hide what's behind).
+     --surface-nav is the same mostly-opaque, theme-flipping dark/light
+     panel the site's own nav bar and mobile menu already use — glass
+     that still reads as a solid card, not a smudge. */
+  background: var(--surface-nav);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
   font-family: var(--font-sans);
   font-size: 12.5px;
@@ -597,10 +603,10 @@ body {
   flex-direction: row;
   border-radius: 14px;
   overflow: hidden;
-  background: var(--surface-glass-strong);
+  background: var(--surface-nav);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
   transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
@@ -704,10 +710,10 @@ body {
   gap: 9px;
   padding: 11px 13px;
   border-radius: 16px;
-  background: var(--surface-glass-strong);
+  background: var(--surface-nav);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
   transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
@@ -764,12 +770,16 @@ body {
    in MusicWidget.tsx guessing at what that width would be — that
    guessing is what caused the covers to first read as cramped, then
    later overflow the card outright, after this width changed twice.
-   Background is real frosted glass (--surface-glass-strong + blur), not
-   the opaque --canvas-mount-bg the "mounted paper" cards (StickyNote,
+   Background is real frosted glass (--surface-nav + blur), not the
+   opaque --canvas-mount-bg the "mounted paper" cards (StickyNote,
    TodoWidgetCard) use — this widget is persistent floating chrome like
-   the pin tray/zoom controls, not a card sitting IN the canvas world,
-   and per feedback it read as flat/solid next to those, which are all
-   genuinely glass. */
+   the pin tray/zoom controls, not a card sitting IN the canvas world.
+   --surface-nav specifically (not --surface-glass-strong) — that first
+   glass pass read as genuinely see-through once blurred, since it's a
+   low-opacity LIGHT tint even in dark mode with barely any own color to
+   hide what's behind it. --surface-nav is the same mostly-opaque,
+   theme-flipping dark/light panel the site's own nav bar already uses —
+   glass that still reads as a solid card. */
 .music-widget {
   position: absolute;
   right: 16px;
@@ -778,10 +788,10 @@ body {
   width: 400px;
   padding: 18px 18px 16px;
   border-radius: 20px;
-  background: var(--surface-glass-strong);
+  background: var(--surface-nav);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 8px 24px rgba(var(--shadow-tint-rgb),0.16), var(--glass-bevel);
   container-type: inline-size;
   container-name: music-widget;
@@ -1066,9 +1076,9 @@ body {
   padding: 9px 18px 9px 13px;
   border-radius: 999px;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-glass-strong);
-  backdrop-filter: blur(16px) saturate(170%);
-  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  background: var(--surface-nav);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 6px 18px rgba(var(--shadow-tint-rgb),0.16), var(--glass-bevel);
   cursor: pointer;
 }
@@ -1111,9 +1121,9 @@ body {
   height: 30px;
   border-radius: 50%;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-glass-strong);
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  background: var(--surface-nav);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow: 0 3px 8px rgba(0,0,0,0.25), var(--glass-bevel);
   display: grid;
   place-items: center;
@@ -1167,10 +1177,10 @@ body {
   gap: 8px;
   padding: 8px;
   border-radius: 999px;
-  background: var(--surface-glass-strong);
+  background: var(--surface-nav);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
   transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
@@ -1231,9 +1241,9 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 1px solid var(--surface-glass-border);
-  background: var(--surface-glass-strong);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  background: var(--surface-nav);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.1), var(--glass-bevel);
   display: grid;
   place-items: center;
@@ -1241,6 +1251,13 @@ body {
   cursor: pointer;
   transition: transform 160ms var(--ease-out), background 160ms var(--ease-out);
 }
+/* Expands UPWARD as a narrow column now, not sideways as a wide row —
+   a horizontal row of 6 swatches was wide enough to reach past the
+   trigger's own corner and overlap whatever else sits along that same
+   bottom edge (the music widget's teaser, in particular, per feedback).
+   A vertical stack only ever grows taller, directly above the trigger,
+   so it can never collide with anything to its side regardless of what
+   else is anchored along the bottom. */
 .bg-picker-panel-wrap {
   position: absolute;
   left: 0;
@@ -1250,13 +1267,14 @@ body {
 }
 .bg-picker-panel {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   padding: 8px;
   border-radius: 999px;
-  background: var(--surface-glass-strong);
+  background: var(--surface-nav);
   border: 1px solid var(--surface-glass-border);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 10px 26px rgba(var(--shadow-tint-rgb),0.18), var(--glass-bevel);
   transform-origin: bottom left;
   opacity: 0;
