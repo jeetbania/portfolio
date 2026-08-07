@@ -714,7 +714,7 @@ export default function Footer() {
           </div>
           {/* Row 2 — every social icon together, centered as a group */}
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"10px", flexWrap:"wrap" }}>
-            <SocialIcon icon={SOCIAL_ICONS.doc}      href="/resume.pdf"                              label="CV / Resume" />
+            <SocialIcon icon={SOCIAL_ICONS.doc}      href="https://drive.google.com/file/d/1qRbyp_2e90zz7zLxOyyCzbZGaBslcn3w/view?usp=sharing" label="CV / Resume" />
             <SocialIcon icon={SOCIAL_ICONS.linkedin} href="https://www.linkedin.com/in/jeetbania/"    label="LinkedIn" />
             <SocialIcon icon={SOCIAL_ICONS.x}        href="https://x.com/figmajeet"                   label="X" />
             <SocialIcon icon={SOCIAL_ICONS.instagram} href="https://instagram.com/jeetbania"           label="Instagram" />

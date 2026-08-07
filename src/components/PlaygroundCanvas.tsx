@@ -57,17 +57,21 @@ const DESKTOP_LAYOUT: Record<string, Layout> = {
   "sticky-3": { x: 2060, y: 850, rotate: -3, width: 200, height: 200 },
 };
 
+/* Was noticeably tighter — per feedback ("too clamped together"), every
+   card here sits ~30% further from the cluster's own center than the
+   first pass, same relative arrangement (columns/rows), just with real
+   breathing room between neighbors instead of edges nearly touching. */
 const MOBILE_LAYOUT: Record<string, Layout> = {
-  "sticky-1": { x: 1400, y: 500, rotate: -5, width: 210, height: 200 },
-  "widget-todo": { x: 1420, y: 770, rotate: -3, width: 220, height: 230 },
-  "photo-screen1": { x: 1390, y: 1040, rotate: -6, width: 190, height: 260 },
-  "photo-tech1": { x: 1560, y: 450, rotate: 4, width: 210, height: 260 },
-  "photo-tech2": { x: 1575, y: 720, rotate: -4, width: 220, height: 260 },
-  "widget-calendar": { x: 1550, y: 990, rotate: 3, width: 210, height: 260 },
-  "photo-event1": { x: 1720, y: 480, rotate: 5, width: 200, height: 260 },
-  "photo-kitchen1": { x: 1735, y: 750, rotate: -3, width: 210, height: 260 },
-  "sticky-2": { x: 1710, y: 1020, rotate: 3, width: 210, height: 200 },
-  "sticky-3": { x: 1560, y: 1260, rotate: -4, width: 200, height: 200 },
+  "sticky-1": { x: 1350, y: 398, rotate: -5, width: 210, height: 200 },
+  "widget-todo": { x: 1376, y: 749, rotate: -3, width: 220, height: 230 },
+  "photo-screen1": { x: 1337, y: 1100, rotate: -6, width: 190, height: 260 },
+  "photo-tech1": { x: 1558, y: 333, rotate: 4, width: 210, height: 260 },
+  "photo-tech2": { x: 1577, y: 684, rotate: -4, width: 220, height: 260 },
+  "widget-calendar": { x: 1545, y: 1035, rotate: 3, width: 210, height: 260 },
+  "photo-event1": { x: 1766, y: 372, rotate: 5, width: 200, height: 260 },
+  "photo-kitchen1": { x: 1785, y: 723, rotate: -3, width: 210, height: 260 },
+  "sticky-2": { x: 1753, y: 1074, rotate: 3, width: 210, height: 200 },
+  "sticky-3": { x: 1557, y: 1386, rotate: -4, width: 200, height: 200 },
 };
 
 /* Derives the true bounding box (and its exact center) straight from a
@@ -102,7 +106,7 @@ const MOBILE_BOUNDS = computeBounds(MOBILE_LAYOUT);
    bounds (+ a margin) instead, since the cluster IS meant to mostly fit
    in view there. */
 const DESKTOP_CONTENT_BOUNDS = { width: 620, height: 760 };
-const MOBILE_CONTENT_BOUNDS = { width: MOBILE_BOUNDS.width + 90, height: MOBILE_BOUNDS.height + 90 };
+const MOBILE_CONTENT_BOUNDS = { width: MOBILE_BOUNDS.width + 140, height: MOBILE_BOUNDS.height + 140 };
 
 /* Hue-rotate degrees applied to the real pin.svg asset (a purple pin) —
    see Pin.tsx for why this is a hue shift rather than hand-edited

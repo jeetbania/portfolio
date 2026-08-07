@@ -104,6 +104,7 @@ export function InfiniteCanvas({
   const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const pointersRef = useRef(new Map<number, { x: number; y: number }>());
   const pinchRef = useRef<{ dist: number; midX: number; midY: number } | null>(null);
+  const rafCleanupRef = useRef<number | null>(null);
   const [hintVisible, setHintVisible] = useState(true);
 
   const center = initialCenter ?? { x: worldWidth / 2, y: worldHeight / 2 };
@@ -215,9 +216,25 @@ export function InfiniteCanvas({
       centerOn(center, fitZoom());
     };
     recenter();
+    // Belt-and-suspenders past the ResizeObserver: a mobile browser's own
+    // chrome (address bar show/hide, safe-area insets settling) can still
+    // reflow this container's real size a beat after the ResizeObserver's
+    // own callback already fired once — re-measuring on the next two
+    // animation frames, and again after everything's had time to settle,
+    // catches that without waiting on a resize that might not fire again.
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(recenter);
+      rafCleanupRef.current = raf2;
+    });
+    const settleTimer = setTimeout(recenter, 300);
     const ro = new ResizeObserver(recenter);
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(raf1);
+      if (rafCleanupRef.current) cancelAnimationFrame(rafCleanupRef.current);
+      clearTimeout(settleTimer);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center.x, center.y, fitZoom]);
 
