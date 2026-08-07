@@ -752,13 +752,16 @@ body {
    edge. Wider than before too: the now-playing view needs real room for
    the art+vinyl group and the track text side by side without the vinyl
    creeping into the text's space (see NowPlaying in MusicWidget.tsx) —
-   widened further still (360px -> 380px -> 400px) — once for real
-   artist/track names that ran longer than the placeholder data ever did
-   ("Nusrat Fateh Ali Khan": the text wraps to 2 lines past that, see
-   lineClamp2 in MusicWidget.tsx), and again because the album row's
-   covers were sized to the OLD narrower width and read as needlessly
-   small/cramped once real covers landed — ALBUM_SIZE/ALBUM_STEP in
-   MusicWidget.tsx are sized to this width specifically. */
+   widened further still (360px -> 380px -> 400px) for real artist/track
+   names that ran longer than the placeholder data ever did ("Nusrat
+   Fateh Ali Khan": the text wraps to 2 lines past that, see lineClamp2
+   in MusicWidget.tsx).
+   `container-type: inline-size` turns this into a query container so
+   .music-album-cover below can size itself in cqw units (a % of THIS
+   element's own real content width) instead of fixed px math computed
+   in MusicWidget.tsx guessing at what that width would be — that
+   guessing is what caused the covers to first read as cramped, then
+   later overflow the card outright, after this width changed twice. */
 .music-widget {
   position: absolute;
   right: 16px;
@@ -770,6 +773,8 @@ body {
   background: var(--canvas-mount-bg);
   outline: 2px solid var(--canvas-mount-outline);
   box-shadow: var(--canvas-mount-shadow);
+  container-type: inline-size;
+  container-name: music-widget;
 }
 
 /* Wraps the Browse/NowPlaying swap — its own height is measured off
@@ -821,8 +826,16 @@ body {
 .music-pill:hover { background: var(--surface-glass-strong); }
 
 /* Row of fanned covers needs real depth for the flip below to look like
-   a card turning in space, not just squashing flat. */
-.music-album-row { perspective: 800px; }
+   a card turning in space, not just squashing flat. justify-content:
+   center is what gives the row even breathing room on both sides at
+   rest, rather than the covers hugging the left edge with all the slack
+   dumped on the right (the "ample space on left and right" ask). */
+.music-album-row {
+  display: flex;
+  justify-content: center;
+  perspective: 800px;
+  padding-bottom: 8px;
+}
 
 .music-album {
   position: relative;
@@ -838,6 +851,30 @@ body {
      baked into the class. */
   transform: rotate(var(--album-rotate, 0deg));
   transition: transform 200ms cubic-bezier(0.22,1,0.36,1), background 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+/* Overlap step — in cqw (see .music-widget's container-type), so it
+   scales with .music-album-cover below rather than needing its own
+   separate fixed-px assumption about the row's available width. */
+.music-album:not(:first-child) { margin-left: -5cqw; }
+
+/* The actual square cover box — sizing is entirely cqw-driven (a % of
+   .music-widget's real content width) so 6 covers + their overlap
+   always add up to comfortably less than the container's width,
+   whatever that width currently is (400px desktop, a narrower mobile
+   expanded panel, or anything this changes to later) — the exact
+   scenario that broke with fixed px math twice already. Measured live
+   (getBoundingClientRect, not just estimated): the .music-album button's
+   own 4px padding adds real width the FIRST version of this math didn't
+   account for, which is why that version's "22cqw of margin" rendered
+   as barely any margin at all in practice — these numbers are tuned
+   against the actual measured result, not just the arithmetic. */
+.music-album-cover {
+  position: relative;
+  width: 14cqw;
+  height: 14cqw;
+  border-radius: 2cqw;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 .music-album:hover {
   transform: rotate(var(--album-rotate, 0deg)) translateY(-10px) scale(1.08);
@@ -906,8 +943,11 @@ body {
 .music-album-play-hint svg { position: relative; z-index: 1; margin-left: 1px; }
 .music-album-play-hint::before {
   content: "";
-  width: 36px;
-  height: 36px;
+  /* % of .music-album-cover (its containing block), not a fixed px —
+     scales with the cover itself instead of looking huge/tiny relative
+     to it if the cover's own cqw size ever changes. */
+  width: 42%;
+  height: 42%;
   border-radius: 50%;
   background: rgba(20,20,24,0.4);
   backdrop-filter: blur(6px) saturate(140%);
@@ -975,17 +1015,87 @@ body {
   .music-vinyl-entering { transform: translateX(0) rotate(0deg); opacity: 1; }
 }
 
+/* Mobile-only collapsed teaser — MusicWidget.tsx renders this INSTEAD of
+   .music-widget when collapsed (not just a smaller variant of it — the
+   full album row/now-playing layout was tried shrunk to phone width
+   first and it never read well, per feedback, hence a genuinely
+   different structure here, same reasoning useIsMobile()'s own doc
+   comment gives for when that's warranted). One cover, one line of text,
+   sitting right above the zoom controls rather than up near the pin
+   tray — the two were reported "too close" up there even before this. */
+.music-widget-collapsed {
+  position: absolute;
+  right: 16px;
+  bottom: 64px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(240px, 68vw);
+  padding: 8px 16px 8px 8px;
+  border-radius: 999px;
+  border: none;
+  background: var(--canvas-mount-bg);
+  outline: 2px solid var(--canvas-mount-outline);
+  box-shadow: var(--canvas-mount-shadow);
+  cursor: pointer;
+}
+.music-widget-collapsed-art {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+.music-widget-collapsed-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--canvas-ink-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.music-widget-collapsed svg { flex-shrink: 0; color: var(--col-muted); }
+
+/* Minimize control on the expanded mobile panel — collapses back to the
+   teaser above. A centered handle above the card (like a bottom sheet's
+   own drag handle) rather than hanging off a corner — a corner version
+   measured PARTIALLY OFF-SCREEN on a narrow phone (.music-widget sits
+   close enough to the real viewport edge there that a negative-offset
+   corner badge can poke past it entirely). Centered on the card's own
+   width instead, so it's never at the mercy of how close to the
+   viewport's edge the card itself happens to be. */
+.music-widget-minimize {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--surface-glass-border);
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25), var(--glass-bevel);
+  display: grid;
+  place-items: center;
+  color: var(--col-fg);
+  cursor: pointer;
+}
+
 @media (max-width: 767px) {
-  /* Back to the top-right corner on mobile, and dropped BELOW the pin
-     tray (which lives up in that same corner's row) rather than beside
-     it — bottom-right is the zoom controls at this width (see
-     .canvas-controls below), and staying beside the pin tray would
-     collide with that too. Kept close to its desktop width since the
-     now-playing layout (art + vinyl + track text side by side) needs the
-     room. Top offset bumped further down from the pin tray (was 78px,
-     read as "too close" per feedback) — the tray's own real height plus
-     a real gap, not just clearing its lowest pixel. */
-  .music-widget { top: 108px; right: 16px; bottom: auto; width: min(360px, 88vw); padding: 15px 15px 13px; }
+  /* Bottom-anchored now, just above the zoom controls — was up near the
+     pin tray, which read as cramped even before the album row itself
+     started overflowing (per feedback, "somewhere around the bottom" is
+     also just where a visitor's thumb already is on a phone). The
+     collapsed teaser above uses the same bottom offset. */
+  .music-widget { top: auto; bottom: 64px; right: 16px; width: min(360px, 88vw); padding: 15px 15px 13px; }
 
   /* Zoom controls move to bottom-right — bottom-center (desktop) sits
      right on top of the background picker's expanded panel and the pin

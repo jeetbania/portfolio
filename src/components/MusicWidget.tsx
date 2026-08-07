@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import GradientThumb from "./GradientThumb";
 import { ImageSkeleton } from "./ImageSkeleton";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { TRACKS, type Track } from "@/data/music";
 
 /**
@@ -41,6 +42,25 @@ import { TRACKS, type Track } from "@/data/music";
  * `overlay` prop (see PlaygroundCanvas.tsx) — a persistent piece of
  * furniture, not a card that scatters around the world like everything
  * else on the board.
+ *
+ * On mobile (useIsMobile()) this renders a genuinely different, smaller
+ * structure — a single-cover teaser pill sitting just above the zoom
+ * controls — rather than a shrunk copy of the full widget, which never
+ * fit well at phone width and collided with other overlay chrome up top.
+ * Tapping the teaser expands into the exact same Browse/NowPlaying UI
+ * everyone else sees; `mobileExpanded` only toggles which of the two
+ * renders, it never resets `order`/`activeIndex`/`pickedIndex` — so
+ * whichever track was playing (or wasn't) survives collapsing the panel
+ * back down.
+ *
+ * The album row's own sizing (cover size, overlap, radius) is driven by
+ * CSS container query units (cqw), not fixed pixel values computed in
+ * JS — see .music-widget's `container-type` and .music-album-cover in
+ * globals.css. Hardcoded pixel math here TWICE undershot or overshot the
+ * widget's actual rendered width (once too cramped, then overflowing the
+ * card entirely) because it was guessing at a width instead of being
+ * anchored to it; cqw units are relative to the widget's REAL content
+ * width at all times; mobile expanded panel, that same math self-adjusts.
  *
  * Track data (artist/title/spotifyUrl/cover) lives in src/data/music.ts,
  * not here — same "don't invent a parallel data source" convention as
@@ -123,11 +143,14 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export function MusicWidget() {
+  const isMobile = useIsMobile();
+  const [mobileExpanded, setMobileExpanded] = useState(false);
   const [order, setOrder] = useState(TRACKS);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [pickedIndex, setPickedIndex] = useState<number | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   const active = activeIndex !== null ? order[activeIndex] : null;
 
@@ -149,8 +172,52 @@ export function MusicWidget() {
     }
   }, [active]);
 
+  // Mobile only: tap outside the expanded panel to collapse it back to
+  // the single-cover teaser — same convention as BackgroundPicker's own
+  // mobile expand panel.
+  useEffect(() => {
+    if (!isMobile || !mobileExpanded) return;
+    function onOutside(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setMobileExpanded(false);
+    }
+    document.addEventListener("mousedown", onOutside);
+    return () => document.removeEventListener("mousedown", onOutside);
+  }, [isMobile, mobileExpanded]);
+
+  if (isMobile && !mobileExpanded) {
+    // Teaser shows whatever's actually going on — the active track's
+    // cover if one's picked, otherwise just the first in the current
+    // order — so re-opening the panel doesn't feel like it "reset."
+    const previewTrack = active ?? order[0];
+    return (
+      <div ref={wrapRef} onPointerDown={e => e.stopPropagation()}>
+        <button
+          type="button"
+          className="music-widget-collapsed"
+          onClick={() => setMobileExpanded(true)}
+          aria-label={active ? `Now playing: ${active.title} by ${active.artist}. Tap to open.` : "Open the music widget"}
+        >
+          <div className="music-widget-collapsed-art">
+            <AlbumArt track={previewTrack} radius={11} />
+          </div>
+          <span className="music-widget-collapsed-label">{active ? active.title : "Listening to…"}</span>
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2.5 7.5 6 4l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="music-widget" onPointerDown={e => e.stopPropagation()}>
+    <div ref={wrapRef} className="music-widget" onPointerDown={e => e.stopPropagation()}>
+      {isMobile && (
+        <button type="button" className="music-widget-minimize" onClick={() => setMobileExpanded(false)} aria-label="Minimize the music widget">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
       <div ref={bodyRef} className="music-widget-body">
         <div ref={contentRef} key={active ? "playing" : "browse"} className="music-widget-fade">
           {active ? (
@@ -168,13 +235,6 @@ export function MusicWidget() {
     </div>
   );
 }
-
-/* Cover size + how far each subsequent one shifts left (i.e. how much of
-   the PREVIOUS cover stays visible) — sized to fill the widget's real
-   content width (see .music-widget) rather than the old cramped 56px
-   covers, which left a lot of dead space in a much wider card. */
-const ALBUM_SIZE = 86;
-const ALBUM_STEP = 56; // px between each cover's left edge
 
 function Browse({
   tracks, pickedIndex, onShuffle, onPick,
@@ -199,7 +259,14 @@ function Browse({
           Refresh
         </button>
       </div>
-      <div className="music-album-row" style={{ display: "flex", paddingBottom: "8px" }}>
+      {/* Cover size/overlap/radius all come from .music-album-cover in
+          globals.css via container-query (cqw) units, NOT fixed pixel
+          values computed here — see the file-level comment for why:
+          hardcoded px math has already broken twice (too small, then
+          overflowing) by guessing at the widget's width instead of
+          being anchored to its real, current one. justify-content:
+          center is what gives it even breathing room on both sides. */}
+      <div className="music-album-row">
         {tracks.map((track, i) => (
           <button
             key={track.artist + track.title}
@@ -213,7 +280,6 @@ function Browse({
             onMouseLeave={() => setHoveredIndex(h => (h === i ? null : h))}
             disabled={pickedIndex !== null}
             style={{
-              marginLeft: i === 0 ? 0 : `${ALBUM_STEP - ALBUM_SIZE}px`,
               zIndex: i,
               // A custom property, not a literal `transform` — the hover
               // rule in globals.css needs to ADD a lift on top of this
@@ -223,7 +289,7 @@ function Browse({
             } as React.CSSProperties}
             aria-label={`Play ${track.title} by ${track.artist}`}
           >
-            <div style={{ position: "relative", width: `${ALBUM_SIZE}px`, height: `${ALBUM_SIZE}px`, borderRadius: "14px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
+            <div className="music-album-cover">
               <AlbumArt track={track} radius={14} />
               {/* Hover-only "click me" cue — replaces the old tooltip
                   (removed per feedback, wasn't needed) and the plain
