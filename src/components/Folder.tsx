@@ -208,14 +208,22 @@ export default function Folder({ project, strongGlass }: FolderProps) {
               className="absolute inset-0 flex flex-col justify-between"
               style={{ padding: "16px 16px 16px" }}
             >
-              {/* Top block — title then description */}
+              {/* Top block — title then description. Colors are hardcoded,
+                  not var(--col-fg)/var(--col-muted) — this card is a
+                  theme-independent "sticker" (see CLAUDE.md), so its text
+                  shouldn't flip with the site theme either. Title stays
+                  dark (reads fine on every tint), description stays the
+                  light tone that used to only show up in dark mode — per
+                  feedback that var(--col-muted)'s light-mode value (a
+                  medium gray meant for a plain page background) was hard
+                  to read against these colorful glass tints. */}
               <div className="min-w-0">
                 <p style={{ fontFamily:"var(--font-serif)", fontSize:"clamp(21px,2.6vw,28px)",
-                  fontWeight:400, lineHeight:1.15, color:"var(--col-fg)", marginBottom:"6px" }}>
+                  fontWeight:400, lineHeight:1.15, color:"#1A1A1A", marginBottom:"6px" }}>
                   {project.title}
                 </p>
                 <p style={{ fontFamily:"var(--font-sans)", fontSize:"12px",
-                  color:"var(--col-muted)", lineHeight:1.45 }}>
+                  color:"rgba(255,255,255,0.56)", lineHeight:1.45 }}>
                   {project.description}
                 </p>
               </div>
