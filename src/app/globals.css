@@ -81,6 +81,15 @@
    */
   --case-card-bg: #E9E7E1;
 
+  /* Image loading skeleton (see .img-skeleton below) — canvas rides on
+     --case-card-bg so it reads as the same warm beige card frame the
+     photo lands in, not a mismatched flash right before it. Dot/glow
+     colors get their own tokens since neither --dot-color (tuned for a
+     full-page decorative grid) nor --col-fg alone was the right weight
+     here. */
+  --skeleton-dot:  rgba(0,0,0,0.14);
+  --skeleton-glow: var(--col-fg);
+
   /*
    * A partially see-through card face — for surfaces sitting on top of a
    * vividly-coloured backing (the "about me" fan cards) that should still
@@ -181,6 +190,10 @@
      so dark mode falls back to the same raised-surface tone every other
      opaque card here uses instead of introducing a third surface color. */
   --case-card-bg: var(--surface-opaque);
+
+  --skeleton-dot: rgba(255,255,255,0.16);
+  /* --skeleton-glow keeps riding on --col-fg, which already flips light
+     in this theme — no separate override needed. */
 
   /* Much more see-through than --surface-opaque so the vivid backing
      colour on the "about me" cards stays visible, not muddy-dark */
@@ -415,6 +428,69 @@ body {
 @keyframes t-shimmer {
   0%   { background-position: 100% 0; }
   100% { background-position: 0% 0; }
+}
+
+/* ─── Image loading skeleton — reverse-engineered from an AI
+   image-generation "generating..." loading treatment (a dot grid with a
+   soft blob-shaped highlight that drifts and morphs across it). Kept only
+   that dot-morph visual; the reference's label/prompt text/resolution
+   chip are dropped since this is a plain "photo is still loading" state,
+   not a generation-in-progress one. See ImageSkeleton.tsx — sits absolute
+   inside the same box the real <Image> renders into (AnchoredImage in
+   imageAnchor.tsx, Folder.tsx), fading out once the photo's onLoad fires.
+   Canvas rides --case-card-bg on purpose (beige in light mode, the same
+   raised-surface dark in dark mode) so it reads as the card's own resting
+   frame color, not a foreign flash before the photo lands. ─────────────── */
+.img-skeleton {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--case-card-bg);
+  pointer-events: none;
+  transition: opacity 280ms var(--ease-out);
+}
+.img-skeleton-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--skeleton-dot) 0.7px, transparent 1.3px);
+  background-size: 11px 11px;
+  background-repeat: space;
+}
+.img-skeleton-glow {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--skeleton-glow) 1.1px, transparent 1.6px);
+  background-size: 11px 11px;
+  background-repeat: space;
+  -webkit-mask-image:
+    radial-gradient(ellipse at center, #000 0%, transparent 60%),
+    radial-gradient(ellipse at center, #000 0%, transparent 62%);
+  mask-image:
+    radial-gradient(ellipse at center, #000 0%, transparent 60%),
+    radial-gradient(ellipse at center, #000 0%, transparent 62%);
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-size: 72% 62%, 52% 52%;
+  mask-size: 72% 62%, 52% 52%;
+  -webkit-mask-position: 16% 20%, 30% 32%;
+  mask-position: 16% 20%, 30% 32%;
+  animation:
+    img-skel-morph 4.2s cubic-bezier(0.35, 1.55, 0.65, 1) infinite,
+    img-skel-breathe 1.9s cubic-bezier(0.66, 0, 0.34, 1) infinite;
+}
+@keyframes img-skel-morph {
+  0%   { -webkit-mask-size: 52% 46%, 40% 40%; mask-size: 52% 46%, 40% 40%; -webkit-mask-position: 16% 20%, 30% 32%; mask-position: 16% 20%, 30% 32%; }
+  25%  { -webkit-mask-size: 46% 58%, 44% 38%; mask-size: 46% 58%, 44% 38%; -webkit-mask-position: 84% 16%, 66% 30%; mask-position: 84% 16%, 66% 30%; }
+  50%  { -webkit-mask-size: 60% 44%, 38% 46%; mask-size: 60% 44%, 38% 46%; -webkit-mask-position: 82% 84%, 62% 68%; mask-position: 82% 84%, 62% 68%; }
+  75%  { -webkit-mask-size: 48% 54%, 46% 40%; mask-size: 48% 54%, 46% 40%; -webkit-mask-position: 14% 82%, 34% 66%; mask-position: 14% 82%, 34% 66%; }
+  100% { -webkit-mask-size: 52% 46%, 40% 40%; mask-size: 52% 46%, 40% 40%; -webkit-mask-position: 16% 20%, 30% 32%; mask-position: 16% 20%, 30% 32%; }
+}
+@keyframes img-skel-breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .img-skeleton-glow { animation: none; opacity: 0.75; }
 }
 
 /* ─── Pixel loader (Quick Ask "Let me think...") — one pixel bright,

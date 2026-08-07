@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Project } from "@/data/projects";
 import { useTheme } from "@/lib/theme";
+import { ImageSkeleton } from "./ImageSkeleton";
 
 interface FolderProps {
   project: Project;
@@ -54,6 +55,13 @@ export default function Folder({ project, strongGlass }: FolderProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [open, setOpen] = useState(false);
+  // Per-preview-image loaded flags, for the skeleton fade-in (see
+  // ImageSkeleton.tsx / imageAnchor.tsx's AnchoredImage — same pattern,
+  // just tracked as an array here since there are 3 independent thumbs).
+  const [loadedImgs, setLoadedImgs] = useState<boolean[]>([false, false, false]);
+  const markLoaded = useCallback((i: number) => {
+    setLoadedImgs(prev => prev.map((v, idx) => (idx === i ? true : v)));
+  }, []);
   const flapRef  = useRef<HTMLDivElement>(null);
   const imgRefs  = useRef<(HTMLDivElement | null)[]>([]);
   const initDone = useRef(false);
@@ -158,6 +166,7 @@ export default function Folder({ project, strongGlass }: FolderProps) {
                   /* NO CSS transform here — Motion owns this entirely */
                 }}
               >
+                {!loadedImgs[i] && <ImageSkeleton visible />}
                 <Image
                   src={img.src}
                   alt={img.alt}
@@ -165,6 +174,8 @@ export default function Folder({ project, strongGlass }: FolderProps) {
                   sizes="(max-width: 900px) 35vw, 18vw"
                   className="object-cover"
                   loading="lazy"
+                  onLoad={() => markLoaded(i)}
+                  style={{ opacity: loadedImgs[i] ? 1 : 0, transition: "opacity 280ms var(--ease-out)" }}
                 />
               </div>
             );

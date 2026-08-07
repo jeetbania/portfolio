@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from "react";
+import { ImageSkeleton } from "@/components/ImageSkeleton";
 
 /**
  * Dev-only "image anchor" tool — the DialKit-style live-tuning workflow
@@ -156,6 +157,25 @@ export function AnchoredImage({
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
 
+  // Loading state for the skeleton (see ImageSkeleton.tsx). `showSkeleton`
+  // stays mounted slightly past `loaded` so the skeleton's own opacity
+  // transition can play instead of popping off mid-fade; unmounting it
+  // afterward (rather than just leaving opacity:0 forever) stops its
+  // infinite CSS animation from running in the background for the rest of
+  // the page's life. Reset both if `src` changes under an already-mounted
+  // instance (e.g. a future gallery/carousel reusing this component).
+  const [loaded, setLoaded] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  useEffect(() => {
+    setLoaded(false);
+    setShowSkeleton(true);
+  }, [src]);
+  useEffect(() => {
+    if (!loaded) return;
+    const t = setTimeout(() => setShowSkeleton(false), 320);
+    return () => clearTimeout(t);
+  }, [loaded]);
+
   const current = anchors[src] ?? defaultFocalPoint ?? { x: 50, y: 50 };
   const zoom = current.zoom ?? 1;
 
@@ -196,6 +216,7 @@ export function AnchoredImage({
         setZoom(zoom - e.deltaY * ZOOM_WHEEL_SENSITIVITY);
       } : undefined}
     >
+      {showSkeleton && <ImageSkeleton visible={!loaded} />}
       <Image
         src={src}
         alt={alt}
@@ -204,6 +225,7 @@ export function AnchoredImage({
         priority={priority}
         quality={85}
         className={className}
+        onLoad={() => setLoaded(true)}
         style={{
           objectPosition: focalPointToCss(current),
           // Cropping in tighter than the natural object-fit:cover crop —
@@ -212,6 +234,12 @@ export function AnchoredImage({
           // that point visually anchored while zooming in around it.
           transform: zoom !== 1 ? `scale(${zoom})` : undefined,
           transformOrigin: focalPointToCss(current),
+          // Cross-fades in over the skeleton rather than popping in —
+          // priority (hero) images load fast enough this is barely
+          // visible, but it's what makes a slow connection read as a
+          // deliberate reveal instead of a layout-shifting pop-in.
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 280ms var(--ease-out)",
         }}
       />
       {anchorModeOn && (
