@@ -1114,25 +1114,20 @@ body {
 .music-widget-collapsed svg { flex-shrink: 0; color: var(--col-muted); }
 
 /* Minimize control on the expanded mobile panel — collapses back to the
-   teaser above. Bottom-right, hanging just below the card — was a
-   centered handle above the card, which per feedback read as an odd
-   place for it: the teaser you TAP TO EXPAND lives bottom-right (and
-   the expanded card's own bottom edge sits at roughly that same screen
-   position, since it's bottom-anchored and only grows upward), so
-   collapsing from that same corner is the more natural, symmetric
-   mental model. Hangs off the RIGHT side specifically, not the left —
-   the earlier top-center handle replaced a left-hanging corner version
-   that measured partially off-screen on a narrow phone; the card's
-   right edge always has real margin to the viewport's right edge
-   (anchored via `right: 16px`), so a right-hanging badge can't repeat
-   that mistake. */
+   teaser above. Bottom-right, INSET within the card now — was hanging
+   partway below the card's own bottom edge (bottom: -14px), which per
+   feedback read as peeking out of the container instead of belonging to
+   it. Sits bottom-right for the same reason as before (the teaser you
+   tap to expand lives in that same corner, so collapsing from it is the
+   more natural symmetric mental model) — just fully inside the card's
+   own padding now, not hanging off it. */
 .music-widget-minimize {
   position: absolute;
-  bottom: -14px;
-  right: 14px;
+  bottom: 10px;
+  right: 10px;
   z-index: 7;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1px solid var(--surface-glass-border);
   background: var(--canvas-glass-bg);
