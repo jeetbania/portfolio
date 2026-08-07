@@ -59,22 +59,42 @@ export function PinTray({
       hoveredCardRef.current = cardEl;
     };
 
-    const onUp = (ev: PointerEvent) => {
+    // Shared cleanup for both a real drop (onUp) and an aborted one
+    // (onCancel) — tears down the listeners and the ghost regardless of
+    // how the gesture ended, so nothing can outlive it.
+    const cleanup = () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
       // Belt-and-suspenders: clear the highlight from EVERY card, not
       // just the one we think is hovered — guarantees no stray class
       // survives the drag regardless of how it got there.
       document.querySelectorAll(".canvas-card-pin-target").forEach(el => el.classList.remove("canvas-card-pin-target"));
       hoveredCardRef.current = null;
-      const el = document.elementFromPoint(ev.clientX, ev.clientY);
-      const cardEl = el?.closest<HTMLElement>("[data-card-id]");
-      if (cardEl?.dataset.cardId) onDropOnCard(cardEl.dataset.cardId, hueRotate);
       setDraggingHue(null);
     };
 
+    const onUp = (ev: PointerEvent) => {
+      cleanup();
+      const el = document.elementFromPoint(ev.clientX, ev.clientY);
+      const cardEl = el?.closest<HTMLElement>("[data-card-id]");
+      if (cardEl?.dataset.cardId) onDropOnCard(cardEl.dataset.cardId, hueRotate);
+    };
+
+    // Was the actual bug behind the leftover "pin stuck in a corner of
+    // the page" glitch: the browser/OS can cancel a pointer sequence
+    // mid-drag without ever firing pointerup — a real, common mobile
+    // Safari quirk, and especially likely here since the tray sits right
+    // at the screen's top-left corner, exactly where an edge-swipe
+    // gesture gets recognized. Without a pointercancel listener, cleanup
+    // never ran: the ghost (position: fixed) stayed mounted forever at
+    // wherever it last was, visible as a stray clipped pin outside the
+    // canvas regardless of scrolling or panning afterward.
+    const onCancel = () => cleanup();
+
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
   };
 
   function positionGhost(x: number, y: number) {

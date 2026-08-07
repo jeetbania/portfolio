@@ -9,6 +9,7 @@ import { CalendarCard } from "./CanvasCalendarCard";
 import { PinTray } from "./PinTray";
 import { MusicWidget } from "./MusicWidget";
 import { BackgroundPicker } from "./BackgroundPicker";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 /**
  * Everything on /playground lives here. Back to a contained canvas per
@@ -25,18 +26,58 @@ import { BackgroundPicker } from "./BackgroundPicker";
 
 const WORLD_WIDTH = 3000;
 const WORLD_HEIGHT = 1800;
-const INITIAL_CENTER = { x: 1560, y: 990 };
 
-/* NOT the card cluster's full bounding box (that's closer to 1500x1180) —
-   deliberately smaller, roughly "a column and a bit." InfiniteCanvas uses
-   this to auto-fit its initial zoom on a narrow (mobile) viewport, and
-   fitting the ENTIRE board in was tried first and came back too zoomed
-   out to read anything (per feedback) — this fits a comfortably legible
-   slice instead and lets panning reach the rest, same as a map app opens
-   on your general area, not the whole continent zoomed to fit. On a wide
-   desktop viewport this is a no-op either way (already bigger than even
-   the full board, clamps back to 1). */
-const CONTENT_BOUNDS = { width: 620, height: 760 };
+/* Each card's position/rotation exists in TWO variants — DESKTOP_LAYOUT
+   (four loose columns with real breathing room, per earlier feedback
+   that a tighter version read as chaotic on a wide screen where there
+   was room to spare) and MOBILE_LAYOUT (a much denser cluster). Reusing
+   the desktop spread on a phone was tried first and came back "too
+   scattered... difficult to move around to find things" — a phone
+   doesn't have room to spare, so the SAME wide-open layout that reads
+   as spacious on desktop just reads as far-flung on mobile, needing
+   real panning to find anything. MOBILE_LAYOUT packs the same 10 cards
+   into a much smaller bounding box instead, closer to the real corkboard
+   references from earlier — more overlap, less distance between any two
+   cards, comfortably explorable without much panning at all. */
+type Layout = { x: number; y: number; rotate: number };
+
+const DESKTOP_LAYOUT: Record<string, Layout> = {
+  "sticky-1": { x: 880, y: 540, rotate: -4 },
+  "widget-todo": { x: 900, y: 900, rotate: -3 },
+  "photo-screen1": { x: 860, y: 1270, rotate: -5 },
+  "photo-tech1": { x: 1260, y: 460, rotate: 4 },
+  "photo-tech2": { x: 1280, y: 830, rotate: -4 },
+  "photo-event1": { x: 1660, y: 520, rotate: 5 },
+  "photo-kitchen1": { x: 1680, y: 890, rotate: -3 },
+  "widget-calendar": { x: 1650, y: 1260, rotate: 3 },
+  "sticky-2": { x: 2040, y: 480, rotate: 3 },
+  "sticky-3": { x: 2060, y: 850, rotate: -3 },
+};
+
+const MOBILE_LAYOUT: Record<string, Layout> = {
+  "sticky-1": { x: 1400, y: 500, rotate: -5 },
+  "widget-todo": { x: 1420, y: 770, rotate: -3 },
+  "photo-screen1": { x: 1390, y: 1040, rotate: -6 },
+  "photo-tech1": { x: 1560, y: 450, rotate: 4 },
+  "photo-tech2": { x: 1575, y: 720, rotate: -4 },
+  "widget-calendar": { x: 1550, y: 990, rotate: 3 },
+  "photo-event1": { x: 1720, y: 480, rotate: 5 },
+  "photo-kitchen1": { x: 1735, y: 750, rotate: -3 },
+  "sticky-2": { x: 1710, y: 1020, rotate: 3 },
+  "sticky-3": { x: 1560, y: 1260, rotate: -4 },
+};
+
+/* NOT the card cluster's full bounding box — deliberately smaller,
+   roughly "a column and a bit" on desktop or "most of the board" on
+   mobile (MOBILE_LAYOUT's own cluster is only ~440x830 world units, so
+   this fits nearly the whole thing). InfiniteCanvas uses this to
+   auto-fit its initial zoom on a narrow viewport — fitting the ENTIRE
+   desktop board in was tried first and came back too zoomed out to read
+   anything (per feedback) — this fits a comfortably legible slice
+   instead. On a wide desktop viewport this is a no-op either way
+   (already bigger than even the full board, clamps back to 1). */
+const DESKTOP_CONTENT_BOUNDS = { width: 620, height: 760 };
+const MOBILE_CONTENT_BOUNDS = { width: 560, height: 950 };
 
 /* Hue-rotate degrees applied to the real pin.svg asset (a purple pin) —
    see Pin.tsx for why this is a hue shift rather than hand-edited
@@ -44,8 +85,13 @@ const CONTENT_BOUNDS = { width: 620, height: 760 };
 const PIN_HUES = [150, -60, 0];
 
 export default function PlaygroundCanvas() {
+  const isMobile = useIsMobile();
   const [pinned, setPinned] = useState<Record<string, number>>({});
   const [bgColor, setBgColor] = useState<string | null>(null);
+
+  const layout = isMobile ? MOBILE_LAYOUT : DESKTOP_LAYOUT;
+  const contentBounds = isMobile ? MOBILE_CONTENT_BOUNDS : DESKTOP_CONTENT_BOUNDS;
+  const initialCenter = isMobile ? { x: 1560, y: 800 } : { x: 1560, y: 990 };
 
   const dropPin = (cardId: string, hueRotate: number) => {
     setPinned(p => ({ ...p, [cardId]: hueRotate }));
@@ -60,8 +106,24 @@ export default function PlaygroundCanvas() {
     });
   };
 
+  // CanvasCard seeds its own drag-position ref from x/y ONCE at mount
+  // (deliberately — that ref, not props, is what the drag physics
+  // reads/writes from then on) and never reacts to x/y changing on a
+  // later render. isMobile itself starts false and flips true a beat
+  // after mount (see useIsMobile's own doc comment) — without a key
+  // tied to it, every card would mount once with DESKTOP_LAYOUT's
+  // coordinates already baked into that ref, and switching `layout`
+  // afterward would visibly do nothing. This key forces a real
+  // unmount/remount when the mode changes, so each card's ref re-seeds
+  // from whichever layout is actually correct. Passed as its own literal
+  // JSX attribute below, not spread from the `card()` props object —
+  // React (19) specifically flags a spread-in `key` as an error, it has
+  // to be a real attribute on the element.
+  const cardKey = (id: string) => `${id}-${isMobile}`;
+
   const card = (id: string) => ({
     id,
+    ...layout[id],
     pinned: Object.prototype.hasOwnProperty.call(pinned, id),
     pinHue: pinned[id],
     onUnpin: unpin,
@@ -73,9 +135,9 @@ export default function PlaygroundCanvas() {
     <InfiniteCanvas
       worldWidth={WORLD_WIDTH}
       worldHeight={WORLD_HEIGHT}
-      initialCenter={INITIAL_CENTER}
-      fitWidth={CONTENT_BOUNDS.width}
-      fitHeight={CONTENT_BOUNDS.height}
+      initialCenter={initialCenter}
+      fitWidth={contentBounds.width}
+      fitHeight={contentBounds.height}
       height="min(84vh, 920px)"
       backgroundColor={bgColor ?? undefined}
       overlay={
@@ -86,53 +148,43 @@ export default function PlaygroundCanvas() {
         </>
       }
     >
-      {/* Card layout — four loose columns with real breathing room between
-          them (per feedback that the earlier tight interlocked version
-          read as chaotic), not a rigid grid either: rotation and a little
-          per-card y-offset keep it feeling placed by hand rather than
-          snapped to a spreadsheet. */}
-
-      {/* ── Column A ── */}
-      <CanvasCard {...card("sticky-1")} x={880} y={540} rotate={-4} width={210} zIndex={5}>
+      <CanvasCard key={cardKey("sticky-1")} {...card("sticky-1")} width={210} zIndex={5}>
         <StickyNote seed="#B8631F" index="01" title="On design" text="Good design disappears. Bad design apologizes." />
       </CanvasCard>
 
-      <CanvasCard {...card("widget-todo")} x={900} y={900} rotate={-3} width={220} zIndex={4}>
+      <CanvasCard key={cardKey("widget-todo")} {...card("widget-todo")} width={220} zIndex={4}>
         <TodoWidgetCard seed="#1F7A52" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-screen1")} x={860} y={1270} rotate={-5} width={190} zIndex={3}>
+      <CanvasCard key={cardKey("photo-screen1")} {...card("photo-screen1")} width={190} zIndex={3}>
         <PhotoNote src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" />
       </CanvasCard>
 
-      {/* ── Column B ── */}
-      <CanvasCard {...card("photo-tech1")} x={1260} y={460} rotate={4} width={210} zIndex={4}>
+      <CanvasCard key={cardKey("photo-tech1")} {...card("photo-tech1")} width={210} zIndex={4}>
         <PhotoNote src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-tech2")} x={1280} y={830} rotate={-4} width={220} zIndex={5}>
+      <CanvasCard key={cardKey("photo-tech2")} {...card("photo-tech2")} width={220} zIndex={5}>
         <PhotoNote src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" />
       </CanvasCard>
 
-      {/* ── Column C ── */}
-      <CanvasCard {...card("photo-event1")} x={1660} y={520} rotate={5} width={200} zIndex={4}>
+      <CanvasCard key={cardKey("photo-event1")} {...card("photo-event1")} width={200} zIndex={4}>
         <PhotoNote src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-kitchen1")} x={1680} y={890} rotate={-3} width={210} zIndex={5}>
+      <CanvasCard key={cardKey("photo-kitchen1")} {...card("photo-kitchen1")} width={210} zIndex={5}>
         <PhotoNote src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" />
       </CanvasCard>
 
-      <CanvasCard {...card("widget-calendar")} x={1650} y={1260} rotate={3} width={210} zIndex={3}>
+      <CanvasCard key={cardKey("widget-calendar")} {...card("widget-calendar")} width={210} zIndex={3}>
         <CalendarCard />
       </CanvasCard>
 
-      {/* ── Column D ── */}
-      <CanvasCard {...card("sticky-2")} x={2040} y={480} rotate={3} width={210} zIndex={4}>
+      <CanvasCard key={cardKey("sticky-2")} {...card("sticky-2")} width={210} zIndex={4}>
         <StickyNote seed="#2A5FA5" index="02" title="Old habits" text="Still sketch everything on paper before Figma touches it." />
       </CanvasCard>
 
-      <CanvasCard {...card("sticky-3")} x={2060} y={850} rotate={-3} width={200} zIndex={5}>
+      <CanvasCard key={cardKey("sticky-3")} {...card("sticky-3")} width={200} zIndex={5}>
         <StickyNote seed="#75308B" index="03" title="Fun fact" text="Ask me about the dino in the footer. I'm weirdly proud of it." />
       </CanvasCard>
     </InfiniteCanvas>

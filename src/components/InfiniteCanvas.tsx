@@ -198,7 +198,15 @@ export function InfiniteCanvas({
      ResizeObserver re-centers on every real size change instead of just
      the first one, which is what actually fixes that class of bug — and
      also means a device rotation or a later web-font-driven reflow
-     re-picks the right fit zoom too, not just the very first paint. */
+     re-picks the right fit zoom too, not just the very first paint.
+     Also depends on center.x/center.y/fitZoom (primitives + a useCallback
+     whose own deps are fitWidth/fitHeight — not the `center` object
+     itself, which is a fresh literal every render and would re-run this
+     on every unrelated re-render too) — NOT just mount-once: a caller
+     like PlaygroundCanvas computing initialCenter/fitWidth/fitHeight
+     from useIsMobile() re-renders with the corrected values a beat AFTER
+     this component's own first mount (isMobile starts false), so a
+     mount-once effect would permanently capture the wrong ones. */
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -211,7 +219,7 @@ export function InfiniteCanvas({
     ro.observe(el);
     return () => ro.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [center.x, center.y, fitZoom]);
 
   const zoomBy = useCallback((factor: number, cx?: number, cy?: number) => {
     const el = containerRef.current;
