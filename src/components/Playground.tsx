@@ -88,22 +88,26 @@ const FAN = [
   { rotate: 10,   y: 11 },
 ];
 
-/* Mobile stack geometry — the reference (a "scrapbook" collage of
-   photos/cards, tossed onto the page at slightly different angles,
-   corners tucked under one another) instead of the neat, evenly-aligned
-   grid the first pass landed on. Each card gets its own small independent
-   rotation (alternating sign so neighbors visibly cant against each
-   other, not all leaning the same way) plus a small x/y nudge that pulls
-   it slightly toward whichever card it should tuck under — negative
-   marginTop does the real work of the row-to-row overlap (see FanCard),
-   this x/y is just the finishing "scattered" touch on top of that. */
+/* Mobile stack geometry — matches the reference's 2x2 collage exactly:
+   four cards (not five — Coffee count sits out on mobile, see
+   MOBILE_CARD_LABELS below, a clean 2x2 reads better than a 2x2-plus-a-
+   spanning-fifth), each at its own small independent rotation, tucked
+   tightly under the row above via a bigger negative marginTop than the
+   first pass used — the reference's rows nearly touch/overlap, not just
+   sit close. */
 const MOBILE_STACK = [
-  { rotate: -4,   x: 2,  y: 0,  marginTop: 0   },
-  { rotate: 3,    x: -3, y: 6,  marginTop: 0   },
-  { rotate: -2.5, x: 4,  y: -4, marginTop: -18 },
-  { rotate: 3.5,  x: -4, y: 2,  marginTop: -12 },
-  { rotate: -2,   x: 0,  y: -3, marginTop: -16 },
+  { rotate: -4,   x: 2,  y: 0, marginTop: 0   },
+  { rotate: 3,    x: -3, y: 6, marginTop: 0   },
+  { rotate: -2.5, x: 4,  y: -4, marginTop: -30 },
+  { rotate: 3.5,  x: -4, y: 2,  marginTop: -22 },
 ];
+
+/* Coffee count is the fifth card, fine as the trailing fan card on
+   desktop but there's no clean way to fit five into the reference's
+   four-card 2x2 without either an odd spanning card (tried, looked
+   tacked-on) or shrinking the grid — dropping it on mobile only reads
+   much closer to the reference. Desktop keeps all five untouched. */
+const MOBILE_HIDDEN_LABELS = new Set(["Coffee count"]);
 
 /* ══════════════════════════════════════════════════════════════════
    Canned "quick ask" responses
@@ -133,7 +137,7 @@ function getResponse(query: string): string {
 /* ══════════════════════════════════════════════════════════════════
    Card
    ══════════════════════════════════════════════════════════════════ */
-function FanCard({ card, index, mounted, isMobile, gridSpanFull }: { card: CardDef; index: number; mounted: boolean; isMobile: boolean; gridSpanFull?: boolean }) {
+function FanCard({ card, index, mounted, isMobile }: { card: CardDef; index: number; mounted: boolean; isMobile: boolean }) {
   const [hovered, setHovered] = useState(false);
   const geo = FAN[index];
   const restingZ = 10 - Math.abs(index - 2);
@@ -173,7 +177,6 @@ function FanCard({ card, index, mounted, isMobile, gridSpanFull }: { card: CardD
            a few px, this is what makes a card genuinely slide up under
            the row above it, like the reference. */
         marginTop: isMobile ? `${mobileGeo.marginTop}px` : undefined,
-        gridColumn: isMobile && gridSpanFull ? "1 / -1" : undefined,
         transform: isMobile
           ? `rotate(${mobileGeo.rotate}deg) translate(${mobileGeo.x}px, ${(mounted ? mobileGeo.y : mobileGeo.y + 20)}px)`
           : (mounted
@@ -584,22 +587,16 @@ export default function Playground() {
           globals.css), a level that has no vertical hover effects to
           protect, so it can safely force overflow-x without side effects. */}
       {isMobile ? (
-        /* Mobile: a plain 2-column stack instead of the desktop fan —
-           squeezing 5 rotated, overlapping cards into a narrow viewport
-           read as skewed/cramped rather than playful. Upright cards in a
-           grid (same content/visual design, just full-width-of-cell) fix
-           that. Odd count (5) — last card spans both columns rather than
-           leaving a lopsided gap next to an empty cell. */
+        /* Mobile: a 2x2 collage instead of the desktop 5-card fan — see
+           MOBILE_HIDDEN_LABELS/MOBILE_STACK above for why the count and
+           geometry differ from desktop. */
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
           gap: "12px", alignItems: "start",
           position: "relative", zIndex: 1,
         }}>
-          {CARDS.map((card, i) => (
-            <FanCard
-              key={card.label} card={card} index={i} mounted={mounted} isMobile={isMobile}
-              gridSpanFull={i === CARDS.length - 1 && CARDS.length % 2 === 1}
-            />
+          {CARDS.filter(card => !MOBILE_HIDDEN_LABELS.has(card.label)).map((card, i) => (
+            <FanCard key={card.label} card={card} index={i} mounted={mounted} isMobile={isMobile} />
           ))}
         </div>
       ) : (
