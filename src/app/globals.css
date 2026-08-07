@@ -510,6 +510,8 @@ body {
 .infinite-canvas {
   cursor: grab;
   background: var(--col-bg);
+  user-select: none;
+  -webkit-user-select: none;
 }
 .infinite-canvas.panning { cursor: grabbing; }
 
@@ -595,9 +597,78 @@ body {
 .canvas-card.canvas-card-dragging { cursor: grabbing; }
 .canvas-card.canvas-card-dragging * { cursor: grabbing; }
 @media (hover: hover) {
-  .canvas-card:not(.canvas-card-dragging):hover {
+  .canvas-card:not(.canvas-card-dragging):not(.canvas-card-pinned):hover {
     filter: brightness(1.02) saturate(1.05);
   }
+}
+
+/* Pinned cards don't drag — see CanvasCard.tsx's pinned branch — so the
+   grab/grabbing affordance would be misleading here. */
+.canvas-card-pinned { cursor: default; }
+
+/* The pin actually stuck into a pinned card's top edge. */
+.canvas-card-pin {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Pin dispenser — a small panel of grabbable pins, sits in the canvas's
+   OWN corner (passed via InfiniteCanvas's `overlay` prop, so it's
+   rendered outside the pannable world and never itself pans/zooms away). */
+.pin-tray {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 13px;
+  border-radius: 16px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--surface-glass-border);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 4px 14px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel);
+}
+.pin-tray-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--col-muted);
+  white-space: nowrap;
+}
+.pin-tray-pins { display: flex; gap: 9px; }
+.pin-tray-pin { cursor: grab; touch-action: none; }
+.pin-tray-pin:active { cursor: grabbing; }
+
+/* The pin that follows the cursor while being dragged from the tray —
+   position:fixed since it's tracking real screen coordinates, not world
+   coordinates (see PinTray.tsx). */
+.pin-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+/* Hover cue on whichever card a dragged pin is currently over — toggled
+   imperatively (classList) in PinTray.tsx, not via CSS :hover, since the
+   "hover" here is a synthetic drop-target check (elementFromPoint) during
+   a pointer drag, not real mouse hover. No `transform` here on purpose —
+   the card's own inline transform (rotation, and pinned cards' hover
+   tilt) would fight a CSS-declared one. */
+.canvas-card-pin-target {
+  outline: 3px dashed rgba(59,91,219,0.6);
+  outline-offset: 5px;
+  filter: brightness(1.04);
 }
 
 /* ─── Card resize (transitions.dev) — tweens width/height changes instead

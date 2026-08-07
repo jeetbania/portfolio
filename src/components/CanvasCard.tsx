@@ -2,23 +2,29 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useCanvasZoom } from "./InfiniteCanvas";
+import { Pin } from "./Pin";
 
 /**
- * A draggable card living inside an <InfiniteCanvas>. The physics here
- * are a from-scratch reimplementation of what made an earlier portfolio's
- * "about" board fun to touch: position eases toward wherever you dragged
- * it (not an instant snap), the card tilts as you drag it sideways (not a
- * fixed rotation), and on release it springs back to its resting angle
- * while coasting a little further on its last velocity (inertia) instead
- * of stopping dead. All of it runs off refs + one rAF loop per card, the
- * same imperative pattern as imageAnchor.tsx — a card can move on every
- * animation frame while dragged; routing that through React state would
- * mean a full re-render per frame for something purely visual.
+ * A card living inside an <InfiniteCanvas>. Two very different modes:
  *
- * Drag deltas are divided by the canvas's current zoom (see
- * useCanvasZoom) so a card always tracks the cursor 1:1 on screen
- * regardless of how zoomed in/out the canvas is — without that, dragging
- * at 2x zoom would fling the card twice as far as your hand actually moved.
+ * - Unpinned (default): draggable. Position eases toward wherever you
+ *   dragged it (not an instant snap), the card tilts as you drag it
+ *   sideways, and on release it springs back to its resting angle while
+ *   coasting a little further on its last velocity (inertia). Runs off
+ *   refs + one rAF loop, the same imperative pattern as imageAnchor.tsx —
+ *   a card can move on every animation frame while dragged; routing that
+ *   through React state would mean a full re-render per frame for
+ *   something purely visual. Drag deltas are divided by the canvas's
+ *   current zoom (see useCanvasZoom) so a card always tracks the cursor
+ *   1:1 on screen regardless of zoom level.
+ *
+ * - Pinned (a <Pin> was dropped on it, see PinTray.tsx): position locks
+ *   at rest — no more drag physics — and a small pushpin renders stuck
+ *   into its top edge. Still reacts to the mouse though, just
+ *   differently: a "stretch toward the cursor" 3D tilt on hover, like a
+ *   photo pinned to a corkboard nudging as you brush past it, so a
+ *   pinned card doesn't go completely inert. `data-card-id` is what
+ *   PinTray's drop-target hit-testing (`elementFromPoint`) looks for.
  */
 
 const LERP_POS = 0.22;
@@ -29,8 +35,10 @@ const TILT_GAIN = 0.28; // how eagerly tilt accumulates per px of horizontal dra
 const INERTIA_DAMPING = 0.9;
 const INERTIA_STOP = 0.04;
 const DRAG_SCALE = 1.045;
+const HOVER_TILT_MAX = 10; // deg, the pinned-card "stretch toward cursor" effect
 
 export function CanvasCard({
+  id,
   x,
   y,
   rotate = 0,
@@ -38,9 +46,12 @@ export function CanvasCard({
   worldWidth,
   worldHeight,
   zIndex = 1,
+  pinned = false,
+  pinColor,
   children,
   style,
 }: {
+  id: string;
   x: number;
   y: number;
   rotate?: number;
@@ -48,6 +59,8 @@ export function CanvasCard({
   worldWidth: number;
   worldHeight: number;
   zIndex?: number;
+  pinned?: boolean;
+  pinColor?: string;
   children: React.ReactNode;
   style?: React.CSSProperties;
 }) {
@@ -72,6 +85,7 @@ export function CanvasCard({
   }, []);
 
   useEffect(() => {
+    if (pinned) return; // locked in place — no physics loop needed at all
     let raf = 0;
     const loop = () => {
       const s = stateRef.current;
@@ -96,11 +110,12 @@ export function CanvasCard({
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [apply, worldWidth, worldHeight, width]);
+  }, [apply, worldWidth, worldHeight, width, pinned]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     // Critical: stops this from also starting a canvas pan underneath.
     e.stopPropagation();
+    if (pinned) return;
     const el = elRef.current;
     if (!el) return;
     const s = stateRef.current;
@@ -116,6 +131,7 @@ export function CanvasCard({
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
+    if (pinned) return;
     const s = stateRef.current;
     if (!s.dragging) return;
     const zoom = zoomRef.current || 1;
@@ -140,6 +156,7 @@ export function CanvasCard({
   };
 
   const endDrag = () => {
+    if (pinned) return;
     const s = stateRef.current;
     if (!s.dragging) return;
     s.dragging = false;
@@ -150,9 +167,56 @@ export function CanvasCard({
     if (el) el.style.zIndex = String(zIndex);
   };
 
+  /* Pinned-only: a "stretch toward cursor" hover tilt (3D perspective
+     rotate, not a position drag) — CSS-transitioned rather than run
+     through the rAF loop above, since it's a lighter, different-feeling
+     interaction (hover, not drag) and doesn't need the drag physics'
+     inertia/lerp machinery. */
+  const onPinnedHover = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `rotate(${rotate}deg) perspective(700px) rotateX(${(-py * HOVER_TILT_MAX).toFixed(2)}deg) rotateY(${(px * HOVER_TILT_MAX).toFixed(2)}deg) scale(1.035)`;
+  };
+  const onPinnedLeave = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transform = `rotate(${rotate}deg)`;
+  };
+
+  if (pinned) {
+    return (
+      <div
+        ref={elRef}
+        data-card-id={id}
+        className="canvas-card canvas-card-pinned"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPinnedHover}
+        onPointerLeave={onPinnedLeave}
+        onDragStart={e => e.preventDefault()}
+        style={{
+          position: "absolute",
+          width,
+          left: x,
+          top: y,
+          transform: `rotate(${rotate}deg)`,
+          transition: "transform 260ms cubic-bezier(0.22,1,0.36,1)",
+          transformStyle: "preserve-3d",
+          zIndex,
+          ...style,
+        }}
+      >
+        <div className="canvas-card-pin">
+          <Pin color={pinColor ?? "#C23B6B"} />
+        </div>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={elRef}
+      data-card-id={id}
       className="canvas-card"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

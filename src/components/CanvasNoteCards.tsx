@@ -1,36 +1,65 @@
 import Image from "next/image";
 
 /**
- * The two "face" designs rendered inside a <CanvasCard> — visually this
- * is where the references' style (Framer about-page's colored sticky
- * notes + bold-captioned photos) gets reinterpreted in this site's own
- * glass language instead of copied: flat colored paper becomes a tinted
- * translucent card (blur + a hairline border in the same hue), and a
- * plain photo + caption becomes the same rounded, bordered, blurred glass
- * frame every other card on this site already uses (QuoteBlock,
- * PlaceholderCard) rather than a plain Polaroid.
+ * The two "face" designs rendered inside a <CanvasCard>.
+ *
+ * StickyNote deliberately does NOT use this site's glass treatment —
+ * per feedback, glass read as generically "app UI," not a sticky note.
+ * Redesigned after a reference showing flat, opaque pastel cards with a
+ * soft grounded shadow (not a colored/tinted glow) and a small numeral —
+ * closer to real paper lifted off a board than a translucent panel. Like
+ * the homepage fan cards, these are deliberately theme-independent
+ * "stickers" (see CLAUDE.md's note on Folder.tsx/Playground.tsx) — same
+ * vivid pastel and fixed dark ink color in both light and dark mode,
+ * which is also why the text color below is a literal hex rather than
+ * var(--col-fg): that token flips to near-white in dark mode and would
+ * vanish against a light pastel background.
+ *
+ * PhotoNote keeps the site's usual glass card frame (blur, hairline
+ * border) — that wasn't called out, and it's what makes a photo read as
+ * "part of this site" rather than a plain Polaroid.
  */
 
-export function StickyNote({ text, tint }: { text: string; tint: string }) {
+export function StickyNote({
+  text,
+  tint,
+  index,
+}: {
+  text: string;
+  tint: string;
+  /** Optional small numeral in the corner, e.g. "01" — purely decorative. */
+  index?: string;
+}) {
   return (
     <div
       style={{
         padding: "20px 20px 22px",
         borderRadius: "16px",
-        background: `linear-gradient(160deg, ${tint}3d 0%, ${tint}16 100%)`,
-        border: `1px solid ${tint}59`,
-        backdropFilter: "blur(18px) saturate(160%)",
-        WebkitBackdropFilter: "blur(18px) saturate(160%)",
-        boxShadow:
-          "0 2px 8px rgba(var(--shadow-tint-rgb),0.08), 0 16px 30px rgba(var(--shadow-tint-rgb),0.10), var(--glass-bevel)",
+        background: `linear-gradient(160deg, color-mix(in srgb, ${tint} 22%, white) 0%, color-mix(in srgb, ${tint} 42%, white) 100%)`,
+        border: "1px solid rgba(0,0,0,0.06)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.08), 0 10px 20px rgba(0,0,0,0.12), 0 26px 44px rgba(0,0,0,0.12)",
       }}
     >
+      {index && (
+        <p
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "13px",
+            fontWeight: 700,
+            letterSpacing: "0.02em",
+            color: `color-mix(in srgb, ${tint} 60%, black)`,
+            margin: "0 0 8px",
+          }}
+        >
+          {index}
+        </p>
+      )}
       <p
         style={{
           fontFamily: "var(--font-hand)",
-          fontSize: "20px",
-          lineHeight: 1.45,
-          color: "var(--col-fg)",
+          fontSize: "19px",
+          lineHeight: 1.42,
+          color: "#2B2A28",
           margin: 0,
         }}
       >
