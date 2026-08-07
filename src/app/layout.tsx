@@ -3,7 +3,6 @@ import { Instrument_Sans, Instrument_Serif, Nanum_Pen_Script } from "next/font/g
 import "./globals.css";
 import Header  from "@/components/Header";
 import DotGrid from "@/components/DotGrid";
-import FloatingThemeToggle from "@/components/FloatingThemeToggle";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
 
 /*
@@ -107,7 +106,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div style={{ position: "relative", zIndex: 1 }}>
             {children}
           </div>
-          <FloatingThemeToggle />
         </ThemeProvider>
       </body>
     </html>

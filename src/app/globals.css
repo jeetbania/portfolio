@@ -1154,7 +1154,11 @@ body {
      to a single trigger in the opposite corner (bottom-left) instead of
      needing this space at all — see .bg-picker-mobile above. */
   .canvas-controls { left: auto; right: 16px; bottom: 16px; transform: none; }
-  .canvas-hint { bottom: 20px; }
+  /* Not just moved — hidden outright on mobile. The whole "drag to pan /
+     ⌘+scroll to zoom" hint describes desktop-only interactions (a mouse
+     drag, a keyboard modifier + scroll wheel) that don't even apply to
+     touch, and per feedback it was just clutter at this width. */
+  .canvas-hint { display: none; }
 }
 
 /* ─── Card resize (transitions.dev) — tweens width/height changes instead
