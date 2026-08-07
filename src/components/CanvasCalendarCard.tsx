@@ -24,7 +24,7 @@ import { EditableText } from "@/lib/contentEditor";
  */
 
 const AGENDA: { time: string; label: string; dot: string }[] = [
-  { time: "9:30", label: "Standup", dot: "#3E7BFA" },
+  { time: "9:00", label: "Wake up eventually", dot: "#3E7BFA" },
   { time: "1:00", label: "Design review", dot: "#2E9B6B" },
   { time: "6:00", label: "Ship it 🚀", dot: "#E8734A" },
 ];

@@ -32,8 +32,8 @@ import { EditableText } from "@/lib/contentEditor";
 type Task = { text: string; emoji: string; checked: boolean };
 
 const INITIAL_TASKS: Task[] = [
-  { text: "Reply to that one email", emoji: "📧", checked: false },
-  { text: "Ship the redesign", emoji: "🚀", checked: false },
+  { text: "Make the portfolio unnecessarily good", emoji: "✨", checked: false },
+  { text: "Find something good to eat", emoji: "🍜", checked: false },
   { text: "Touch grass", emoji: "🌱", checked: false },
 ];
 

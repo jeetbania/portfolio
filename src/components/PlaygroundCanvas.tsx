@@ -202,7 +202,7 @@ export default function PlaygroundCanvas() {
       }
     >
       <CanvasCard key={cardKey("sticky-1")} {...card("sticky-1")} zIndex={5}>
-        <StickyNote id="sticky-1" seed="#B8631F" index="01" title="On design" text="Good design disappears. Bad design apologizes." />
+        <StickyNote id="sticky-1" seed="#B8631F" index="01" title="Things I'm Into" text="Designing things people enjoy using, making nice websites, games, good food, and making things fun." />
       </CanvasCard>
 
       <CanvasCard key={cardKey("widget-todo")} {...card("widget-todo")} zIndex={4}>
@@ -210,23 +210,23 @@ export default function PlaygroundCanvas() {
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-screen1")} {...card("photo-screen1")} zIndex={3}>
-        <PhotoNote id="photo-screen1" src="/playground-image-1.jpg" alt="Waffle and iced drinks at a cafe" title="The Treat" subtitle="waffle o'clock" aspectRatio="2765/3686" />
+        <PhotoNote id="photo-screen1" src="/playground-image-1.jpg" alt="Waffle and iced drinks at a cafe" title="waffle o'clock" subtitle="i was kidding, lunch is still my biggest worry" aspectRatio="2765/3686" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech1")} {...card("photo-tech1")} zIndex={4}>
-        <PhotoNote id="photo-tech1" src="/playground-image-2.jpg" alt="Snow-capped Himalayan mountain range" title="The View" subtitle="somewhere up there" aspectRatio="3226/2419" />
+        <PhotoNote id="photo-tech1" src="/playground-image-2.jpg" alt="Snow-capped Himalayan mountain range" title="advantage of living here" subtitle="one of the prettiest views I get to call nearby" aspectRatio="3226/2419" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech2")} {...card("photo-tech2")} zIndex={5}>
-        <PhotoNote id="photo-tech2" src="/playground-image-3.jpg" alt="Selfie with a friend" title="The Duo" subtitle="usual suspects" aspectRatio="5875/4406" />
+        <PhotoNote id="photo-tech2" src="/playground-image-3.jpg" alt="Selfie with a friend" title="my favourite hooman" subtitle="she makes things better" aspectRatio="5875/4406" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-event1")} {...card("photo-event1")} zIndex={4}>
-        <PhotoNote id="photo-event1" src="/playground-image-4.jpg" alt="Graduation day, cap and gown" title="The Cap" subtitle="made it official" aspectRatio="2722/3629" />
+        <PhotoNote id="photo-event1" src="/playground-image-4.jpg" alt="Graduation day, cap and gown" title="2022 made it!!" subtitle="somehow they let me graduate" aspectRatio="2722/3629" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-kitchen1")} {...card("photo-kitchen1")} zIndex={5}>
-        <PhotoNote id="photo-kitchen1" src="/playground-image-5.jpg" alt="Childhood photo on a bicycle" title="The Start" subtitle="before any of this" aspectRatio="1675/2277" />
+        <PhotoNote id="photo-kitchen1" src="/playground-image-5.jpg" alt="Childhood photo on a bicycle" title="before all this" subtitle="when what's in lunch was my biggest worry" aspectRatio="1675/2277" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("widget-calendar")} {...card("widget-calendar")} zIndex={3}>
@@ -234,11 +234,11 @@ export default function PlaygroundCanvas() {
       </CanvasCard>
 
       <CanvasCard key={cardKey("sticky-2")} {...card("sticky-2")} zIndex={4}>
-        <StickyNote id="sticky-2" seed="#2A5FA5" index="02" title="Old habits" text="Still sketch everything on paper before Figma touches it." />
+        <StickyNote id="sticky-2" seed="#2A5FA5" index="02" title="A Bad Habit" text="I'll sketch something on paper, then immediately start redoing it before I've even finished the sketch." />
       </CanvasCard>
 
       <CanvasCard key={cardKey("sticky-3")} {...card("sticky-3")} zIndex={5}>
-        <StickyNote id="sticky-3" seed="#75308B" index="03" title="Fun fact" text="Ask me about the dino in the footer. I'm weirdly proud of it." />
+        <StickyNote id="sticky-3" seed="#75308B" index="03" title="Ask Me About" text="the tiny dinosaur I hid somewhere on this website." />
       </CanvasCard>
     </InfiniteCanvas>
   );
