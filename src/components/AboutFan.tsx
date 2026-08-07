@@ -4,16 +4,18 @@ import { useRef, useEffect, useCallback } from "react";
 import { animate } from "motion";
 import Image from "next/image";
 
-/* 7 placeholder photos, center one is index 3 — swap the src (and update
-   the alt alongside it) once real personal photos replace these. */
+/* 7 real personal photos, center one is index 3 (about-us-4, the desk
+   setup) — replaced the old stock placeholders. Order was chosen so the
+   two PILLS below (pinned at afterIndex:1 and afterIndex:5) land next to
+   a photo their label actually describes — see the note on PILLS. */
 const PHOTOS = [
-  { src: "/tech-1.jpg",    alt: "Circuit board close-up" },
-  { src: "/event-1.jpg",   alt: "Live event crowd" },
-  { src: "/kitchen-1.jpg", alt: "Participants cooking together" },
-  { src: "/screen-1.jpg",  alt: "Analytics dashboard on screen" },
-  { src: "/tech-2.jpg",    alt: "Team collaborating around a table" },
-  { src: "/event-2.jpg",   alt: "Conference audience" },
-  { src: "/kitchen-2.jpg", alt: "Kitchen scene" },
+  { src: "/about-us-1.jpg", alt: "Selfie by a river at sunset" },
+  { src: "/about-us-7.jpg", alt: "White cat curled up asleep on a deck" },
+  { src: "/about-us-5.jpg", alt: "Gateway of India monument in Mumbai" },
+  { src: "/about-us-4.jpg", alt: "Desk setup with a mechanical keyboard" },
+  { src: "/about-us-3.jpg", alt: "Friends gathered on a mountain cafe balcony" },
+  { src: "/about-us-6.jpg", alt: "Starry night sky over a mountain guesthouse" },
+  { src: "/about-us-2.jpg", alt: "A full Indian thali meal" },
 ];
 const N = PHOTOS.length;
 const CENTER = (N - 1) / 2;
@@ -39,12 +41,13 @@ const SPEECH_SHAPES = {
    39-unit total height — the rest is the tail poking out below. */
 const SPEECH_BELLY_FRACTION = 30 / 39;
 
-/* Little callouts pinned above specific cards — copy is just a
-   placeholder for now, swap the labels whenever. One pastel-blue
-   highlight, the rest subtle gray. */
+/* Little callouts pinned above specific cards — afterIndex:1 lands next
+   to the Gateway of India photo (index 2), afterIndex:5 next to the
+   thali photo (index 6), see PHOTOS above. One pastel-blue highlight,
+   the rest subtle gray. */
 const PILLS = [
-  { afterIndex: 1, label: "tokyo trip", variant: "left" as const,  bg: "#C7E2F7", fg: "#1E4A66" },
-  { afterIndex: 5, label: "fav meal",   variant: "right" as const, bg: "#E6E6E6", fg: "#3A3A3A" },
+  { afterIndex: 1, label: "mumbai trip", variant: "left" as const,  bg: "#C7E2F7", fg: "#1E4A66" },
+  { afterIndex: 5, label: "fav meal",    variant: "right" as const, bg: "#E6E6E6", fg: "#3A3A3A" },
 ];
 const PILL_HEIGHT = 56; // px, rendered size — width follows each shape's own aspect ratio
 /* Clear space kept between a pill's tail tip and the card it points at —
