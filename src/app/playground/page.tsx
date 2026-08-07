@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import RoundedCap from "@/components/RoundedCap";
-import PlaygroundCanvas from "@/components/PlaygroundCanvas";
+import PlaygroundShell from "@/components/PlaygroundShell";
 
 export const metadata: Metadata = {
   title: "Playground — Jeet Bania",
@@ -28,7 +28,7 @@ export default function PlaygroundPage() {
           border: "1px solid var(--surface-card-border)",
           boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.06), 0 24px 48px rgba(var(--shadow-tint-rgb),0.08), var(--glass-bevel)",
         }}>
-          <PlaygroundCanvas />
+          <PlaygroundShell />
         </div>
       </div>
 

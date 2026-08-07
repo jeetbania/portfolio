@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme";
 import { MountFrame, InnerCard, derivePalette } from "./CanvasCardChrome";
+import { EditableText } from "@/lib/contentEditor";
 
 /**
  * The to-do widget for the Playground canvas, built on the same
@@ -40,7 +41,7 @@ const INITIAL_TASKS: Task[] = [
    manager — a card this size stops reading as a note past 3-4 rows. */
 const MAX_TASKS = 3;
 
-export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
+export function TodoWidgetCard({ id, seed = "#2A5FA5" }: { id: string; seed?: string }) {
   const { theme } = useTheme();
   const palette = derivePalette(seed, theme === "dark");
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
@@ -66,9 +67,11 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
   return (
     <MountFrame>
       <InnerCard palette={palette} style={{ padding: "20px 16px 14px" }}>
-        <span style={{ fontFamily: "var(--font-hand)", color: palette.ink, fontSize: "28px", lineHeight: "28px", display: "block", marginBottom: "8px" }}>
-          today, probably
-        </span>
+        <EditableText
+          id={`${id}.heading`}
+          baseValue="today, probably"
+          style={{ fontFamily: "var(--font-hand)", color: palette.ink, fontSize: "28px", lineHeight: "28px", display: "block", marginBottom: "8px" }}
+        />
         {tasks.map((task, i) => (
           <button
             key={i}
@@ -95,7 +98,7 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
               )}
             </span>
             <span style={{ position: "relative", fontFamily: "var(--font-sans)", fontSize: "13.5px", color: palette.text }}>
-              {task.text} {task.emoji}
+              <EditableText id={`${id}.tasks[${i}].text`} baseValue={task.text} /> {task.emoji}
               <ScribbleStrike active={task.checked} color={palette.ink} variant={i} />
             </span>
           </button>

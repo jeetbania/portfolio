@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme";
+import { EditableText } from "@/lib/contentEditor";
 
 /**
  * A calendar widget — reworked twice now per feedback: first to drop the
@@ -28,7 +29,7 @@ const AGENDA: { time: string; label: string; dot: string }[] = [
   { time: "6:00", label: "Ship it 🚀", dot: "#E8734A" },
 ];
 
-export function CalendarCard() {
+export function CalendarCard({ id }: { id: string }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [reminderSet, setReminderSet] = useState(false);
@@ -117,18 +118,22 @@ export function CalendarCard() {
             }}
           >
             <span aria-hidden="true" style={{ flexShrink: 0, width: "7px", height: "7px", borderRadius: "50%", background: item.dot }} />
-            <span style={{
-              fontFamily: "var(--font-sans)", fontSize: "12.5px", color: "var(--col-muted)",
-              fontVariantNumeric: "tabular-nums", flexShrink: 0,
-            }}>
-              {item.time}
-            </span>
-            <span style={{
-              fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--canvas-ink-strong)",
-              textDecoration: done[i] ? "line-through" : "none",
-            }}>
-              {item.label}
-            </span>
+            <EditableText
+              id={`${id}.agenda[${i}].time`}
+              baseValue={item.time}
+              style={{
+                fontFamily: "var(--font-sans)", fontSize: "12.5px", color: "var(--col-muted)",
+                fontVariantNumeric: "tabular-nums", flexShrink: 0,
+              }}
+            />
+            <EditableText
+              id={`${id}.agenda[${i}].label`}
+              baseValue={item.label}
+              style={{
+                fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--canvas-ink-strong)",
+                textDecoration: done[i] ? "line-through" : "none",
+              }}
+            />
           </button>
         ))}
       </div>

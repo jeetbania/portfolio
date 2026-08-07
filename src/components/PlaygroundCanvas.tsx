@@ -120,7 +120,16 @@ export default function PlaygroundCanvas() {
 
   const layout = isMobile ? MOBILE_LAYOUT : DESKTOP_LAYOUT;
   const contentBounds = isMobile ? MOBILE_CONTENT_BOUNDS : DESKTOP_CONTENT_BOUNDS;
-  const initialCenter = isMobile ? MOBILE_BOUNDS.center : { x: 1560, y: 990 };
+  // The camera's world-space TARGET moving right shifts the (fixed-
+  // position) cards LEFT on screen — panX = containerWidth/2 -
+  // target.x*zoom, so a bigger target.x makes panX more negative, which
+  // is what pushes every card's screen position left. Per feedback that
+  // the mobile view still read as biased right, offsetting the target
+  // past the cluster's own true center (rather than picking a whole new
+  // center by hand again) directly nudges the visible content leftward.
+  const initialCenter = isMobile
+    ? { x: MOBILE_BOUNDS.center.x + 110, y: MOBILE_BOUNDS.center.y }
+    : { x: 1560, y: 990 };
 
   const dropPin = (cardId: string, hueRotate: number) => {
     setPinned(p => ({ ...p, [cardId]: hueRotate }));
@@ -184,43 +193,43 @@ export default function PlaygroundCanvas() {
       }
     >
       <CanvasCard key={cardKey("sticky-1")} {...card("sticky-1")} zIndex={5}>
-        <StickyNote seed="#B8631F" index="01" title="On design" text="Good design disappears. Bad design apologizes." />
+        <StickyNote id="sticky-1" seed="#B8631F" index="01" title="On design" text="Good design disappears. Bad design apologizes." />
       </CanvasCard>
 
       <CanvasCard key={cardKey("widget-todo")} {...card("widget-todo")} zIndex={4}>
-        <TodoWidgetCard seed="#1F7A52" />
+        <TodoWidgetCard id="widget-todo" seed="#1F7A52" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-screen1")} {...card("photo-screen1")} zIndex={3}>
-        <PhotoNote src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" />
+        <PhotoNote id="photo-screen1" src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech1")} {...card("photo-tech1")} zIndex={4}>
-        <PhotoNote src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" />
+        <PhotoNote id="photo-tech1" src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-tech2")} {...card("photo-tech2")} zIndex={5}>
-        <PhotoNote src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" />
+        <PhotoNote id="photo-tech2" src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-event1")} {...card("photo-event1")} zIndex={4}>
-        <PhotoNote src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" />
+        <PhotoNote id="photo-event1" src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("photo-kitchen1")} {...card("photo-kitchen1")} zIndex={5}>
-        <PhotoNote src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" />
+        <PhotoNote id="photo-kitchen1" src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("widget-calendar")} {...card("widget-calendar")} zIndex={3}>
-        <CalendarCard />
+        <CalendarCard id="widget-calendar" />
       </CanvasCard>
 
       <CanvasCard key={cardKey("sticky-2")} {...card("sticky-2")} zIndex={4}>
-        <StickyNote seed="#2A5FA5" index="02" title="Old habits" text="Still sketch everything on paper before Figma touches it." />
+        <StickyNote id="sticky-2" seed="#2A5FA5" index="02" title="Old habits" text="Still sketch everything on paper before Figma touches it." />
       </CanvasCard>
 
       <CanvasCard key={cardKey("sticky-3")} {...card("sticky-3")} zIndex={5}>
-        <StickyNote seed="#75308B" index="03" title="Fun fact" text="Ask me about the dino in the footer. I'm weirdly proud of it." />
+        <StickyNote id="sticky-3" seed="#75308B" index="03" title="Fun fact" text="Ask me about the dino in the footer. I'm weirdly proud of it." />
       </CanvasCard>
     </InfiniteCanvas>
   );

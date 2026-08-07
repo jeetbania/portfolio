@@ -25,6 +25,13 @@
   /* Base palette */
   --col-bg:           #F5F4F0;
   --col-fg:           #1A1A1A;
+  /* Playground canvas's own DEFAULT backdrop (no custom color picked via
+     BackgroundPicker) — light blue in light mode specifically per
+     feedback ("the light blue was looking better than this beige by
+     default"), same hex as BackgroundPicker's own blue swatch for
+     consistency. Dark mode keeps the plain --col-bg ("normal dark") —
+     this is a light-mode-only preference, not a theme-wide one. */
+  --canvas-default-bg: #C8E6F7;
   --col-muted:        #6B6B6B;
   /* Was .4 (2.8:1 against --col-bg) — real text at this token's actual
      sizes (10.5–13px meta labels/captions) needs WCAG AA's 4.5:1, not
@@ -171,6 +178,9 @@
 
   --col-bg:      #111113;
   --col-fg:      #F2F1ED;
+  /* Dark mode's canvas default stays "normal dark," not the light-mode
+     blue — see the :root comment. */
+  --canvas-default-bg: var(--col-bg);
   --col-muted:   rgba(255,255,255,0.56);
   /* Was .4 (3.8:1 against --col-bg, worse against --surface-opaque tiles)
      — same fix as the light-theme value above, same reasoning. .5 clears
@@ -543,7 +553,7 @@ body {
    React re-render) to swap grab->grabbing while a background drag is live. */
 .infinite-canvas {
   cursor: grab;
-  background: var(--col-bg);
+  background: var(--canvas-default-bg);
   user-select: none;
   -webkit-user-select: none;
 }
