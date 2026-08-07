@@ -36,7 +36,7 @@ export function CalendarCard() {
           position: "absolute", left: "-16px", top: "22px",
           width: "100%", height: "88%",
           borderRadius: "18px",
-          background: "#FDFDFD",
+          background: "var(--canvas-mount-bg)",
           boxShadow: "0 6px 16px rgba(0,0,0,0.14)",
           transform: "rotate(-8deg)",
           zIndex: 0,
@@ -44,12 +44,12 @@ export function CalendarCard() {
       >
         <div style={{ position: "absolute", left: "14px", top: "16px", display: "flex", flexDirection: "column", gap: "9px" }}>
           {[0, 1, 2].map(i => (
-            <span key={i} style={{ width: "13px", height: "13px", borderRadius: "50%", background: "rgba(0,0,0,0.06)" }} />
+            <span key={i} style={{ width: "13px", height: "13px", borderRadius: "50%", background: "color-mix(in srgb, var(--canvas-ink-strong) 12%, transparent)" }} />
           ))}
         </div>
         <span style={{
           position: "absolute", left: "20px", bottom: "10px",
-          fontFamily: "var(--font-hand)", fontSize: "18px", color: "#A3A3A3",
+          fontFamily: "var(--font-hand)", fontSize: "18px", color: "var(--col-muted)",
           transform: "rotate(2deg)",
         }}>
           Something fun, maybe
@@ -81,7 +81,7 @@ export function CalendarCard() {
       {/* Front layer — the actual content. */}
       <div style={{
         position: "relative", zIndex: 2,
-        background: "#FFFFFF",
+        background: "var(--canvas-mount-bg)",
         borderRadius: "18px",
         boxShadow: "0 10px 26px rgba(0,0,0,0.20)",
         padding: "20px 18px 16px",
@@ -93,10 +93,10 @@ export function CalendarCard() {
         }}>
           Today
         </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "20px", color: "#111", margin: "0 0 3px", lineHeight: 1.15 }}>
+        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "20px", color: "var(--canvas-ink-strong)", margin: "0 0 3px", lineHeight: 1.15 }}>
           {weekday}, {day} {month}
         </p>
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "12.5px", color: "#8A8A8A", margin: "0 0 22px" }}>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: "12.5px", color: "var(--col-muted)", margin: "0 0 22px" }}>
           Live from the calendar
         </p>
         <button
@@ -109,8 +109,8 @@ export function CalendarCard() {
             border: "none",
             cursor: "pointer",
             fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "13px",
-            background: reminderSet ? "#FDECC8" : "#F0F0F0",
-            color: reminderSet ? "#8A5B0A" : "#1A1A1A",
+            background: reminderSet ? "color-mix(in srgb, #F6D949 35%, var(--canvas-mount-bg))" : "var(--surface-glass)",
+            color: reminderSet ? "#8A5B0A" : "var(--canvas-ink-strong)",
             transition: "background 200ms var(--ease-out), color 200ms var(--ease-out), transform 220ms cubic-bezier(0.34,1.6,0.64,1)",
             transform: reminderSet ? "scale(1.03)" : "scale(1)",
           }}

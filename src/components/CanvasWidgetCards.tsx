@@ -66,7 +66,7 @@ export function TodoWidgetCard({ seed = "#2A5FA5" }: { seed?: string }) {
                   </svg>
                 )}
               </span>
-              <span style={{ position: "relative", fontFamily: "var(--font-sans)", fontSize: "13.5px", color: "#1A1A1A" }}>
+              <span style={{ position: "relative", fontFamily: "var(--font-sans)", fontSize: "13.5px", color: "var(--canvas-ink-strong)" }}>
                 {task.text} {task.emoji}
                 <ScribbleStrike active={checked[i]} color={palette.ink} />
               </span>
@@ -157,7 +157,7 @@ export function CoffeeCounterCard({ seed = "#B8631F" }: { seed?: string }) {
           >
             ☕
           </button>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: "24px", fontWeight: 700, color: "#1A1A1A", margin: "10px 0 0", lineHeight: 1 }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: "24px", fontWeight: 700, color: "var(--canvas-ink-strong)", margin: "10px 0 0", lineHeight: 1 }}>
             {count}
           </p>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: "12px", color: palette.text, margin: "3px 0 0" }}>

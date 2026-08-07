@@ -90,6 +90,23 @@
   --skeleton-dot:  rgba(0,0,0,0.14);
   --skeleton-glow: var(--col-fg);
 
+  /* Playground canvas "mounted paper" cards (CanvasCardChrome.tsx,
+     PhotoNote, CalendarCard) — unlike the folder/fan-card "stickers"
+     elsewhere on the site, these were reported looking wrong in dark
+     mode (flat white regardless of theme), so unlike those, these DO
+     flip. --canvas-tint-base is the key one: derivePalette() color-mixes
+     each card's accent seed against it, so in light mode a note is a
+     pale tint of its accent on near-white, and in dark mode the exact
+     same seed/percentages instead produce a deep muted tint of that
+     accent on near-black — same "one seed drives everything" logic,
+     just a different base to blend toward per theme. */
+  --canvas-mount-bg:      #F9F9F9;
+  --canvas-mount-outline: #FFFFFF;
+  --canvas-mount-shadow:  0 5px 17px rgba(0,0,0,0.22);
+  --canvas-inner-shadow:  0 2px 3px rgba(0,0,0,0.18);
+  --canvas-tint-base:     white;
+  --canvas-ink-strong:    #1A1A1A;
+
   /*
    * A partially see-through card face — for surfaces sitting on top of a
    * vividly-coloured backing (the "about me" fan cards) that should still
@@ -194,6 +211,13 @@
   --skeleton-dot: rgba(255,255,255,0.16);
   /* --skeleton-glow keeps riding on --col-fg, which already flips light
      in this theme — no separate override needed. */
+
+  --canvas-mount-bg:      #26262A;
+  --canvas-mount-outline: rgba(255,255,255,0.10);
+  --canvas-mount-shadow:  0 5px 17px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+  --canvas-inner-shadow:  0 2px 3px rgba(0,0,0,0.35);
+  --canvas-tint-base:     #26262A;
+  --canvas-ink-strong:    #F2F1ED;
 
   /* Much more see-through than --surface-opaque so the vivid backing
      colour on the "about me" cards stays visible, not muddy-dark */
@@ -523,25 +547,6 @@ body {
      overhead here. */
   background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1.6px);
   background-size: 28px 28px;
-}
-
-/* Heading — passed to InfiniteCanvas's `overlay` prop (PlaygroundCanvas.tsx),
-   so it's a sibling of the pannable world, not inside it: dead center of
-   the canvas viewport, always, regardless of pan/zoom. pointer-events:none
-   is what lets drags/clicks on the canvas or a card behind it still land —
-   this is a label, not a control. z-index sits above resting cards (1-5)
-   so it stays legible, but below an actively-dragged card's temporary 50
-   so a card you're actively holding still visually wins over a fixed
-   background label, same as it would over a real cork board. */
-.playground-heading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 20;
-  pointer-events: none;
-  text-align: center;
-  width: min(620px, 84%);
 }
 
 .canvas-hint {

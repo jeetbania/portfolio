@@ -47,7 +47,7 @@ export function CanvasCard({
   worldHeight,
   zIndex = 1,
   pinned = false,
-  pinColor,
+  pinHue,
   children,
   style,
 }: {
@@ -60,7 +60,7 @@ export function CanvasCard({
   worldHeight: number;
   zIndex?: number;
   pinned?: boolean;
-  pinColor?: string;
+  pinHue?: number;
   children: React.ReactNode;
   style?: React.CSSProperties;
 }) {
@@ -206,7 +206,7 @@ export function CanvasCard({
         }}
       >
         <div className="canvas-card-pin">
-          <Pin color={pinColor ?? "#C23B6B"} />
+          <Pin hueRotate={pinHue ?? 0} />
         </div>
         {children}
       </div>

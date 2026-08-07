@@ -9,45 +9,43 @@ import { CalendarCard } from "./CanvasCalendarCard";
 import { PinTray } from "./PinTray";
 
 /**
- * Everything on /playground lives here. Two things changed shape from the
- * first draft, per feedback:
+ * Everything on /playground lives here. No heading anymore — per
+ * feedback it read as cleaner without one, so this page opens directly
+ * on the canvas itself; PinTray is the only thing left in InfiniteCanvas's
+ * `overlay` slot (fixed to the canvas's own corner, not the pannable
+ * world).
  *
- * - The heading used to be plain content INSIDE the pannable world (so it
- *   panned/zoomed away like everything else). Now it's passed through
- *   InfiniteCanvas's `overlay` prop instead (same slot PinTray already
- *   used) and centered via .playground-heading in globals.css — it never
- *   moves, no matter what happens to the canvas underneath it.
- *   pointer-events: none on that class is what lets clicks/drags reach
- *   through to whatever canvas content happens to sit behind it.
- * - Cards are laid out in a loose ring around the world's center instead
- *   of a cluster starting near the top-left — with the heading now fixed
- *   dead-center of the viewport, the center of the INITIAL view needed to
- *   stay relatively clear so cards don't load in stacked directly behind
- *   the (unmovable) title.
+ * Cards are laid out in a loose ring around the world's center — that
+ * gap in the middle used to matter because a fixed heading sat there;
+ * now it's just breathing room, which still reads fine (an "almost
+ * infinite" canvas earns a bit of open space).
  *
- * Pin state (which cards are locked down, and in what color) lives here
- * as real React state — pinning is a deliberate, infrequent action, so a
- * normal re-render per pin is fine, and this is the natural lift-state-up
- * point since both <PinTray> and every <CanvasCard> need it.
+ * Pin state (which cards are locked down, and which pin color) lives
+ * here as real React state — pinning is a deliberate, infrequent action,
+ * so a normal re-render per pin is fine, and this is the natural
+ * lift-state-up point since both <PinTray> and every <CanvasCard> need it.
  */
 
 const WORLD_WIDTH = 3000;
 const WORLD_HEIGHT = 1800;
 const INITIAL_CENTER = { x: 1500, y: 900 };
 
-const PIN_COLORS = ["#E8734A", "#3E7BFA", "#8B5CF6"];
+/* Hue-rotate degrees applied to the real pin.svg asset (a purple pin) —
+   see Pin.tsx for why this is a hue shift rather than hand-edited
+   gradient stops. 0 keeps the pin's native purple. */
+const PIN_HUES = [150, -60, 0];
 
 export default function PlaygroundCanvas() {
-  const [pinned, setPinned] = useState<Record<string, string>>({});
+  const [pinned, setPinned] = useState<Record<string, number>>({});
 
-  const dropPin = (cardId: string, color: string) => {
-    setPinned(p => ({ ...p, [cardId]: color }));
+  const dropPin = (cardId: string, hueRotate: number) => {
+    setPinned(p => ({ ...p, [cardId]: hueRotate }));
   };
 
   const card = (id: string) => ({
     id,
-    pinned: Boolean(pinned[id]),
-    pinColor: pinned[id],
+    pinned: Object.prototype.hasOwnProperty.call(pinned, id),
+    pinHue: pinned[id],
     worldWidth: WORLD_WIDTH,
     worldHeight: WORLD_HEIGHT,
   });
@@ -58,32 +56,7 @@ export default function PlaygroundCanvas() {
       worldHeight={WORLD_HEIGHT}
       initialCenter={INITIAL_CENTER}
       height="88svh"
-      overlay={
-        <>
-          <div className="playground-heading" aria-hidden={false}>
-            <p style={{
-              fontFamily: "var(--font-sans)", fontSize: "11px", letterSpacing: "0.1em",
-              textTransform: "uppercase", color: "var(--col-muted)", marginBottom: "14px",
-            }}>
-              Playground
-            </p>
-            <h1 style={{
-              fontFamily: "var(--font-serif)", fontSize: "clamp(32px, 4.2vw, 54px)",
-              fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: "16px",
-            }}>
-              A corner of the site with no real point.
-            </h1>
-            <p style={{
-              fontFamily: "var(--font-sans)", fontSize: "16px", fontWeight: 500,
-              letterSpacing: "-0.01em", lineHeight: 1.55, color: "var(--col-muted)",
-              maxWidth: "480px", marginLeft: "auto", marginRight: "auto",
-            }}>
-              Drag the canvas, zoom in and out, move the cards wherever you want. Grab a pin if you want one to stay put.
-            </p>
-          </div>
-          <PinTray colors={PIN_COLORS} onDropOnCard={dropPin} />
-        </>
-      }
+      overlay={<PinTray hues={PIN_HUES} onDropOnCard={dropPin} />}
     >
       <CanvasCard {...card("sticky-1")} x={1050} y={550} rotate={-4} width={210} zIndex={4}>
         <StickyNote seed="#B8631F" index="01" title="On design" text="Good design disappears. Bad design apologizes." />
@@ -97,24 +70,24 @@ export default function PlaygroundCanvas() {
         <StickyNote seed="#75308B" index="03" title="Fun fact" text="Ask me about the dino in the footer. I'm weirdly proud of it." />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-tech1")} x={760} y={650} rotate={-6} width={220} zIndex={2}>
-        <PhotoNote src="/tech-1.jpg" alt="Circuit board close-up" caption="Where the interesting problems live." />
+      <CanvasCard {...card("photo-tech1")} x={740} y={640} rotate={-6} width={210} zIndex={2}>
+        <PhotoNote src="/tech-1.jpg" alt="Circuit board close-up" title="The Build" subtitle="where it happens" dot="#E8734A" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-event1")} x={2000} y={620} rotate={5} width={210} zIndex={2}>
-        <PhotoNote src="/event-1.jpg" alt="Live event crowd" caption="Conferences, occasionally." />
+      <CanvasCard {...card("photo-event1")} x={2010} y={610} rotate={5} width={200} zIndex={2}>
+        <PhotoNote src="/event-1.jpg" alt="Live event crowd" title="The Crowd" subtitle="conferences, occasionally" dot="#3E7BFA" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-kitchen1")} x={1950} y={1080} rotate={-3} width={220} zIndex={2}>
-        <PhotoNote src="/kitchen-1.jpg" alt="Participants cooking together" caption="Community over competition." />
+      <CanvasCard {...card("photo-kitchen1")} x={1960} y={1080} rotate={-3} width={210} zIndex={2}>
+        <PhotoNote src="/kitchen-1.jpg" alt="Participants cooking together" title="The Table" subtitle="community > competition" dot="#2E9B6B" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-tech2")} x={790} y={1080} rotate={4} width={230} zIndex={2}>
-        <PhotoNote src="/tech-2.jpg" alt="Team collaborating around a table" caption="Best ideas happen around a table." />
+      <CanvasCard {...card("photo-tech2")} x={780} y={1080} rotate={4} width={220} zIndex={2}>
+        <PhotoNote src="/tech-2.jpg" alt="Team collaborating around a table" title="The Huddle" subtitle="best ideas, argued over" dot="#8B5CF6" />
       </CanvasCard>
 
-      <CanvasCard {...card("photo-screen1")} x={1190} y={1330} rotate={-5} width={200} zIndex={1}>
-        <PhotoNote src="/screen-1.jpg" alt="Analytics dashboard on screen" caption="Numbers, but make them fun." />
+      <CanvasCard {...card("photo-screen1")} x={1200} y={1320} rotate={-5} width={190} zIndex={1}>
+        <PhotoNote src="/screen-1.jpg" alt="Analytics dashboard on screen" title="The Numbers" subtitle="made fun, mostly" dot="#E0527A" />
       </CanvasCard>
 
       <CanvasCard {...card("widget-coffee")} x={2070} y={890} rotate={3} width={180} zIndex={3}>
