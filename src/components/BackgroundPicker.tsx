@@ -78,6 +78,22 @@ export function BackgroundPicker({
           aria-pressed={value === color}
         />
       ))}
+      {/* Reset — no swatch itself reads as "back to default" the way a
+          dedicated icon does, so a color once picked had no obvious way
+          back per feedback. Dims/disables once already at the default so
+          it doesn't look clickable when there's nothing to reset. */}
+      <button
+        type="button"
+        className="bg-picker-reset"
+        onClick={() => { onChange(null); setOpen(false); }}
+        disabled={!value}
+        aria-label="Reset canvas background to default"
+        title="Reset background"
+      >
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M13.5 8A5.5 5.5 0 1 1 11.9 4.1M13.5 1.5V4.6H10.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
     </>
   );
 

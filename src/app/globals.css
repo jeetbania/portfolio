@@ -1031,6 +1031,26 @@ body {
   transform: scale(1.12);
 }
 
+/* Reset — a plain neutral icon button, same footprint as a swatch but
+   deliberately not colored like one (it isn't a color choice, it's the
+   way back out of one). Dims to a non-interactive look once already at
+   the default, rather than just doing nothing on click with no cue why. */
+.bg-picker-reset {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--col-hairline);
+  background: var(--surface-glass);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--col-muted);
+  cursor: pointer;
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+.bg-picker-reset:hover:not(:disabled) { transform: scale(1.12); background: var(--surface-glass-strong); }
+.bg-picker-reset:disabled { opacity: 0.35; cursor: default; }
+
 /* Mobile-only trigger + expanding panel (BackgroundPicker.tsx swaps to
    this structure via useIsMobile — the desktop row above doesn't fit
    next to the zoom controls at this width). Same bottom-left corner as
@@ -1079,6 +1099,7 @@ body {
   transform: scale(0.9) translateY(8px);
 }
 .bg-picker-panel .bg-picker-swatch { width: 26px; height: 26px; }
+.bg-picker-panel .bg-picker-reset { width: 26px; height: 26px; }
 
 /* ══════════════════════════════════════════════════════════════════
    MOBILE — pure CSS layout overrides only (no JS, no hydration risk).

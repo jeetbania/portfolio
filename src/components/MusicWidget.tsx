@@ -1,7 +1,9 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import Image from "next/image";
 import GradientThumb from "./GradientThumb";
+import { TRACKS, type Track } from "@/data/music";
 
 /**
  * A "Listening to..." widget: a fanned stack of album covers that lift on
@@ -39,28 +41,33 @@ import GradientThumb from "./GradientThumb";
  * furniture, not a card that scatters around the world like everything
  * else on the board.
  *
- * Placeholder tracks/art only, per request — swap TRACKS below once real
- * songs/covers/Spotify links exist. Cover art is GradientThumb (already
- * used for blog placeholder covers) rather than any stock photo, since
- * there's no real art to show yet and a soft gradient blob reads
- * honestly as "placeholder," not as a fake specific album.
+ * Track data (artist/title/spotifyUrl/cover) lives in src/data/music.ts,
+ * not here — same "don't invent a parallel data source" convention as
+ * projects.ts/blog.ts. A track renders its real `cover` image (from
+ * public/albums/) via AlbumArt below when one's set, falling back to a
+ * GradientThumb blob (already used for blog placeholder covers) built
+ * from `colors` otherwise — so placeholder tracks read honestly as
+ * placeholders, not fake specific albums, until real art exists.
  */
 
-type Track = {
-  artist: string;
-  title: string;
-  colors: readonly [string, string, string];
-  spotifyUrl?: string;
-};
+const DEFAULT_COLORS: readonly [string, string, string] = ["#8A8A92", "#B8B8C0", "#4A4A52"];
 
-const TRACKS: Track[] = [
-  { artist: "Night Static", title: "Overdrive", colors: ["#6C4FD1", "#A79AFF", "#2A1D5C"] },
-  { artist: "Paper Cranes", title: "Low Tide", colors: ["#1F9D55", "#6EDB98", "#0E4A28"] },
-  { artist: "Radio Silence", title: "Fast Forward", colors: ["#E8734A", "#F5C15A", "#7A2E12"] },
-  { artist: "Sunday Static", title: "Afterglow", colors: ["#C23B6B", "#F58FB0", "#5C1230"] },
-  { artist: "The Long Way", title: "Home Movies", colors: ["#C77D11", "#F5C15A", "#5C3A08"] },
-  { artist: "Nova & Wren", title: "Static Bloom", colors: ["#2563C7", "#6FA8F5", "#12245C"] },
-];
+/** Real cover art if `track.cover` is set, else a gradient placeholder. */
+function AlbumArt({ track, radius }: { track: Track; radius: number }) {
+  if (track.cover) {
+    return (
+      <Image
+        src={`/albums/${track.cover}`}
+        alt={`${track.title} by ${track.artist}`}
+        fill
+        className="object-cover"
+        sizes="108px"
+        draggable={false}
+      />
+    );
+  }
+  return <GradientThumb colors={track.colors ?? DEFAULT_COLORS} radius={radius} />;
+}
 
 /* How long the pick phase gets to finish before the view actually swaps
    to NowPlaying — matches .music-album-flip-pick's own animation
@@ -163,7 +170,7 @@ function Browse({
             aria-label={`Play ${track.title} by ${track.artist}`}
           >
             <div style={{ position: "relative", width: "56px", height: "56px", borderRadius: "9px", overflow: "hidden", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }}>
-              <GradientThumb colors={track.colors} radius={9} />
+              <AlbumArt track={track} radius={9} />
             </div>
             <span className="music-album-tooltip">
               {track.artist}<br />
@@ -213,7 +220,7 @@ function NowPlaying({ track, onBack }: { track: Track; onBack: () => void }) {
             style={{ position: "absolute", left: "82px", top: "12px", width: "96px", height: "96px" }}
           />
           <div style={{ position: "absolute", left: 0, top: "6px", width: "108px", height: "108px", borderRadius: "12px", overflow: "hidden", boxShadow: "0 10px 24px rgba(0,0,0,0.32)", zIndex: 2 }}>
-            <GradientThumb colors={track.colors} radius={12} />
+            <AlbumArt track={track} radius={12} />
           </div>
         </div>
 
