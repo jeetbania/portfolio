@@ -71,16 +71,21 @@ export const projects: Project[] = [
     description: "International PR agency for crypto and Web3 companies, rebranded and rebuilt against a hard conference deadline.",
     tint: "var(--folder-yap)",
     tintHex: "#B8CEF5",
-    /* images[0] is also the case-study hero (page.tsx reads it directly) —
-       set its `focalPoint` once you've anchored it, and it applies there
-       too. Folder.tsx only reads the first 3 for the homepage folder-card
-       stack; the full 9-image set lives in caseStudies.ts's blocks below. */
+    /* images[0] is also the case-study hero (page.tsx reads it directly),
+       heroVideo's poster frame (paints before the video loads, and is
+       what a prefers-reduced-motion visitor sees instead of it — see
+       HeroVideo.tsx), and the homepage folder-card thumbnail (which never
+       plays video) — set its `focalPoint` once you've anchored it, and it
+       applies everywhere it's used. Folder.tsx only reads the first 3 for
+       the homepage folder-card stack; the full 9-image set lives in
+       caseStudies.ts's blocks below. */
     images: [
       { src: "/yap-hero.webp",       alt: "YAP Global hero" },
       { src: "/yap-showcase-1.webp", alt: "YAP Global showcase 1" },
       { src: "/yap-showcase-3.webp", alt: "YAP Global showcase 3" },
     ],
     tags: ["UX Design", "Brand Identity"],
+    heroVideo: "/yap-global-hero.mp4",
   },
   {
     slug: "fourth-project",
