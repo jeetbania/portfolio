@@ -36,20 +36,21 @@ export const projects: Project[] = [
     description: "Chennai-based RISC-V processor IP company, redesigned around a new flagship product.",
     tint: "var(--folder-incore)",
     tintHex: "#B8F0D8",
-    /* images[0] is also the case-study hero (page.tsx reads it directly)
-       and, if/when heroVideo below gets a real file, the video's poster
-       frame too. incore-approach.webp standing in as the hero/folder-card
-       image for now, since a hero video is planned instead of a hero
-       photo and no dedicated poster frame exists yet (see chat, Aug
-       2026) — swap this for a real one anytime; every case-study page
-       reads it straight from here. */
+    /* images[0] is also the case-study hero (page.tsx reads it directly),
+       heroVideo's poster frame (paints before the video loads, and is
+       what a prefers-reduced-motion visitor sees instead of it — see
+       HeroVideo.tsx), and the homepage folder-card thumbnail (which never
+       plays video). incore-approach.webp is standing in as all three for
+       now rather than a real still pulled from the video itself — swap
+       it for one anytime; every case-study page reads it straight from
+       here. */
     images: [
       { src: "/incore-approach.webp",   alt: "InCore website, approach mockup" },
       { src: "/incore-showcase-1.webp", alt: "InCore website, showcase mockup" },
       { src: "/incore-showcase-3.webp", alt: "InCore website, showcase mockup" },
     ],
     tags: ["UX Design", "Content Strategy"],
-    // heroVideo: "/incore-hero.mp4", // uncomment once the compressed video file is in public/
+    heroVideo: "/incore-hero.mp4",
   },
   {
     slug: "migrateful",
