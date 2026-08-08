@@ -14,19 +14,24 @@
  * whole thing relative to that inherited font-size, `rotate` reorients
  * the artwork (it's drawn pointing up-and-right natively) since the same
  * asset gets reused pointing in different directions depending on what
- * it's gesturing at.
+ * it's gesturing at. `flipY` mirrors it top-to-bottom first (so the hook
+ * curls the other way) — used when the arrow sits below the thing it's
+ * annotating instead of beside it, pointing back up at it.
  */
 export function AnnotationArrow({
   size = 1,
   rotate = 0,
+  flipY = false,
   color = "#3B5BDB",
   style,
 }: {
   size?: number;
   rotate?: number;
+  flipY?: boolean;
   color?: string;
   style?: React.CSSProperties;
 }) {
+  const transforms = [flipY && "scaleY(-1)", rotate && `rotate(${rotate}deg)`].filter(Boolean).join(" ");
   return (
     <svg
       width={`${1.1 * size}em`}
@@ -39,7 +44,7 @@ export function AnnotationArrow({
         display: "inline-block",
         flexShrink: 0,
         verticalAlign: "middle",
-        transform: rotate ? `rotate(${rotate}deg)` : undefined,
+        transform: transforms || undefined,
         ...style,
       }}
     >

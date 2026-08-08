@@ -55,10 +55,20 @@ export default function Hero() {
             connect with{" "}
             <em style={{ fontStyle:"italic", color:"#3B5BDB" }}>real people</em>
           </p>
-          <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
-            color:"var(--col-muted)", marginTop:"6px" }}>
-            <AnnotationArrow /> yes, actual humans
-          </p>
+          {/* Arrow sits BELOW the text now, pointing back up at it (flipY
+              mirrors the artwork's native up-right hook into an up-left
+              one) rather than beside it — reads more like an annotation
+              pointing at "yes, actual humans" than a bullet in front of
+              it. Text nudged right via marginLeft so the arrow (centered
+              under the whole block) lands under its left half instead of
+              dead-center, which is what actually sells "pointing at it". */}
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginTop:"6px" }}>
+            <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
+              color:"var(--col-muted)", marginLeft:"16px" }}>
+              yes, actual humans
+            </p>
+            <AnnotationArrow style={{ marginTop:"2px" }} />
+          </div>
         </div>
 
         {/* CTAs — glass primary, ghost secondary. Colors run entirely off
