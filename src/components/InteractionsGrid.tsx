@@ -8,6 +8,10 @@ import InteractionCard from "./InteractionCard";
  * dashed-border-glass empty state WorkFilterGrid uses for "no results",
  * reused here for "no clips yet" rather than inventing a second visual
  * language for the same basic idea.
+ *
+ * Vertically stacked, one full-width card after another — not a 2-column
+ * grid like the case-study cards use. Each clip reads better with room
+ * to breathe at a larger size than squeezed into a half-width cell.
  */
 export default function InteractionsGrid() {
   if (interactions.length === 0) {
@@ -31,7 +35,7 @@ export default function InteractionsGrid() {
   return (
     <div
       className="interactions-grid"
-      style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "clamp(14px,2vw,24px)" }}
+      style={{ display: "flex", flexDirection: "column", gap: "clamp(14px,2vw,24px)" }}
     >
       {interactions.map((interaction, i) => (
         <InteractionCard key={interaction.id} interaction={interaction} index={i} />
