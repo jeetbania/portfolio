@@ -20,7 +20,12 @@ export default function WorkPageBody({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <div style={{ marginBottom: "clamp(48px, 7vh, 72px)", textAlign: "center" }}>
+      {/* marginBottom was clamp(48px,7vh,72px), sized back when a subtitle
+          paragraph sat between the h1 and the grid below — once that was
+          removed the same gap read as way too much dead space directly
+          under the heading. Tightened now that the h1 is the last thing
+          in this block. */}
+      <div style={{ marginBottom: "clamp(24px, 3.5vh, 36px)", textAlign: "center" }}>
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "22px" }}>
           <WorkModeToggle mode={mode} onModeChange={setMode} />
         </div>
