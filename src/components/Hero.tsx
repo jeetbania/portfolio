@@ -57,10 +57,13 @@ export default function Hero() {
           </p>
           {/* Arrow sits to the RIGHT of the text — the asset itself (see
               AnnotationArrow.tsx) already points back up-left toward it,
-              no rotate/flip needed here. */}
+              no rotate/flip needed here. Nudged up via marginTop since
+              its own bounding box sits a bit low relative to the hand
+              font's baseline, otherwise reading as pointing below the
+              text rather than at it. */}
           <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
             color:"var(--col-muted)", marginTop:"6px" }}>
-            yes, actual humans <AnnotationArrow />
+            yes, actual humans <AnnotationArrow style={{ marginTop:"-8px" }} />
           </p>
         </div>
 
