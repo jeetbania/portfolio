@@ -1490,3 +1490,16 @@ body {
 }
 .interaction-card-badge { transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-spring); }
 .interaction-card:hover .interaction-card-badge { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
+
+/* ─── 404 page "Take me home" CTA — plain CSS :hover, not the inline JS
+   handlers Hero.tsx's matching button uses, since not-found.tsx stays a
+   Server Component (needs the `metadata` export). ───────────────────── */
+.notfound-home-link {
+  transition: background 220ms var(--ease-out), color 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms var(--ease-out);
+}
+.notfound-home-link:hover {
+  background: var(--cta-bg-hover);
+  color: var(--cta-text-hover);
+  border-color: transparent;
+  box-shadow: 0 6px 16px var(--cta-shadow-hover);
+}
