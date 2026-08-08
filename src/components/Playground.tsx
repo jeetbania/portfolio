@@ -110,28 +110,124 @@ const MOBILE_STACK = [
 const MOBILE_HIDDEN_LABELS = new Set(["Coffee count"]);
 
 /* ══════════════════════════════════════════════════════════════════
-   Canned "quick ask" responses
+   Canned "quick ask" responses — every topic now has a few phrasings
+   (picked at random per ask, via `pick()` below) so asking the same
+   thing twice doesn't visibly repeat the exact same sentence, which is
+   the fastest way to give away this isn't a live model. Small talk
+   (greetings, "how are you", thanks, "are you a real AI") gets its own
+   conversational branch, checked before the topic table — it used to
+   fall straight through to the one generic "Good question, I don't
+   have an answer for that" fallback, which read as broken when
+   someone said "hey" and got told their non-question was a good
+   question. The remaining fallback (still used for genuinely
+   unanswered topics) now also branches on whether the input actually
+   reads as a question, so a plain statement isn't called one either.
    ══════════════════════════════════════════════════════════════════ */
-const RESPONSES: { keys: string[]; answer: string }[] = [
-  { keys: ["work", "project", "doing", "building", "portfolio"],
-    answer: "Right now I'm deep in a portfolio redesign, honestly obsessing over folder physics more than anyone reasonably should." },
-  { keys: ["music", "listen", "song", "playlist", "band"],
-    answer: "Currently on repeat: The 1975. Ask me for a playlist sometime, I have opinions." },
-  { keys: ["book", "read", "reading"],
-    answer: "I'm reading Hooked by Nir Eyal. Equal parts fascinating and slightly terrifying." },
-  { keys: ["coffee", "caffeine", "tea"],
-    answer: "Averaging way too many cups a week. My design system has better documentation than my sleep schedule does." },
-  { keys: ["contact", "hire", "email", "reach", "talk", "available"],
-    answer: "Best way to reach me is the \u201CLet's Talk\u201D button up top. I actually reply, promise." },
-  { keys: ["who", "you", "about", "yourself"],
-    answer: "I'm Jeet, a product designer who loves clean systems, tiny interactions, and asking \u201Cwhy\u201D one too many times." },
+
+function pick(answers: string[]): string {
+  return answers[Math.floor(Math.random() * answers.length)];
+}
+
+/** Phrase/regex matched (not single common words) so small talk never
+ * accidentally swallows an unrelated real question — checked first. */
+const SMALL_TALK: { match: RegExp; answers: string[] }[] = [
+  {
+    match: /\b(how'?s it going|how are (ya|you)|how(?:'re| are) you doing|how you doin'?g?)\b/,
+    answers: [
+      "Pretty good, thanks for asking! Mid-way through a coffee, deep in some Figma file somewhere.",
+      "Can't complain, honestly. You caught me between design revisions.",
+      "Doing well. Living the classic designer life: too much coffee, not enough sleep.",
+    ],
+  },
+  {
+    match: /\b(hi|hey|hello|yo|sup|howdy|hiya|what's up)\b/,
+    answers: [
+      "Hey there! Ask me about my work, music taste, or how much coffee I've had today.",
+      "Hi! I'm the pre-written version of Jeet, ask away.",
+      "Hey. Fair warning, my answers are a bit rehearsed, but happy to chat.",
+    ],
+  },
+  {
+    match: /\b(thanks|thank you|thx|cheers|appreciate it)\b/,
+    answers: [
+      "Anytime. Well, technically I only have so many answers, but anytime within reason.",
+      "You're welcome! Let me know if there's anything else I can pretend to help with.",
+      "No problem at all.",
+    ],
+  },
+  {
+    match: /\b(bye|goodbye|see ya|see you|later|cya)\b/,
+    answers: [
+      "See ya. The cards up there will still be here if you want to poke around more.",
+      "Bye for now, come back anytime, I don't go anywhere.",
+    ],
+  },
+  {
+    match: /\b(are you (a )?(real|human|ai|bot|robot|chatgpt)|is this (ai|a bot)|are you (actually )?jeet)\b/,
+    answers: [
+      "Honest answer: I'm a small set of pre-written replies, not a live model. Real Jeet is one “Let's Talk” click away.",
+      "Nope, no AI here, just Jeet's own words on a short leash. The real him replies faster than you'd think though.",
+      "I'm scripted, not sentient. But the guy behind this site is very real and reads every message.",
+    ],
+  },
 ];
-const FALLBACK = "Good question, I don't have a canned answer for that one yet. The \u201CLet's Talk\u201D button up top gets you a real one though.";
+
+const RESPONSES: { keys: string[]; answers: string[] }[] = [
+  { keys: ["work", "project", "doing", "building", "portfolio"],
+    answers: [
+      "Right now I'm deep in a portfolio redesign, honestly obsessing over folder physics more than anyone reasonably should.",
+      "Mostly this site, if you couldn't tell. Turns out redesigning your own portfolio is a great way to never finish it.",
+    ] },
+  { keys: ["music", "listen", "song", "playlist", "band"],
+    answers: [
+      "Currently on repeat: The 1975. Ask me for a playlist sometime, I have opinions.",
+      "The 1975, on loop, probably louder than the office would like.",
+    ] },
+  { keys: ["book", "read", "reading"],
+    answers: [
+      "I'm reading Hooked by Nir Eyal. Equal parts fascinating and slightly terrifying.",
+      "Hooked, by Nir Eyal. Makes me side-eye every app on my phone, including this one.",
+    ] },
+  { keys: ["coffee", "caffeine", "tea"],
+    answers: [
+      "Averaging way too many cups a week. My design system has better documentation than my sleep schedule does.",
+      "Somewhere around a dozen cups this week. Don't tell my cardiologist.",
+    ] },
+  { keys: ["contact", "hire", "email", "reach", "available", "freelance"],
+    answers: [
+      "Best way to reach me is the “Let's Talk” button up top. I actually reply, promise.",
+      "Hit “Let's Talk” up top, that goes straight to the real me, not this pre-written version.",
+    ] },
+  { keys: ["who are you", "about yourself", "tell me about you", "your name", "whats your name", "what's your name"],
+    answers: [
+      "I'm Jeet, a product designer who loves clean systems, tiny interactions, and asking “why” one too many times.",
+      "Jeet Bania, product designer, professional overthinker of button states.",
+    ] },
+];
+
+/* Fallback for anything unmatched — split by whether the input actually
+ * reads as a question, so a plain statement ("nice site" / "cool") doesn't
+ * get told it's "a good question." */
+const FALLBACK_QUESTION = [
+  "That one's outside what I've been briefed on, genuinely above my pay grade. The “Let's Talk” button up top gets you the real answer.",
+  "I don't have a good answer loaded for that. “Let's Talk” up top connects you to the actual Jeet, who does.",
+  "You've found the edge of my knowledge. Try “Let's Talk” up top, he's much smarter than me.",
+];
+const FALLBACK_STATEMENT = [
+  "Noted. Not much I can do with that, but I appreciate you sharing.",
+  "Fair enough. Feel free to ask me something about the work, music, or coffee intake though.",
+  "Interesting. I'm mostly built for Q&A about Jeet, so throw a question my way if you've got one.",
+];
+
+function isQuestion(q: string): boolean {
+  return q.endsWith("?") || /^(who|what|when|where|why|how|is|are|do|does|did|can|could|would|will|should|any)\b/.test(q);
+}
 
 function getResponse(query: string): string {
-  const q = query.toLowerCase();
-  for (const r of RESPONSES) if (r.keys.some(k => q.includes(k))) return r.answer;
-  return FALLBACK;
+  const q = query.toLowerCase().trim();
+  for (const s of SMALL_TALK) if (s.match.test(q)) return pick(s.answers);
+  for (const r of RESPONSES) if (r.keys.some(k => q.includes(k))) return pick(r.answers);
+  return pick(isQuestion(q) ? FALLBACK_QUESTION : FALLBACK_STATEMENT);
 }
 
 /* ══════════════════════════════════════════════════════════════════
