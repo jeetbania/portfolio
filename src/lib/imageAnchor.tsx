@@ -5,6 +5,7 @@ import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from "react";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
+import { useDevToolsAllowed } from "./devToolsGate";
 
 /**
  * Dev-only "image anchor" tool — the DialKit-style live-tuning workflow
@@ -19,14 +20,13 @@ import { ImageSkeleton } from "@/components/ImageSkeleton";
  * they survive reloads, then once you land on values you like, copy them
  * out (the floating panel's "Copy JSON" button) and hand them to me to bake
  * into caseStudies.ts/projects.ts as each image's `focalPoint`. The toggle
- * button/panel only ever renders in development — `AnchorToggle` bails out
- * in `NODE_ENV === "production"` the same way `<DialRoot />` hides itself,
- * and since `anchorModeOn` starts `false` every mount and is never
- * persisted, a real visitor has no way to reach edit mode even if this
- * code ships. `<AnchoredImage>` is what everything renders through —
- * always applies whatever focal point is active (persisted override, else
- * the code-baked default, else dead center), so the same component works
- * identically whether anchor mode is on or off.
+ * button/panel only renders where `useDevToolsAllowed()` (devToolsGate.ts)
+ * says so — anywhere except the real production domain, so it still works
+ * on Vercel previews and localhost, just never on jeetcreates.cc itself.
+ * `<AnchoredImage>` is what everything renders through — always applies
+ * whatever focal point is active (persisted override, else the code-baked
+ * default, else dead center), so the same component works identically
+ * whether anchor mode is on or off.
  */
 
 /**
@@ -311,14 +311,15 @@ const anchorBtnStyle: React.CSSProperties = {
 };
 
 /** Floating "Anchor images" toggle + panel — mount once alongside
- * `<AnchorProvider>`. Used to bail out in NODE_ENV === "production", but
- * that made it invisible on every Vercel deployment too (Next sets
- * NODE_ENV=production for any `next build`, preview or not) — the only
- * place it ever actually rendered was a local `next dev` session. Since
- * nothing it does touches real content (edits only ever write to the
- * visitor's own localStorage, per-slug), it now always renders; a random
- * visitor can toggle it but can't affect anyone else's view of the site. */
+ * `<AnchorProvider>`. Gated by `useDevToolsAllowed()` (devToolsGate.ts) so
+ * it renders on Vercel previews and localhost but never on the real
+ * production domain — see that file for why NODE_ENV alone can't tell
+ * preview and production apart. Nothing it does touches real content
+ * either way (edits only ever write to the visitor's own localStorage,
+ * per-slug), but per Jeet this should never even be reachable on the main
+ * site, so it's gone entirely there rather than just harmless. */
 export function AnchorToggle() {
+  const devToolsAllowed = useDevToolsAllowed();
   const { anchorModeOn, setAnchorModeOn, anchors, resetAll } = useAnchorContext();
   const [copied, setCopied] = useState(false);
 
@@ -336,6 +337,8 @@ export function AnchorToggle() {
       window.prompt("Copy this JSON:", json);
     }
   };
+
+  if (!devToolsAllowed) return null;
 
   return (
     <div style={{

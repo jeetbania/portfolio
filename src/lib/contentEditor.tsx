@@ -3,6 +3,7 @@
 import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from "react";
+import { useDevToolsAllowed } from "./devToolsGate";
 
 /**
  * Dev-only in-place copy editor for case-study text — the third tool in
@@ -204,15 +205,15 @@ const editorBtnStyle: React.CSSProperties = {
 
 /** Floating "Edit Copy" toggle + panel — mount once alongside
  * `<ContentEditorProvider>`. Sits top-left (AnchorToggle owns bottom-left)
- * so the two dev-tool docks never collide. Used to bail out in
- * NODE_ENV === "production", but that made it invisible on every Vercel
- * deployment too (Next sets NODE_ENV=production for any `next build`,
- * preview or not) — the only place it ever actually rendered was a local
- * `next dev` session, which isn't how this gets checked day to day. Since
- * edits only ever write to the visitor's own localStorage (per-slug),
- * never anything server-side, it now always renders — see the identical
- * reasoning on AnchorToggle in imageAnchor.tsx. */
+ * so the two dev-tool docks never collide. Gated by `useDevToolsAllowed()`
+ * (devToolsGate.ts) so it renders on Vercel previews and localhost but
+ * never on the real production domain — see that file for why NODE_ENV
+ * alone can't tell preview and production apart. Edits only ever write to
+ * the visitor's own localStorage (per-slug), never anything server-side,
+ * but per Jeet this should never even be reachable on the main site — same
+ * reasoning as AnchorToggle in imageAnchor.tsx. */
 export function ContentEditorToggle() {
+  const devToolsAllowed = useDevToolsAllowed();
   const { editModeOn, setEditModeOn, overrides, resetAll } = useContentEditorContext();
   const [copied, setCopied] = useState(false);
 
@@ -228,6 +229,8 @@ export function ContentEditorToggle() {
       window.prompt("Copy this JSON:", json);
     }
   };
+
+  if (!devToolsAllowed) return null;
 
   return (
     <div style={{

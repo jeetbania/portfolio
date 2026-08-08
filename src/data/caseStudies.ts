@@ -539,7 +539,7 @@ export const caseStudies: CaseStudy[] = [
         id: "showcase",
         label: "Showcase",
         blocks: [
-          { type: "image", src: "/spaces-international-showcase.webp", alt: "Open Spaces initiative page, persona-matched content for entrepreneurs", wide: true },
+          { type: "image", src: "/spaces-international-showcase.webp", alt: "Open Spaces initiative page, persona-matched content for entrepreneurs", wide: true, focalPoint: { x: 51.54, y: 34.91 } },
           {
             type: "imageGrid",
             images: [
