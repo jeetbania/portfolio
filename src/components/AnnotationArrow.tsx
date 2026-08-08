@@ -14,24 +14,33 @@
  * whole thing relative to that inherited font-size, `rotate` reorients
  * the artwork (it's drawn pointing up-and-right natively) since the same
  * asset gets reused pointing in different directions depending on what
- * it's gesturing at. `flipY` mirrors it top-to-bottom first (so the hook
- * curls the other way) — used when the arrow sits below the thing it's
- * annotating instead of beside it, pointing back up at it.
+ * it's gesturing at. `flipX`/`flipY` mirror it left-right / top-bottom —
+ * both together (Hero's usage: arrow sits to the right of "yes, actual
+ * humans", tip needs to point back left at it) is the same net rotation
+ * as `rotate={180}` for a rigid shape, but expressed as a flip since
+ * that's the more direct way to reason about "point it back at the
+ * thing on its other side" than picking a rotation angle.
  */
 export function AnnotationArrow({
   size = 1,
   rotate = 0,
+  flipX = false,
   flipY = false,
   color = "#3B5BDB",
   style,
 }: {
   size?: number;
   rotate?: number;
+  flipX?: boolean;
   flipY?: boolean;
   color?: string;
   style?: React.CSSProperties;
 }) {
-  const transforms = [flipY && "scaleY(-1)", rotate && `rotate(${rotate}deg)`].filter(Boolean).join(" ");
+  const transforms = [
+    flipX && "scaleX(-1)",
+    flipY && "scaleY(-1)",
+    rotate && `rotate(${rotate}deg)`,
+  ].filter(Boolean).join(" ");
   return (
     <svg
       width={`${1.1 * size}em`}
