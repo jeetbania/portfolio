@@ -55,15 +55,12 @@ export default function Hero() {
             connect with{" "}
             <em style={{ fontStyle:"italic", color:"#3B5BDB" }}>real people</em>
           </p>
-          {/* Arrow sits to the RIGHT of the text, flipped on both axes so
-              its tip (drawn natively pointing up-right) points back
-              down-left at "yes, actual humans" instead of away from it —
-              flipping both axes is the same net effect as rotate(180),
-              just reasoned about as "mirror it back toward the text on
-              its other side" rather than picking an angle. */}
+          {/* Arrow sits to the RIGHT of the text — the asset itself (see
+              AnnotationArrow.tsx) already points back up-left toward it,
+              no rotate/flip needed here. */}
           <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
             color:"var(--col-muted)", marginTop:"6px" }}>
-            yes, actual humans <AnnotationArrow flipX flipY />
+            yes, actual humans <AnnotationArrow />
           </p>
         </div>
 
