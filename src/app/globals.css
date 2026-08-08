@@ -1407,7 +1407,7 @@ body {
   /* Work section: 2 columns → 1. This was the root cause of folders
      overflowing on phones — at ~170px wide, the tag pills + arrow
      button simply didn't fit. Full width fixes it directly. */
-  .work-grid {
+  .work-grid, .interactions-grid {
     grid-template-columns: 1fr !important;
     gap: 18px !important;
   }
@@ -1477,3 +1477,16 @@ body {
 }
 .blog-card-arrow { transition: background 180ms var(--ease-out), transform 180ms var(--ease-spring); }
 .blog-card:hover .blog-card-arrow { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
+
+/* ─── Interaction card — /work's "Interactions" tab (InteractionCard.tsx).
+   Same lift-on-hover as .blog-card; the caption chip's badge inverts on
+   hover like .blog-card-arrow, signalling "this clicks through." ────── */
+.interaction-card {
+  transition: transform 220ms var(--ease-spring), box-shadow 220ms var(--ease-out);
+}
+.interaction-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(var(--shadow-tint-rgb),0.08), 0 18px 38px rgba(var(--shadow-tint-rgb),0.14), var(--glass-bevel);
+}
+.interaction-card-badge { transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-spring); }
+.interaction-card:hover .interaction-card-badge { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
