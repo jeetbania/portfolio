@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import type { Interaction } from "@/data/interactions";
+import { ImageSkeleton } from "./ImageSkeleton";
 
 /**
  * One clip in the /work "Interactions" tab (see InteractionsGrid.tsx) —
@@ -26,8 +28,25 @@ import type { Interaction } from "@/data/interactions";
  * card itself. The accessible name still lives in the wrapping <a>'s
  * aria-label, and the hover lift + deeper shadow (see .interaction-card
  * in globals.css) is the only affordance that this links out.
+ *
+ * Loading state uses the same ImageSkeleton every other image/hero-video
+ * on the site shows while its source is still arriving (see Folder.tsx,
+ * HeroVideo.tsx, imageAnchor.tsx's AnchoredImage) — same `loaded` +
+ * `showSkeleton` split as HeroVideo.tsx (flip `loaded` the instant the
+ * video reports data, but keep the skeleton mounted 320ms longer so its
+ * own fade-out finishes instead of popping off mid-transition). Unlike
+ * HeroVideo, there's no poster image to hang the loaded-check on here
+ * (poster is optional and unset for both current clips), so this listens
+ * to the video's own `onLoadedData` instead.
  */
 export default function InteractionCard({ interaction, index }: { interaction: Interaction; index: number }) {
+  const [loaded, setLoaded] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const onLoadedData = () => {
+    setLoaded(true);
+    setTimeout(() => setShowSkeleton(false), 320);
+  };
+
   return (
     <a
       href={interaction.tweetUrl}
@@ -58,12 +77,14 @@ export default function InteractionCard({ interaction, index }: { interaction: I
         playsInline
         preload="metadata"
         aria-hidden="true"
+        onLoadedData={onLoadedData}
         style={{
           display: "block", position: "absolute", inset: 0,
           width: "100%", height: "100%", objectFit: "cover",
           background: "var(--surface-wash)",
         }}
       />
+      {showSkeleton && <ImageSkeleton visible={!loaded} />}
     </a>
   );
 }

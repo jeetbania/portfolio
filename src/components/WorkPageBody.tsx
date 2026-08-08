@@ -36,7 +36,7 @@ export default function WorkPageBody({ projects }: { projects: Project[] }) {
         }}>
           {mode === "work"
             ? "A closer look at what I've built."
-            : "Small stuff, shipped quickly."}
+            : "Fun sidequests."}
         </h1>
       </div>
 
