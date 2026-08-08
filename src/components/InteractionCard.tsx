@@ -62,7 +62,7 @@ export default function InteractionCard({ interaction, index }: { interaction: I
         overflow: "hidden",
         background: "var(--surface-card-tinted)",
         border: "1px solid var(--surface-card-border)",
-        boxShadow: "0 4px 14px rgba(var(--shadow-tint-rgb),0.10), 0 1px 3px rgba(var(--shadow-tint-rgb),0.08)",
+        boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.07), var(--glass-bevel)",
         animation: "work-item-in 460ms var(--ease-spring) both",
         animationDelay: `${index * 45}ms`,
       }}

@@ -1492,17 +1492,16 @@ body {
 .blog-card:hover .blog-card-arrow { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
 
 /* ─── Interaction card — /work's "Interactions" tab (InteractionCard.tsx).
-   No caption overlay anymore, so hover lift + a deeper shadow bloom is
-   the only "this links out" affordance — kept tasteful (a bump, not a
-   dramatic pop): rest-state shadow lives inline on the card (a touch
-   more than .blog-card's, since there's no caption chip adding its own
-   visual weight at the bottom), hover deepens it further here. ─────── */
+   No caption overlay, so hover lift + a shadow bloom is the only "this
+   links out" affordance. First pass here was too heavy per Jeet — pulled
+   back to match .blog-card's own rest/hover weight almost exactly rather
+   than trying to be deliberately heavier. ───────────────────────────── */
 .interaction-card {
   transition: transform 220ms var(--ease-spring), box-shadow 220ms var(--ease-out);
 }
 .interaction-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 3px 6px rgba(var(--shadow-tint-rgb),0.10), 0 22px 46px rgba(var(--shadow-tint-rgb),0.18), var(--glass-bevel);
+  box-shadow: 0 2px 4px rgba(var(--shadow-tint-rgb),0.08), 0 18px 38px rgba(var(--shadow-tint-rgb),0.14), var(--glass-bevel);
 }
 
 /* ─── 404 page subcopy — single line on desktop (the sentence is short
