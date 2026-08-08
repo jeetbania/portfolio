@@ -86,11 +86,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "InCore Semiconductors is a Chennai-based fabless semiconductor company building customizable RISC-V processor IP. It grew out of the SHAKTI processor program at IIT Madras and is backed by Peak XV Partners. InCore licenses processor cores and SoC design tools to chip companies instead of manufacturing chips itself, charging a license fee plus an optional royalty tied to volume.",
+            text: "InCore Semiconductors is a Chennai-based fabless semiconductor company building customizable RISC-V processor IP, grown out of the SHAKTI processor program at IIT Madras and backed by Peak XV Partners. Instead of manufacturing chips, InCore licenses processor cores and SoC design tools, charging a license fee plus an optional volume-tied royalty.",
           },
           {
             type: "paragraph",
-            text: "I worked on InCore's website through a design agency, on and off, from early 2024 through mid-2025. It wasn't a single redesign and launch. The engagement started with brand discovery and a first pass at product page structure, returned about a year later for a full homepage rebuild driven by a shift in product strategy, and continued after that with SEO fixes, new landing pages, and ongoing content support.",
+            text: "I worked on InCore's website through a design agency, on and off, from early 2024 through mid-2025. It wasn't a single redesign and launch: brand discovery and a first product-page pass, a full homepage rebuild about a year later after a strategy shift, then ongoing SEO fixes, landing pages, and content support.",
           },
         ],
       },
@@ -115,7 +115,7 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "InCore's own list of problems with their site was specific and unglamorous: not enough product information for engineers trying to evaluate them, a broken enquiry form, and no in-house developer to keep any of it updated. The stakes were higher than a typical B2B site too, since InCore's buyers are SoC architects and chip design engineers who can't afford to pick the wrong vendor.",
+            text: "InCore's own list of problems was specific and unglamorous: not enough product information for evaluating engineers, a broken enquiry form, no in-house developer to keep any of it updated. The stakes were higher than a typical B2B site too, since InCore's buyers are SoC architects who can't afford to pick the wrong vendor.",
           },
           {
             type: "list",
@@ -133,7 +133,7 @@ export const caseStudies: CaseStudy[] = [
           },
           {
             type: "paragraph",
-            text: "About a year in, a second problem emerged. InCore had built an internal automation platform, the SoC Generator, that let one engineer do in minutes what used to take a team of three or four several months. Internally this became the company's real differentiator, but the site still presented it as one of several roughly equal offerings. Bounce rate was rising and sessions were falling, data suggesting visitors weren't getting the message either.",
+            text: "About a year in, a second problem emerged: InCore's internal automation platform, the SoC Generator, let one engineer do in minutes what used to take a team months. It became the company's real differentiator internally, but the site still presented it as one of several equal offerings, and rising bounce rate suggested visitors weren't getting the message.",
           },
         ],
       },
@@ -148,11 +148,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "I worked from a structured brand and audience questionnaire the client filled out directly. Two details shaped everything downstream: the target buyer is highly risk-averse, since choosing the wrong CPU vendor is a costly, career-relevant decision for them, and the company had zero in-house technical capacity to maintain a website, which meant every design decision also had to be realistic for a non-developer to keep updated.",
+            text: "I worked from a structured brand and audience questionnaire the client filled out directly. Two details shaped everything downstream: the buyer is highly risk-averse, since picking the wrong CPU vendor is a costly, career-relevant decision, and the company had zero in-house technical capacity, so every design decision also had to be realistic for a non-developer to maintain.",
           },
           {
             type: "paragraph",
-            text: "The first real deliverable was structuring the product section around a flow the client already had in their head but hadn't put into a page hierarchy: Build Your Own Core through a core generator, Buy a Core across two core-hub tiers, and Buy a Full Chip across SoC options, each leading to a sales enquiry, plus a documentation area for brochures and specs. I wrote the section copy and page structure directly from that flow instead of inventing a new one.",
+            text: "The first deliverable was structuring the product section around a flow the client had in their head but hadn't put into a page hierarchy: Build Your Own Core, Buy a Core across two tiers, Buy a Full Chip across SoC options, each leading to a sales enquiry, plus a documentation area. I wrote the copy and structure directly from that flow instead of inventing a new one.",
           },
           { type: "image", src: "/incore-approach.webp", alt: "InCore website, approach mockup", wide: true },
         ],
@@ -165,11 +165,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "About a year later, the client's own team had shifted strategy internally. SoC Generator, not the individual IP cores, was becoming the company's flagship product, the thing they wanted every visitor to understand first. That wasn't a request to make the homepage look better, it was a request to change what the homepage was fundamentally organized around. I rebuilt the structure so SoC Generator anchored the hero and the product overview, with the RISC-V cores (renamed Core-Hubs to avoid confusion with \"generator\" language) and reference designs repositioned as supporting offerings underneath it.",
+            text: "About a year later, the client's strategy shifted internally: SoC Generator, not the individual IP cores, was becoming the flagship product they wanted every visitor to understand first. That meant changing what the homepage was fundamentally organized around, not just how it looked. I rebuilt the structure so SoC Generator anchored the hero, with the RISC-V cores (renamed Core-Hubs to avoid confusion) and reference designs repositioned underneath it as supporting offerings.",
           },
           {
             type: "paragraph",
-            text: "Because a full rebuild takes time and the strategy shift was urgent, the work split into two passes: a fast, one-week update to surface SoC Generator messaging on the existing site, followed by a fuller homepage rebuild the next month. That let the business-critical message go live quickly without waiting on the complete redesign.",
+            text: "Because the strategy shift was urgent and a full rebuild takes time, the work split into two passes: a fast one-week update to surface SoC Generator messaging on the existing site, then a fuller homepage rebuild the next month, so the business-critical message went live without waiting on the complete redesign.",
           },
           {
             type: "imageGrid",
@@ -190,11 +190,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Once the new homepage was live, I kept iterating based on real SEO and performance reports the client shared every few months, not fresh brainstorming each time. That included fixing Core Web Vitals issues, addressing keyword cannibalization between pages competing for the same search terms, and adjusting internal linking to the SoC Generator page after a report showed its clicks were climbing while its overall traffic was falling.",
+            text: "Once the new homepage was live, I kept iterating on real SEO and performance reports the client shared every few months: fixing Core Web Vitals, addressing keyword cannibalization between competing pages, adjusting internal linking to the SoC Generator page after a report showed its clicks climbing while overall traffic fell.",
           },
           {
             type: "paragraph",
-            text: "Some of the most useful fixes were mundane but real: a gated brochure stuck on the client's OneDrive that visitors couldn't reliably access, moved into the site's own documentation page with a proper download link, and a broken document form caused by an expired API key, which also surfaced a case for the redundant email setup they'd already been planning. As InCore kept shipping new products and press coverage, I kept producing supporting material too: landing pages, documentation entries, and newsroom summaries written in the company's own voice.",
+            text: "Some fixes were mundane but real: a gated brochure stuck on the client's OneDrive, moved into the site's own documentation page with a proper download link; a broken enquiry form caused by an expired API key, which also surfaced a case for redundant email. I kept producing supporting material too, landing pages, documentation, newsroom summaries, as InCore kept shipping new products.",
           },
           {
             type: "imageGrid",
@@ -212,32 +212,153 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The site went through two concrete milestones: a working product-page structure in 2024, and a full homepage rebuild in January 2025 that repositioned SoC Generator as the flagship product, presented and defended directly to the client on a call. Real SEO reports afterward showed a mixed but informative picture: clicks to the SoC Generator page rose sharply while overall traffic to that page dipped, and engagement improved even as total sessions declined. I used that data to keep adjusting internal linking, CTA placement, and technical performance rather than treating the rebuild as a finished, one-time deliverable. I don't have lead-volume or conversion numbers from the enquiry form itself, so I'm leaving that claim out.",
+            text: "The site went through two concrete milestones: a working product-page structure in 2024, and a full homepage rebuild in January 2025 that repositioned SoC Generator as the flagship product. Real SEO reports afterward showed a mixed picture: clicks to the SoC Generator page rose sharply while overall traffic dipped, engagement improving even as sessions declined. I kept adjusting internal linking, CTA placement, and performance against that data rather than treating the rebuild as finished. I don't have lead-volume or conversion numbers from the enquiry form itself, so I'm leaving that claim out.",
           },
           {
             type: "paragraph",
-            text: "The main lesson here is that a homepage redesign request can actually be a business-strategy request wearing a design costume. When InCore asked for a refresh, the real change underneath it was that the company had decided what it wanted to be known for, and the old structure was working against that decision. The other lesson was how useful it was to treat the site as something to keep tuning against real data instead of a project with one finish line.",
+            text: "The main lesson: a homepage redesign request can be a business-strategy request wearing a design costume. When InCore asked for a refresh, the real change was that the company had decided what it wanted to be known for, and the old structure worked against that. The other lesson was treating the site as something to keep tuning against real data, not a project with one finish line.",
           },
         ],
       },
     ],
   },
   {
+    /* Real content, from a source doc Jeet supplied (Aug 2026), not
+       placeholder. No em dashes, same standing preference as the other
+       real case studies. No `tools`/`team` in meta — the source doc
+       flags the CMS as "inherited, not explicitly reconfirmed as the
+       rebuild platform" rather than a confirmed detail, and no team was
+       named beyond "a small team," so neither gets invented here. Kept
+       deliberately short throughout, per Jeet's own note that the case
+       studies (Spaces International especially) had gotten too long —
+       this one's the new shorter baseline, not just this section. Only 8
+       of the 9 real images are used below; migrateful-showcase-3.webp
+       (a phone mockup of the same "Behind Every Dish" section
+       showcase-1.webp already covers on laptop) was left out as a near
+       duplicate rather than shown twice. */
     slug: "migrateful",
-    meta: { role: "UX Designer", timeline: "2024", tools: ["Figma"] },
+    meta: {
+      role: "UX Design, IA & Content Strategy",
+      timeline: "Aug 2023 — Sep 2023",
+    },
     sections: [
       {
         id: "overview",
         label: "Overview",
         blocks: [
-          { type: "paragraph", text: "Placeholder overview for Migrateful — community cooking events connecting migrants with local residents." },
-          { type: "stats", items: [{ value: "Placeholder", label: "Timeline" }, { value: "UX Designer", label: "Role" }] },
+          {
+            type: "paragraph",
+            text: "Migrateful is a UK charity that trains refugees, asylum seekers, and migrants to teach cookery classes, helping them toward employment and integration. Founded in 2017, it has since supported 79+ migrant chefs across more than 3,000 classes.",
+          },
+          {
+            type: "paragraph",
+            text: "I worked on the website rebuild as part of a small team, covering content strategy, page copy, and layout direction across the homepage, About Us, Meet the Chefs, Our Impact, and Donate. Their old site, 152 pages and 51 plugins deep, had broken down under its own complexity and needed a clean rebuild.",
+          },
+        ],
+      },
+      {
+        id: "tldr",
+        label: "TL;DR",
+        blocks: [
+          {
+            type: "stats",
+            items: [
+              { value: "£140", label: "per class, priced and positioned like a premium product" },
+              { value: "3,000+", label: "classes already run, 79+ chefs supported going in" },
+              { value: "5", label: "pages rebuilt: home, About, chefs, impact, donate" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "problem-statement",
+        label: "Problem Statement",
+        blocks: [
+          {
+            type: "quote",
+            text: "We are not a charity with lots of photos of us smiling in church halls, we are a slick professional company, and that is why we can charge a lot because our product is worth a lot.",
+            attribution: "Migrateful",
+          },
+          {
+            type: "paragraph",
+            text: "That's a real tension for a charity site to hold: premium enough to sell a £140 class, still an honest nonprofit underneath. The client's own instructions were specific, not vague brand talk.",
+          },
+          {
+            type: "list",
+            items: [
+              "Photography closer to a high-end hospitality brand than typical charity imagery",
+              "No white saviour framing, chefs and staff read as one team",
+              "Homepage stays apolitical, so the blog moved off it entirely",
+              "No UK-specific slang, the audience is international",
+            ],
+          },
+        ],
+      },
+      {
+        id: "approach",
+        label: "Approach",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The client had already reviewed comparable sites (Migration Matters, Settle, Breaking Barriers, Kerb) with specific, itemized reactions, so I worked from those concrete likes and dislikes instead of starting visual research from zero. Early structural drafts had the homepage competing for attention across chefs, classes, volunteering, and donations, which I simplified to one strong hero image and one clear action, book a class, with everything else moved to supporting sections.",
+          },
+          {
+            type: "paragraph",
+            text: "Chef bios and testimonials came from real submissions, trimmed to a consistent, readable length rather than written from scratch. One early open question, serif versus sans-serif headings, got resolved by direct client feedback rather than the more generic \"modern nonprofit\" default, and serif stuck.",
+          },
+          { type: "image", src: "/migrateful-approach.webp", alt: "Migrateful website, homepage mockup", wide: true },
+        ],
+      },
+      {
+        id: "showcase",
+        label: "Showcase",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The site had to serve four different audiences, the public booking classes, businesses arranging private events, volunteers signing up for shifts, and the internal team updating content, so pages like Meet the Chefs needed to support both storytelling and a direct booking action at once.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/migrateful-showcase-2.webp", alt: "Migrateful website, Syrian cooking class event page mockup" },
+              { src: "/migrateful-design-2.webp", alt: "Migrateful website, Bristol class page mockup" },
+            ],
+          },
+          { type: "image", src: "/migrateful-showcase-1.webp", alt: "Migrateful website, chef stories section mockup", wide: true },
+          { type: "image", src: "/migrateful-showcase-4.webp", alt: "Migrateful website, mobile navigation mockup", wide: true },
+        ],
+      },
+      {
+        id: "design-system",
+        label: "Design System",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The visual system leaned into the premium positioning the client wanted: confident serif headings, a restrained purple and orange palette, and real photography over stock or illustration wherever possible.",
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/migrateful-design-1.webp", alt: "Migrateful design system, colors and typography" },
+              { src: "/migrateful-design-3.webp", alt: "Migrateful design system, Alumni Chef Network card" },
+            ],
+          },
+          { type: "image", src: "/migrateful-design-4.webp", alt: "Migrateful design system, book cover", wide: true },
         ],
       },
       {
         id: "conclusion",
         label: "Conclusion",
-        blocks: [{ type: "paragraph", text: "Placeholder conclusion." }],
+        blocks: [
+          {
+            type: "paragraph",
+            text: "I don't have a launch date, traffic, or conversion numbers from this engagement, so I'm not claiming an outcome I can't support. What I can point to is a genuinely collaborative process, the client's detailed, page-by-page feedback (naming exact problems, citing specific competitor sites) carried through into real copy and structure across the homepage, About Us, Meet the Chefs, Impact, and Donate.",
+          },
+          {
+            type: "paragraph",
+            text: "The client had already thought through their own positioning before I got involved, a charity insisting it should look like a premium hospitality brand rather than a typical nonprofit. My job was translating that specific, sometimes counterintuitive instinct into consistent copy and structure, not inventing a direction from scratch.",
+          },
+        ],
       },
     ],
   },
@@ -251,7 +372,7 @@ export const caseStudies: CaseStudy[] = [
          than guessing, so nothing's been invented here either. */
       role: "UX Design, Content Strategy & IA",
       timeline: "May 2025 — Jun 2025",
-      team: "Natural Eye Media — small internal team",
+      team: "Natural Eye Media, small internal team",
       tools: ["Figma"],
     },
     /* Same 9-image template as InCore: hero (page.tsx, via projects.ts's
@@ -266,11 +387,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "YAP Global is an international PR and communications agency for crypto, DeFi, and Web3 companies, founded in 2018 by former journalist Samantha Yap. By 2025 the agency had just been through a full brand refresh — new logo, new colors, new identity — but the website hadn't caught up.",
+            text: "YAP Global is an international PR and communications agency for crypto, DeFi, and Web3 companies, founded in 2018 by former journalist Samantha Yap. By 2025 the agency had just been through a full brand refresh, new logo, new colors, new identity, but the website hadn't caught up.",
           },
           {
             type: "paragraph",
-            text: "I led the redesign at Natural Eye Media, the agency handling the project, covering UX, IA, content strategy, and copy across the homepage, service pages, case studies, careers, and a redesigned newsletter section called The Context — all built to a hard deadline: launch before EthCC, a major Web3 conference, on June 30, 2025.",
+            text: "I led the redesign at Natural Eye Media, covering UX, IA, content strategy, and copy across the homepage, service pages, case studies, careers, and a redesigned newsletter section called The Context, all built to a hard deadline: launch before EthCC, a major Web3 conference, on June 30, 2025.",
           },
         ],
       },
@@ -284,7 +405,7 @@ export const caseStudies: CaseStudy[] = [
               { value: "Jun 2025", label: "Shipped on schedule, ahead of EthCC" },
               { value: "3 → 1", label: "Competing homepage directions merged into one" },
               { value: "7", label: "Site sections redesigned, home to a rebuilt newsletter" },
-              { value: "2026", label: "Still an active account — new assets shipping past launch" },
+              { value: "2026", label: "Still an active account, new assets shipping past launch" },
             ],
           },
         ],
@@ -295,7 +416,7 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The rebrand had already happened — new logo, new colors, new identity — but the site hadn't caught up, and the client felt it: cluttered, forgettable, and not converting. A glossary section meant to explain crypto terms was working against them; they wanted to read as a serious international PR agency, not a Web3 101 course.",
+            text: "The rebrand had already happened, new logo, new colors, new identity, but the site hadn't caught up, and the client felt it: cluttered, forgettable, not converting. A glossary section meant to explain crypto terms was working against them; they wanted to read as a serious PR agency, not a Web3 101 course.",
           },
           {
             type: "list",
@@ -319,13 +440,13 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "I started from an internal discovery questionnaire, adapted for a rebrand context, and had the client fill it out across two separate passes plus a call — cross-referencing all three and treating the most recent answers as the ones that mattered when they conflicted. That surfaced five distinct audiences the site had to speak to: business leads, newsletter subscribers, industry peers, journalists, and job seekers, each needing something different from the page.",
+            text: "I started from an internal discovery questionnaire, adapted for a rebrand context, and had the client fill it out across two passes plus a call, cross-referencing all three and treating the most recent answers as the ones that mattered when they conflicted. That surfaced five distinct audiences: business leads, newsletter subscribers, industry peers, journalists, job seekers.",
           },
           {
             type: "paragraph",
-            text: "For content, the client pointed me to a competitor's homepage they liked and asked for a copy read, not a visual one — so I pulled out what was actually working there (a confident opening line, benefits-led service copy, credibility placed high) and rebuilt that structure in YAP's own voice. Since the goal was conversion, not discovery, the IA followed the same logic: hero, trust signals, case studies, services, newsletter, contact — getting a high-intent visitor to proof as fast as possible.",
+            text: "The client pointed me to a competitor's homepage they liked and asked for a copy read, not a visual one, so I pulled out what was actually working there (a confident opening line, benefits-led service copy, credibility placed high) and rebuilt that structure in YAP's own voice. The IA followed the same conversion-first logic: hero, trust signals, case studies, services, newsletter, contact, getting a high-intent visitor to proof as fast as possible.",
           },
-          { type: "image", src: "/yap-approach.webp", alt: "YAP Global website, tablet mockup — approach", wide: true, focalPoint: { x: 52.03, y: 71.65, zoom: 1.28 } },
+          { type: "image", src: "/yap-approach.webp", alt: "YAP Global website, tablet mockup, approach", wide: true, focalPoint: { x: 52.03, y: 71.65, zoom: 1.28 } },
         ],
       },
       {
@@ -334,11 +455,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Three homepage directions went in front of the client, and instead of picking a single winner, I took their detailed, section-by-section feedback — what to keep from each — and merged the strongest pieces into one: the wins section and tile motif from one direction, the services structure and landing layout from another, the testimonial treatment from a third.",
+            text: "Three homepage directions went in front of the client. Instead of picking a single winner, I took their detailed, section-by-section feedback on what to keep from each and merged the strongest pieces into one: the wins section and tile motif from one direction, the services structure from another, the testimonial treatment from a third.",
           },
           {
             type: "paragraph",
-            text: "The rebrand centered on a quotation-mark symbol tied to the agency's name — a nod to \"yapping,\" their own word for storytelling. Instead of treating it as a static logo mark, I used it as a recurring visual anchor between sections, signaling continuity as the page scrolled from one part of the story to the next.",
+            text: "The rebrand centered on a quotation-mark symbol tied to the agency's name, a nod to \"yapping,\" their own word for storytelling. Rather than a static logo mark, I used it as a recurring visual anchor between sections, signaling continuity as the page scrolled from one part of the story to the next.",
           },
           {
             type: "imageGrid",
@@ -347,8 +468,8 @@ export const caseStudies: CaseStudy[] = [
               { src: "/yap-showcase-2.webp", alt: "YAP Global \"We Yap With Purpose\" values page, tablet mockup", focalPoint: { x: 51.33, y: 16.06, zoom: 1.33 } },
             ],
           },
-          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global website, tablet mockup — showcase", wide: true, focalPoint: { x: 51.93, y: 50.36 } },
-          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global website, tablet mockup — showcase", wide: true, focalPoint: { x: 70.77, y: 14.04, zoom: 1.13 } },
+          { type: "image", src: "/yap-showcase-3.webp", alt: "YAP Global website, tablet mockup, showcase", wide: true, focalPoint: { x: 51.93, y: 50.36 } },
+          { type: "image", src: "/yap-showcase-4.webp", alt: "YAP Global website, tablet mockup, showcase", wide: true, focalPoint: { x: 70.77, y: 14.04, zoom: 1.13 } },
         ],
       },
       {
@@ -357,20 +478,20 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The client had used a physical newspaper prop at a conference to represent their newsletter, The Context — I carried that straight onto the site, building the section as an actual open-newspaper spread instead of a generic email signup block, so the physical brand moment and the digital one matched.",
+            text: "The client had used a physical newspaper prop at a conference to represent their newsletter, The Context. I carried that straight onto the site, building the section as an actual open-newspaper spread instead of a generic email signup block, so the physical and digital brand moments matched.",
           },
           {
             type: "paragraph",
-            text: "Two problems came up in launch week. The client wanted \"learn more\" arrows removed from service items pointing to pages that weren't built yet — dead links are worse than no links — so I replaced them with small descriptive tags instead of reintroducing a link that led nowhere. And with a handful of internal pages still incomplete the day before launch, I reused the site's already-approved 404 page styling to build a coming-soon page fast, instead of pushing the whole launch back.",
+            text: "Two problems came up in launch week. The client wanted \"learn more\" arrows removed from service items pointing to unbuilt pages, dead links are worse than no links, so I swapped in small descriptive tags instead. And with internal pages still incomplete the day before launch, I reused the site's approved 404 styling to build a coming-soon page fast rather than push the launch back.",
           },
           {
             type: "imageGrid",
             images: [
-              { src: "/yap-design-1.webp", alt: "YAP Global website, tablet mockup — design details", focalPoint: { x: 48.28, y: 71.45, zoom: 1.08 } },
-              { src: "/yap-design-2.webp", alt: "YAP Global website, tablet mockup — design details", focalPoint: { x: 40.22, y: 52.53, zoom: 1.33 } },
+              { src: "/yap-design-1.webp", alt: "YAP Global website, tablet mockup, design details", focalPoint: { x: 48.28, y: 71.45, zoom: 1.08 } },
+              { src: "/yap-design-2.webp", alt: "YAP Global website, tablet mockup, design details", focalPoint: { x: 40.22, y: 52.53, zoom: 1.33 } },
             ],
           },
-          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global website, tablet mockup — design details", wide: true, focalPoint: { x: 50.79, y: 49.81 } },
+          { type: "image", src: "/yap-design-3.webp", alt: "YAP Global website, tablet mockup, design details", wide: true, focalPoint: { x: 50.79, y: 49.81 } },
         ],
       },
       {
@@ -379,11 +500,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The site launched on schedule ahead of EthCC, coming-soon page and all. The founder's reaction to the 404 page was positive enough that the team reused its style under deadline pressure, and the relationship didn't end at launch — I was still producing new branded assets for YAP Global more than a year later. I don't have post-launch traffic or conversion numbers to share, so I'm leaving that out rather than guessing.",
+            text: "The site launched on schedule ahead of EthCC, coming-soon page and all. The founder's reaction to the 404 page was positive enough that the team reused its style under deadline pressure, and the relationship didn't end at launch, I was still producing new branded assets more than a year later. I don't have post-launch traffic or conversion numbers to share, so I'm leaving that out rather than guessing.",
           },
           {
             type: "paragraph",
-            text: "The real lesson was learning to edit across three competing, client-approved directions instead of refining just one — merging documented, specific feedback into a single coherent system rather than defending any one direction as \"the\" answer. If I did this again, I'd flag page-readiness risk earlier in the timeline, instead of solving it with a coming-soon page the day before launch.",
+            text: "The real lesson was editing across three competing, client-approved directions instead of refining just one, merging specific feedback into a single coherent system rather than defending any one direction as \"the\" answer. If I did this again, I'd flag page-readiness risk earlier instead of solving it with a coming-soon page the day before launch.",
           },
         ],
       },
@@ -414,11 +535,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Spaces International is a charity and social enterprise built around social inclusion, working through three connected initiatives: Safe Spaces (listening to lived experience), Transformed Spaces (helping organisations become more inclusive), and Open Spaces (helping individuals with business ideas access the resources to launch them). Their vision, in their own words, is to empower individuals and organisations to engage with social inclusion in a meaningful way.",
+            text: "Spaces International is a charity and social enterprise built around social inclusion, working through three initiatives: Safe Spaces (listening to lived experience), Transformed Spaces (helping organisations become more inclusive), and Open Spaces (helping people launch business ideas). In their own words, their vision is to empower individuals and organisations to engage with social inclusion in a meaningful way.",
           },
           {
             type: "paragraph",
-            text: "I worked on the content strategy and page copy for their website redesign, starting from three user personas the organisation's own team had already developed, one for each initiative, and building the site's structure and messaging directly from them. The work ran from February through May 2024 and covered the homepage, all three initiative pages, About Us, Get Involved, and Contact Us.",
+            text: "I worked on content strategy and page copy for their website redesign, starting from three personas the client's own team had already built, one per initiative. The work ran February through May 2024 and covered the homepage, all three initiative pages, About Us, Get Involved, and Contact Us.",
           },
         ],
       },
@@ -428,7 +549,7 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Spaces International's existing copy was outdated but not broken, it explained the organisation's model reasonably well. The harder problem was that the model is actually three distinct initiatives serving three very different audiences (a school counsellor, a corporate CEO, an aspiring entrepreneur) that all needed to read as one coherent charity rather than three unrelated programs bolted together. I worked directly from three detailed personas the client had already built, one per initiative, and used them to write genuinely different content and calls to action for each audience rather than one generic nonprofit voice repeated three times.",
+            text: "Spaces International's existing copy explained the organisation reasonably well, just outdated. The harder problem: three distinct initiatives, three very different audiences (a school counsellor, a corporate CEO, an aspiring entrepreneur), all needing to read as one coherent charity rather than three programs bolted together. I worked from the client's own personas to write genuinely different content for each audience rather than one generic nonprofit voice repeated three times.",
           },
           {
             type: "stats",
@@ -446,16 +567,12 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The starting content wasn't a redesign-from-crisis situation. The real challenge was structural and tonal rather than a broken-site rebuild.",
+            text: "This wasn't a redesign-from-crisis situation. The real challenge was structural and tonal: three initiatives under one shared brand, each speaking to a completely different visitor.",
           },
           {
             type: "quote",
             text: "A bit outdated, but still explains decently what we do.",
             attribution: "Spaces International, on their previous site copy",
-          },
-          {
-            type: "paragraph",
-            text: "Spaces International runs three initiatives under one shared brand, and each speaks to a completely different visitor:",
           },
           {
             type: "list",
@@ -467,7 +584,7 @@ export const caseStudies: CaseStudy[] = [
           },
           {
             type: "paragraph",
-            text: "Treating these as one audience would have flattened the site into generic charity language that didn't actually serve any of the three visitors well. On top of that, the organisation had a genuinely nuanced position to communicate: they exist to help people listen to lived experience and support inclusion, but they explicitly do not promote any specific worldview or belief system, treating that as a matter of personal choice. That's a fine distinction to get right in writing, and getting it wrong in either direction, sounding preachy, or sounding like they don't stand for anything, would have undercut the organisation's credibility.",
+            text: "Treating these as one audience would have flattened the site into generic charity language. The organisation also had a nuanced position to hold: they support inclusion without promoting any specific worldview, a line that's easy to get wrong in either direction, preachy on one side, noncommittal on the other.",
           },
         ],
       },
@@ -481,7 +598,7 @@ export const caseStudies: CaseStudy[] = [
           },
           {
             type: "paragraph",
-            text: "When I started this project, I deliberately held off on writing any copy until I had both the existing site content and all three personas in hand, and said so directly rather than letting an early draft get produced prematurely. That meant the very first real content decisions were grounded in actual audience research the client had already invested in, not a generic nonprofit template.",
+            text: "I deliberately held off on writing any copy until I had both the existing site content and all three personas in hand, so the first real content decisions were grounded in audience research the client had already invested in, not a generic nonprofit template.",
           },
           {
             type: "heading",
@@ -489,39 +606,15 @@ export const caseStudies: CaseStudy[] = [
           },
           {
             type: "paragraph",
-            text: "For Safe Spaces, the persona was a school counsellor looking for structured, respectful ways to talk about difficult topics with students, so that page's content leaned into discussion formats, facilitated dialogue, and expert-guided conversations. For Transformed Spaces, the persona was a tech CEO looking to build a credible diversity and inclusion strategy for his company, so that page's content leaned into consulting access, measurable frameworks, and peer benchmarking with other leaders. For Open Spaces, the persona was an aspiring social entrepreneur short on funding and network, so that page's content leaned into mentorship, funding opportunities, and founder success stories. Each of these came from actually reading what that specific persona's goals and pain points were, not from writing one \"get involved\" message and swapping the initiative name.",
+            text: "Safe Spaces leaned into discussion formats for a school counsellor; Transformed Spaces leaned into consulting access and measurable frameworks for a corporate leader; Open Spaces leaned into mentorship and funding for an aspiring entrepreneur. Each came from that persona's actual goals, not one \"get involved\" message with the initiative name swapped.",
           },
           {
             type: "heading",
-            text: "Structuring the homepage to hold three initiatives as equal, parallel entry points",
+            text: "Protecting the client's own words rather than smoothing them",
           },
           {
             type: "paragraph",
-            text: "Because Spaces International's model genuinely is three distinct initiatives rather than one program with sub-features, I built the homepage IA (hero, About, an Initiatives section with three parallel columns, events, resources, get involved, testimonials) so a first-time visitor could immediately see all three doors in and self-select the one relevant to them, rather than funnelling everyone through one generic path first.",
-          },
-          {
-            type: "heading",
-            text: "Writing the \"Our Beliefs\" section with real care",
-          },
-          {
-            type: "paragraph",
-            text: "The client gave me their actual internal explanation of what the organisation does and doesn't promote: that they believe the human experience is worth listening to, that they promote intentional steps toward inclusion, and that they deliberately do not promote any specific worldview because that has to be a personal choice. I kept that reasoning intact rather than smoothing it into generic \"we believe in diversity\" language, since the nuance itself was the point.",
-          },
-          {
-            type: "heading",
-            text: "Preserving real testimonials and a contributor's anonymity exactly as given",
-          },
-          {
-            type: "paragraph",
-            text: "The team section included real quotes from named co-founders and trustees, plus one contributor who was listed only as \"Identity Protected,\" a treasurer who chose not to be named. I was told directly not to alter these testimonials, and treated that as a hard rule rather than a style suggestion, since editing someone's own words about their lived experience isn't something to paraphrase for flow.",
-          },
-          {
-            type: "heading",
-            text: "Building Get Involved as four parallel doors, not one long page",
-          },
-          {
-            type: "paragraph",
-            text: "The client wanted a Get Involved page structured around Events, Internships, Resources, and Hannah Grace Day (the organisation's own named annual event honouring resilience and community), each as its own overview section with a clear path into a dedicated page, rather than one combined page trying to cover all four at once.",
+            text: "The \"Our Beliefs\" section kept the client's own reasoning intact (they support inclusion without promoting any specific worldview) rather than flattening it into generic \"we believe in diversity\" language. Team testimonials, including one contributor listed only as \"Identity Protected,\" were left exactly as given, a hard rule rather than a style suggestion. Get Involved became four parallel doors (Events, Internships, Resources, Hannah Grace Day) instead of one long page trying to cover all four at once.",
           },
         ],
       },
@@ -568,7 +661,7 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "This engagement stayed almost entirely in content and IA, but it did produce one piece of real visual groundwork: a lightweight style guide covering type (headings and body set in Be Vietnam Pro), button specs, and the site's color palette, an orange anchor color against black and white, with a couple of softer supporting tones for texture.",
+            text: "This engagement stayed almost entirely in content and IA, but it did produce one piece of real visual groundwork: a lightweight style guide covering type (Be Vietnam Pro), button specs, and the palette, an orange anchor against black and white with a couple of softer supporting tones.",
           },
           { type: "image", src: "/spaces-international-design-1.webp", alt: "Spaces International Style Guide cover, typography, button, and color specs", wide: true },
         ],
@@ -579,19 +672,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "This engagement stayed almost entirely in content strategy and copywriting rather than full visual design iteration, so I don't have client design feedback rounds or a launch milestone to point to the way I would for a more visually-driven project. What I can point to is a complete, persona-matched content structure delivered across the homepage, all three initiative pages, About Us, Get Involved, and Contact Us, each written for the specific audience it needed to reach rather than one shared nonprofit voice, plus a lightweight style guide that gave the direction a real visual anchor beyond just copy.",
+            text: "This stayed almost entirely in content strategy rather than full visual design, so I don't have client feedback rounds or a launch milestone to point to. What I can point to is a complete, persona-matched content structure across the homepage, three initiative pages, About Us, Get Involved, and Contact Us, plus a lightweight style guide that gave the direction a real visual anchor. I don't have launch or engagement data to share beyond that.",
           },
           {
             type: "paragraph",
-            text: "I don't have a confirmed launch date or any post-launch engagement data for this site, so I'm not making a claim about impact beyond the content work itself.",
-          },
-          {
-            type: "paragraph",
-            text: "The main discipline this project reinforced was resisting the urge to generate content before actually understanding who it was for. Stopping myself early on to insist on seeing all three personas before writing anything meant every later content decision had a real audience behind it instead of a generic assumption.",
-          },
-          {
-            type: "paragraph",
-            text: "The other thing worth remembering here is that \"one brand, three audiences\" is a genuinely different problem from \"one brand, one audience talked about three ways.\" The temptation with an org like Spaces International is to write one warm, mission-driven voice and repeat it under three headings. The personas made it clear that wouldn't have worked: a school counsellor, a startup founder, and a corporate CEO need different proof points, different calls to action, and different levels of formality, even while representing the same underlying mission. Respecting those differences, rather than smoothing them into one voice, was the actual job here.",
+            text: "The main discipline this reinforced was resisting the urge to generate content before understanding who it was for. \"One brand, three audiences\" is a genuinely different problem from \"one brand talked about three ways\": a school counsellor, a founder, and a CEO need different proof points and different levels of formality, even under one shared mission.",
           },
         ],
       },
@@ -614,11 +699,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Arc Studio is a creative agency focused entirely on Web3 and crypto companies, offering branding, podcast production, social media, and website design. This case study covers the agency's own website, not a client project.",
+            text: "Arc Studio is a creative agency focused entirely on Web3 and crypto companies, offering branding, podcast production, social media, and website design. This case study covers the agency's own site, not a client project.",
           },
           {
             type: "paragraph",
-            text: "I led the design work myself, developing the site's visual identity, information architecture, and page templates, working closely with an internal stakeholder who reviewed and shaped the direction throughout. The project started in March 2025 and continued through mid-2025 as internal pages (About, service templates, case study pages) were built out.",
+            text: "I led the design work myself, developing the visual identity, IA, and page templates, working closely with an internal stakeholder who reviewed and shaped the direction throughout. The project started in March 2025 and continued through mid-2025 as internal pages (About, service templates, case study pages) were built out.",
           },
         ],
       },
@@ -643,7 +728,7 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Most web3 marketing agency websites look alike. Before starting any design work, I mapped the direct competitor landscape (Coinbound, Lunar Strategy, MarketAcross, Crowdcreate, Serotonin, Coinband) and found the same pattern repeating: a bold hero statement, a strip of client logos, a testimonial carousel, a services grid. None of it was wrong, but none of it gave a visitor a reason to remember one agency over another.",
+            text: "Most Web3 marketing agency websites look alike. Mapping the direct competitor landscape (Coinbound, Lunar Strategy, MarketAcross, Crowdcreate, Serotonin, Coinband) turned up the same pattern everywhere: bold hero statement, client-logo strip, testimonial carousel, services grid. None of it was wrong, but none of it gave a visitor a reason to remember one agency over another.",
           },
           {
             type: "list",
@@ -660,7 +745,7 @@ export const caseStudies: CaseStudy[] = [
           },
           {
             type: "paragraph",
-            text: "There was also a practical production problem. With ten-plus page types to design and copy still evolving, designing every page from scratch against a moving target would have meant constant rework.",
+            text: "There was also a practical problem: with ten-plus page types to design and copy still evolving, designing every page from scratch against a moving target would have meant constant rework.",
           },
         ],
       },
@@ -675,11 +760,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Instead of treating Arc as a one-line metaphor for the hero section, I used it as the entire creative brief. An arc is also a physical shape that shows up across cultures and history: Roman archways, Japanese torii gates, the arc of a falling apple, the curve of a story. That gave the identity a source to pull from for nearly every page, rather than needing a new concept invented from zero each time.",
+            text: "Instead of treating Arc as a one-line metaphor for the hero section, I used it as the entire creative brief. An arc is also a physical shape across cultures and history: Roman archways, Japanese torii gates, the arc of a falling apple, the curve of a story, a source to pull from for nearly every page rather than inventing a new concept each time.",
           },
           {
             type: "paragraph",
-            text: "An early hero version used heavy orange marquee ribbons alongside a colosseum image, but that didn't survive feedback. The idea that stuck was using the Arc de Triomphe itself as the hero visual, with the inside of the arch masked so that scrolling creates a parallax effect of moving through it, literally walking the visitor through the arc. The agency's own name became an interactive piece of the page instead of just a word in the logo.",
+            text: "An early hero version used heavy orange marquee ribbons alongside a colosseum image, but that didn't survive feedback. What stuck was the Arc de Triomphe itself as the hero visual, its arch masked so scrolling creates a parallax effect of moving through it, literally walking the visitor through the arc. The agency's own name became an interactive piece of the page instead of just a word in the logo.",
           },
           { type: "image", src: "/arc-approach.webp", alt: "Arc Studio site, approach mockup", wide: true },
         ],
@@ -692,11 +777,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The orange accent color came under specific scrutiny more than once for being visually too strong, particularly in the ribbon banners and background blocks. Rather than abandoning the color, since it stayed the throughline accent across the whole site, I moved to a lighter shade in the places it was overpowering the content around it.",
+            text: "The orange accent came under scrutiny more than once for being visually too strong, particularly in ribbon banners and background blocks. Rather than abandoning it, since it stayed the throughline accent across the site, I moved to a lighter shade wherever it was overpowering the content around it.",
           },
           {
             type: "paragraph",
-            text: "For the About page, the brief was a set of handwritten notes from a call: Japanese gates, arcs, Newton, cave art from India, no religious notes. I turned that loose list into a structured, section-by-section image brief: a torii gate as a portal motif in the hero, a Roman archway merging into a torii gate to represent the blend of cultures, a modernized Newton's apple tree with an orange apple falling toward an arc shape, and imagery inspired by Indian cave art transitioning into digital linework, deliberately avoiding any religious iconography as instructed.",
+            text: "For the About page, the brief was handwritten notes from a call: Japanese gates, arcs, Newton, cave art from India, no religious notes. I turned that into a structured, section-by-section image brief: a torii gate as a portal motif in the hero, a Roman archway merging into a torii gate for the blend of cultures, a modernized Newton's apple tree with an orange apple falling toward an arc, and Indian cave art transitioning into digital linework, deliberately avoiding any religious iconography as instructed.",
           },
           {
             type: "imageGrid",
@@ -717,11 +802,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Rather than custom-designing four separate service pages, I built a single repeatable structure (hero statement, service breakdown, the Arc Studio edge, selected work, FAQ, CTA) and applied it to branding, podcast production, website design, and social media, changing only the copy and supporting visuals per page. The same approach applied to the case study template, which followed a consistent challenge, approach, results, gallery structure across every client project featured.",
+            text: "Rather than custom-designing four separate service pages, I built one repeatable structure (hero statement, service breakdown, the Arc Studio edge, selected work, FAQ, CTA) and applied it to branding, podcast production, website design, and social media, changing only copy and supporting visuals per page. The case study template followed the same logic: a consistent challenge, approach, results, gallery structure across every client project.",
           },
           {
             type: "paragraph",
-            text: "For the internal pages, I laid out the intended content structure for each page first, sent that ahead of final copy, and only moved into visual design once real copy existed against that structure, which kept the design work from chasing a moving target every time messaging changed. For the Work and Case Study pages specifically, I looked at a studio called Off-Mind's own site as a structural reference for its challenge-to-results narrative flow, then rebuilt that flow in Arc Studio's own classical-meets-digital visual language rather than copying its look.",
+            text: "For internal pages, I laid out the intended content structure first, sent it ahead of final copy, and only moved into visual design once real copy existed against it, so the design work wasn't chasing a moving target every time messaging changed. For Work and Case Study specifically, I used a studio called Off-Mind's site as a structural reference for its challenge-to-results flow, then rebuilt that flow in Arc Studio's own classical-meets-digital language rather than copying its look.",
           },
           {
             type: "imageGrid",
@@ -739,11 +824,11 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The clearest checkpoint I have is a direct one: after the hero and homepage iterations, the internal stakeholder confirmed the final design was approved, with only copy adjustments and small image swaps requested afterward, rather than another structural round. The same visual language (the classical art references, the orange accent, the tone of voice) held up well enough to be reused consistently across service page templates and the About page months later, which suggests the identity worked as an actual system rather than a one-off hero concept. I don't have launch dates, traffic, or lead numbers for the live site, so I'm leaving out a performance claim.",
+            text: "The clearest checkpoint: after the hero and homepage iterations, the internal stakeholder confirmed the final design was approved, with only copy adjustments and small image swaps requested afterward, not another structural round. The same visual language (classical art references, the orange accent, the tone of voice) held up well enough to be reused across service page templates and the About page months later, suggesting the identity worked as an actual system. I don't have launch dates, traffic, or lead numbers for the live site, so I'm leaving out a performance claim.",
           },
           {
             type: "paragraph",
-            text: "The main thing this project taught me was to take a name seriously as a design constraint instead of a marketing throwaway. Once arc became a literal, physical shape with real historical and cultural range to draw from, almost every design decision had somewhere to start from, instead of needing a brand-new concept invented from scratch for every page. The other real skill this project exercised was translating loose, informal input into a structured, page-by-page art direction brief, closer to editing someone else's half-formed instinct into something buildable than generating creative ideas in the abstract.",
+            text: "The main thing this project taught me was to take a name seriously as a design constraint, not a marketing throwaway. Once arc became a literal, physical shape with real historical range to draw from, almost every design decision had somewhere to start from instead of a brand-new concept invented per page. The other real skill exercised was translating loose, informal input into a structured, page-by-page art direction brief, closer to editing someone else's half-formed instinct into something buildable than generating ideas in the abstract.",
           },
         ],
       },
@@ -809,11 +894,14 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        /* Image slot 2 of 7 (1 = the hero cover on page.tsx). Trimmed from
-           the usual 9-image template to fit 7 real images: Showcase drops
-           to a pair plus 1 single (not 2), and Design System drops its
-           trailing single entirely (pair only). See CaseStudyContent.tsx/
-           caseStudies.ts if the count ever needs to change again. */
+        /* Image slot 2 of 8 (1 = the hero cover on page.tsx). Trimmed from
+           the usual 9-image template to fit 8 real images: Showcase stays
+           a pair plus 1 single (not 2). Design System used to drop its
+           trailing single entirely (only 7 images existed) but Jeet's
+           Aug 8 2026 rename freed up a design-3.webp, so it now has the
+           full pair-plus-single like InCore/Arc Studio. See
+           CaseStudyContent.tsx/caseStudies.ts if the count ever needs to
+           change again. */
         id: "approach",
         label: "Approach",
         blocks: [
@@ -849,7 +937,8 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        /* Image slots 6–7 of 7: a side-by-side pair, no trailing single. */
+        /* Image slots 6–8 of 8: a side-by-side pair, then one full-width
+           single (design-3.webp, added Aug 8 2026 — see the note above). */
         id: "design-system",
         label: "Design System",
         blocks: [
@@ -864,6 +953,7 @@ export const caseStudies: CaseStudy[] = [
               { src: "/dealsage-design-2.webp", alt: "DealSage site, design details mockup" },
             ],
           },
+          { type: "image", src: "/dealsage-design-3.webp", alt: "DealSage site, design details mockup", wide: true },
         ],
       },
       {

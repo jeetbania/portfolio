@@ -55,15 +55,22 @@ export const projects: Project[] = [
   {
     slug: "migrateful",
     title: "Migrateful",
-    description: "Community cooking events connecting migrants with local residents.",
+    description: "UK charity training refugee and migrant chefs to teach cookery classes, rebuilt to read as premium rather than a typical nonprofit.",
     tint: "var(--folder-migrateful)",
     tintHex: "#D4C9F5",
+    /* Real content, from a source doc Jeet supplied (Aug 2026), replacing
+       the old placeholder kitchen.png/kitchen-1.jpg/kitchen-2.jpg (not
+       used anywhere else, safe to retire). images[0] is also the
+       case-study hero, heroVideo's poster frame, and the homepage
+       folder-card thumbnail — same triple role as every other project's
+       `-approach.webp`. */
     images: [
-      { src: "/kitchen.png",   alt: "Migrateful cooking event" },
-      { src: "/kitchen-1.jpg", alt: "Participants cooking together" },
-      { src: "/kitchen-2.jpg", alt: "Kitchen scene" },
+      { src: "/migrateful-approach.webp",   alt: "Migrateful website, homepage mockup" },
+      { src: "/migrateful-showcase-2.webp", alt: "Migrateful website, cooking class event page mockup" },
+      { src: "/migrateful-design-2.webp",   alt: "Migrateful website, Bristol class page mockup" },
     ],
-    tags: ["UX Design", "Branding"],
+    tags: ["UX Design", "Content Strategy"],
+    heroVideo: "/migrateful-hero.mp4",
   },
   {
     slug: "yap-global",
@@ -142,16 +149,21 @@ export const projects: Project[] = [
        placeholder rather than a guess. */
     tint: "var(--folder-sixth)",
     tintHex: "#C8E6C0",
-    /* images[0] is also the case-study hero (page.tsx reads it directly).
-       Only 6 of the 7 images below are in public/ so far (dealsage-
-       showcase-3.webp is still pending) — that one block will show a
-       broken image until it's added, same as InCore/Arc Studio's hero
-       did while waiting on theirs. */
+    /* images[0] is also the case-study hero (page.tsx reads it directly),
+       heroVideo's poster frame, and the homepage folder-card thumbnail —
+       same triple role as every other project's `-approach.webp`. Jeet
+       renamed 2 files Aug 8 2026: the old (unused) dealsage-hero.webp
+       became this approach.webp, and the old approach.webp became
+       design-3.webp (see caseStudies.ts's Design System section) — so
+       this isn't new content, just correctly named now. showcase-3.webp
+       (converted from a .png Jeet uploaded) fills the last gap that was
+       previously missing. */
     images: [
-      { src: "/dealsage-hero.webp",       alt: "DealSage site, mockup" },
-      { src: "/dealsage-approach.webp",   alt: "DealSage site, mockup" },
-      { src: "/dealsage-showcase-1.webp", alt: "DealSage site, mockup" },
+      { src: "/dealsage-approach.webp",   alt: "DealSage site, approach mockup" },
+      { src: "/dealsage-showcase-1.webp", alt: "DealSage site, showcase mockup" },
+      { src: "/dealsage-showcase-2.webp", alt: "DealSage site, showcase mockup" },
     ],
     tags: ["Product Design", "Design System"],
+    heroVideo: "/dealsage-hero.mp4",
   },
 ];
