@@ -1,4 +1,5 @@
 import Folder from "./Folder";
+import { AnnotationArrow } from "./AnnotationArrow";
 import { projects } from "@/data/projects";
 
 export default function WorkGrid() {
@@ -25,7 +26,7 @@ export default function WorkGrid() {
         </h2>
         <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
           color:"var(--col-muted)", marginTop:"8px" }}>
-          Yep, go ahead and judge it ↓
+          Yep, go ahead and judge it <AnnotationArrow rotate={140} />
         </p>
       </div>
 

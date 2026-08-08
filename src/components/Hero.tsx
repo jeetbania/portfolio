@@ -1,6 +1,7 @@
 "use client";
 
 import HeroName from "./HeroName";
+import { AnnotationArrow } from "./AnnotationArrow";
 import { withGlassShine } from "@/lib/hoverStyles";
 import { useTheme } from "@/lib/theme";
 
@@ -56,7 +57,7 @@ export default function Hero() {
           </p>
           <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
             color:"var(--col-muted)", marginTop:"6px" }}>
-            ↳ yes, actual humans
+            <AnnotationArrow /> yes, actual humans
           </p>
         </div>
 
