@@ -21,7 +21,7 @@ export default function InteractionsGrid() {
           border: "1px dashed var(--col-border)",
         }}
       >
-        <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "20px", color: "var(--col-muted)" }}>
+        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 500, fontSize: "16px", color: "var(--col-muted)" }}>
           New interactions dropping soon, check back shortly.
         </p>
       </div>

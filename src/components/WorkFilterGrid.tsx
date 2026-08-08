@@ -68,8 +68,8 @@ export default function WorkFilterGrid({ projects }: { projects: Project[] }) {
             border: "1px dashed var(--col-border)",
           }}
         >
-          <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "20px", color: "var(--col-muted)" }}>
-            Nothing here yet — try a different search or filter.
+          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 500, fontSize: "16px", color: "var(--col-muted)" }}>
+            Nothing here yet, try a different search or filter.
           </p>
         </div>
       )}

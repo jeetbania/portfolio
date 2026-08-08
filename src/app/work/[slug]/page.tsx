@@ -120,7 +120,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 <CaseStudyContent key={section.id} id={section.id} label={section.label} blocks={section.blocks} tintHex={project.tintHex} index={i} />
               ))
             ) : (
-              <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--col-muted)" }}>
+              <p style={{ fontFamily: "var(--font-sans)", fontWeight: 500, color: "var(--col-muted)" }}>
                 Case study content coming soon.
               </p>
             )}

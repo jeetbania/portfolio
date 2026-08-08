@@ -26,22 +26,13 @@ export default function WorkPageBody({ projects }: { projects: Project[] }) {
         </div>
         <h1 style={{
           fontFamily: "var(--font-serif)", fontSize: "clamp(38px, 6vw, 64px)",
-          fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: "18px",
+          fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em",
           maxWidth: "680px", marginLeft: "auto", marginRight: "auto",
         }}>
           {mode === "work"
             ? "A closer look at what I've built."
             : "Small stuff, shipped quickly."}
         </h1>
-        <p style={{
-          fontFamily: "var(--font-sans)", fontSize: "18px", fontWeight: 500,
-          letterSpacing: "-0.01em", lineHeight: 1.55, color: "var(--col-muted)",
-          maxWidth: "560px", marginLeft: "auto", marginRight: "auto",
-        }}>
-          {mode === "work"
-            ? "Product design, motion, and everything in between — six projects, six different problems, one obsession with getting the details right."
-            : "UI experiments and micro-interactions I've posted along the way, no case study attached. Click any clip to see the original post."}
-        </p>
       </div>
 
       {mode === "work" ? <WorkFilterGrid projects={projects} /> : <InteractionsGrid />}
