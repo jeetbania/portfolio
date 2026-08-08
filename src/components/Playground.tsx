@@ -572,11 +572,17 @@ function QuickAsk({ mounted }: { mounted: boolean }) {
         {/*
          * Response expands INSIDE the same bar using the 0fr→1fr grid-row
          * trick — this animates height smoothly without measuring the DOM.
+         * Bounce comes from y1 > 1 on the cubic-bezier (a "back" ease):
+         * grid-template-rows happily overshoots past 1fr before settling,
+         * same trick FanCard's hover lift uses. Bumped from a barely-there
+         * 1.05 to 1.5 (and 420ms → 520ms to give the extra travel room to
+         * read) so the card visibly springs open/shut instead of just
+         * easing.
          */}
         <div style={{
           display: "grid",
           gridTemplateRows: (thinking || reply) ? "1fr" : "0fr",
-          transition: "grid-template-rows 420ms cubic-bezier(0.34,1.05,0.64,1)",
+          transition: "grid-template-rows 520ms cubic-bezier(0.34,1.5,0.64,1)",
         }}>
           <div style={{ overflow: "hidden" }}>
             {(thinking || reply) && (
