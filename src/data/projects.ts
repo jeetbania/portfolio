@@ -101,17 +101,21 @@ export const projects: Project[] = [
     description: "Web3 creative agency's own site, redesigned around the literal shape of its name.",
     tint: "var(--folder-arc)",
     tintHex: "#F2A65A",
-    /* images[0] is also the case-study hero (page.tsx reads it directly)
-       and, if a hero video gets added later (Jeet's planning one, not
-       uploaded yet — see src/components/HeroVideo.tsx), its poster
-       frame too. arc-approach.webp standing in as the hero/folder-card
-       image for now. */
+    /* images[0] is also the case-study hero (page.tsx reads it directly),
+       heroVideo's poster frame (paints before the video loads, and is
+       what a prefers-reduced-motion visitor sees instead of it — see
+       HeroVideo.tsx), and the homepage folder-card thumbnail (which never
+       plays video). arc-approach.webp is standing in as all three for
+       now rather than a real still pulled from the video itself — swap
+       it for one anytime; every case-study page reads it straight from
+       here. */
     images: [
       { src: "/arc-approach.webp",   alt: "Arc Studio site, approach mockup" },
       { src: "/arc-showcase-1.webp", alt: "Arc Studio site, showcase mockup" },
       { src: "/arc-showcase-3.webp", alt: "Arc Studio site, showcase mockup" },
     ],
     tags: ["Brand Identity", "Art Direction"],
+    heroVideo: "/arc-studio-hero.mp4",
   },
   {
     slug: "dealsage",
