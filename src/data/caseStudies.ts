@@ -390,21 +390,188 @@ export const caseStudies: CaseStudy[] = [
     ],
   },
   {
-    slug: "fourth-project",
-    meta: { role: "UX Researcher, UI Designer", timeline: "2024", tools: ["Figma"] },
+    /* Real content, from a source doc Jeet supplied (Aug 2026), not
+       placeholder — same as InCore/YAP Global/Arc Studio. No em dashes
+       anywhere in this case study's copy, same standing preference as
+       the other real case studies. No `tools` in meta — the source doc
+       says so directly ("this project stayed in content/IA territory, so
+       no build platform was discussed"), and no `team` either, since none
+       was mentioned. No `design-system` section either: this engagement
+       never reached visual design (see the Outcome/Conclusion section
+       below), so there's no design system to document — sections are a
+       flexible list precisely for cases like this one. See the note on
+       Project.images in projects.ts for why every image block below
+       points at a file that doesn't exist yet on purpose. */
+    slug: "spaces-international",
+    meta: {
+      role: "UX Design, IA & Content Strategy",
+      timeline: "Feb 2024 — May 2024",
+    },
     sections: [
       {
         id: "overview",
         label: "Overview",
         blocks: [
-          { type: "paragraph", text: "Placeholder overview — a design exploration in data visualisation and dashboard UX." },
-          { type: "stats", items: [{ value: "Placeholder", label: "Timeline" }, { value: "UX Researcher, UI Designer", label: "Role" }] },
+          {
+            type: "paragraph",
+            text: "Spaces International is a charity and social enterprise built around social inclusion, working through three connected initiatives: Safe Spaces (listening to lived experience), Transformed Spaces (helping organisations become more inclusive), and Open Spaces (helping individuals with business ideas access the resources to launch them). Their vision, in their own words, is to empower individuals and organisations to engage with social inclusion in a meaningful way.",
+          },
+          {
+            type: "paragraph",
+            text: "I worked on the content strategy and page copy for their website redesign, starting from three user personas the organisation's own team had already developed, one for each initiative, and building the site's structure and messaging directly from them. The work ran from February through May 2024 and covered the homepage, all three initiative pages, About Us, Get Involved, and Contact Us.",
+          },
+        ],
+      },
+      {
+        id: "tldr",
+        label: "TL;DR",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Spaces International's existing copy was outdated but not broken, it explained the organisation's model reasonably well. The harder problem was that the model is actually three distinct initiatives serving three very different audiences (a school counsellor, a corporate CEO, an aspiring entrepreneur) that all needed to read as one coherent charity rather than three unrelated programs bolted together. I worked directly from three detailed personas the client had already built, one per initiative, and used them to write genuinely different content and calls to action for each audience rather than one generic nonprofit voice repeated three times.",
+          },
+          {
+            type: "stats",
+            items: [
+              { value: "3", label: "connected initiatives, one shared brand" },
+              { value: "3", label: "client-built personas driving every page's content" },
+              { value: "7", label: "pages restructured: home, 3 initiatives, About, Get Involved, Contact" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "problem-statement",
+        label: "Problem Statement",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The starting content wasn't a redesign-from-crisis situation. The real challenge was structural and tonal rather than a broken-site rebuild.",
+          },
+          {
+            type: "quote",
+            text: "A bit outdated, but still explains decently what we do.",
+            attribution: "Spaces International, on their previous site copy",
+          },
+          {
+            type: "paragraph",
+            text: "Spaces International runs three initiatives under one shared brand, and each speaks to a completely different visitor:",
+          },
+          {
+            type: "list",
+            items: [
+              "Safe Spaces (Listen): a school counsellor looking for respectful ways to talk about difficult social topics",
+              "Transformed Spaces (Learn): a corporate leader looking for a credible, structured DEI partner",
+              "Open Spaces (Engage): an aspiring social entrepreneur who needs funding, mentorship, and physical resources",
+            ],
+          },
+          {
+            type: "paragraph",
+            text: "Treating these as one audience would have flattened the site into generic charity language that didn't actually serve any of the three visitors well. On top of that, the organisation had a genuinely nuanced position to communicate: they exist to help people listen to lived experience and support inclusion, but they explicitly do not promote any specific worldview or belief system, treating that as a matter of personal choice. That's a fine distinction to get right in writing, and getting it wrong in either direction, sounding preachy, or sounding like they don't stand for anything, would have undercut the organisation's credibility.",
+          },
+        ],
+      },
+      {
+        id: "approach",
+        label: "Approach",
+        blocks: [
+          {
+            type: "heading",
+            text: "Refusing to generate content before understanding the full picture",
+          },
+          {
+            type: "paragraph",
+            text: "When I started this project, I deliberately held off on writing any copy until I had both the existing site content and all three personas in hand, and said so directly rather than letting an early draft get produced prematurely. That meant the very first real content decisions were grounded in actual audience research the client had already invested in, not a generic nonprofit template.",
+          },
+          {
+            type: "heading",
+            text: "Treating each persona as its own content strategy, not a relabeled template",
+          },
+          {
+            type: "paragraph",
+            text: "For Safe Spaces, the persona was a school counsellor looking for structured, respectful ways to talk about difficult topics with students, so that page's content leaned into discussion formats, facilitated dialogue, and expert-guided conversations. For Transformed Spaces, the persona was a tech CEO looking to build a credible diversity and inclusion strategy for his company, so that page's content leaned into consulting access, measurable frameworks, and peer benchmarking with other leaders. For Open Spaces, the persona was an aspiring social entrepreneur short on funding and network, so that page's content leaned into mentorship, funding opportunities, and founder success stories. Each of these came from actually reading what that specific persona's goals and pain points were, not from writing one \"get involved\" message and swapping the initiative name.",
+          },
+          {
+            type: "heading",
+            text: "Structuring the homepage to hold three initiatives as equal, parallel entry points",
+          },
+          {
+            type: "paragraph",
+            text: "Because Spaces International's model genuinely is three distinct initiatives rather than one program with sub-features, I built the homepage IA (hero, About, an Initiatives section with three parallel columns, events, resources, get involved, testimonials) so a first-time visitor could immediately see all three doors in and self-select the one relevant to them, rather than funnelling everyone through one generic path first.",
+          },
+          {
+            type: "heading",
+            text: "Writing the \"Our Beliefs\" section with real care",
+          },
+          {
+            type: "paragraph",
+            text: "The client gave me their actual internal explanation of what the organisation does and doesn't promote: that they believe the human experience is worth listening to, that they promote intentional steps toward inclusion, and that they deliberately do not promote any specific worldview because that has to be a personal choice. I kept that reasoning intact rather than smoothing it into generic \"we believe in diversity\" language, since the nuance itself was the point.",
+          },
+          {
+            type: "heading",
+            text: "Preserving real testimonials and a contributor's anonymity exactly as given",
+          },
+          {
+            type: "paragraph",
+            text: "The team section included real quotes from named co-founders and trustees, plus one contributor who was listed only as \"Identity Protected,\" a treasurer who chose not to be named. I was told directly not to alter these testimonials, and treated that as a hard rule rather than a style suggestion, since editing someone's own words about their lived experience isn't something to paraphrase for flow.",
+          },
+          {
+            type: "heading",
+            text: "Building Get Involved as four parallel doors, not one long page",
+          },
+          {
+            type: "paragraph",
+            text: "The client wanted a Get Involved page structured around Events, Internships, Resources, and Hannah Grace Day (the organisation's own named annual event honouring resilience and community), each as its own overview section with a clear path into a dedicated page, rather than one combined page trying to cover all four at once.",
+          },
+        ],
+      },
+      {
+        /* All 5 image blocks below point at files that don't exist in
+           public/ yet, on purpose — see the note on Project.images in
+           projects.ts. First 3 filenames match projects.ts's images[]
+           array exactly (same reuse pattern InCore/YAP Global/Arc Studio
+           already use), the other 2 only exist here. */
+        id: "showcase",
+        label: "Showcase",
+        blocks: [
+          { type: "image", src: "/spaces-showcase-1.webp", alt: "Spaces International homepage, three-initiative structure", wide: true },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/spaces-showcase-2.webp", alt: "Open Spaces initiative page, persona-matched content for entrepreneurs" },
+              { src: "/spaces-showcase-3.webp", alt: "Transformed Spaces initiative page, persona-matched content for corporate leaders" },
+            ],
+          },
+          {
+            type: "imageGrid",
+            images: [
+              { src: "/spaces-showcase-4.webp", alt: "About Us page, Our Beliefs and Meet the Team sections" },
+              { src: "/spaces-showcase-5.webp", alt: "Get Involved page, Events, Internships, Resources, Hannah Grace Day" },
+            ],
+          },
         ],
       },
       {
         id: "conclusion",
         label: "Conclusion",
-        blocks: [{ type: "paragraph", text: "Placeholder conclusion." }],
+        blocks: [
+          {
+            type: "paragraph",
+            text: "This engagement stayed almost entirely in content strategy and copywriting rather than visual design iteration, so I don't have mockups, client design feedback rounds, or a launch milestone to point to the way I would for a more visually-driven project. What I can point to is a complete, persona-matched content structure delivered across the homepage, all three initiative pages, About Us, Get Involved, and Contact Us, each written for the specific audience it needed to reach rather than one shared nonprofit voice.",
+          },
+          {
+            type: "paragraph",
+            text: "I don't have a confirmed launch date or any post-launch engagement data for this site, so I'm not making a claim about impact beyond the content work itself.",
+          },
+          {
+            type: "paragraph",
+            text: "The main discipline this project reinforced was resisting the urge to generate content before actually understanding who it was for. Stopping myself early on to insist on seeing all three personas before writing anything meant every later content decision had a real audience behind it instead of a generic assumption.",
+          },
+          {
+            type: "paragraph",
+            text: "The other thing worth remembering here is that \"one brand, three audiences\" is a genuinely different problem from \"one brand, one audience talked about three ways.\" The temptation with an org like Spaces International is to write one warm, mission-driven voice and repeat it under three headings. The personas made it clear that wouldn't have worked: a school counsellor, a startup founder, and a corporate CEO need different proof points, different calls to action, and different levels of formality, even while representing the same underlying mission. Respecting those differences, rather than smoothing them into one voice, was the actual job here.",
+          },
+        ],
       },
     ],
   },

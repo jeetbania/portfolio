@@ -88,17 +88,36 @@ export const projects: Project[] = [
     heroVideo: "/yap-global-hero.mp4",
   },
   {
-    slug: "fourth-project",
-    title: "Fourth Project",
-    description: "A design exploration in data visualisation and dashboard UX.",
-    tint: "var(--folder-fourth)",
+    slug: "spaces-international",
+    title: "Spaces International",
+    description: "Charity and social enterprise for social inclusion, its site rebuilt around three real audience personas.",
+    tint: "var(--folder-spaces)",
     tintHex: "#F5D4B8",
+    /* Real content, from a source doc Jeet supplied (Aug 2026), not
+       placeholder — same as InCore/YAP Global/Arc Studio. Different from
+       those three in one real way though: no image mockups exist yet
+       (Jeet's making them "tomorrow", per chat) — every image below
+       points at a file that doesn't exist in public/ yet, on purpose.
+       AnchoredImage/ImageSkeleton (case-study images) and Folder.tsx's
+       own thumbnail stack (this array's first 3, for the homepage
+       folder-card) both already treat "image never finishes loading" as
+       "show the loading skeleton" rather than a broken-image icon — so
+       this reads as "still loading" instead of broken in both places,
+       with zero extra code needed. Once real files land at these exact
+       paths, they'll just start rendering, nothing else to wire up.
+       heroVideo is real footage, not a placeholder — but that means
+       images[0] (its poster, and what a prefers-reduced-motion visitor
+       is stuck seeing) is ALSO a missing file for now, which HeroVideo.tsx
+       doesn't route through ImageSkeleton (it's a deliberately plain,
+       server-renderable <img>, no client JS) — so that one visitor
+       segment sees a broken image, not a skeleton, until tomorrow. */
     images: [
-      { src: "/screen-1.jpg", alt: "Analytics dashboard" },
-      { src: "/screen-2.jpg", alt: "Mobile app screens" },
-      { src: "/tech-2.jpg",   alt: "Team collaboration" },
+      { src: "/spaces-showcase-1.webp", alt: "Spaces International website, homepage mockup" },
+      { src: "/spaces-showcase-2.webp", alt: "Spaces International website, Open Spaces initiative page mockup" },
+      { src: "/spaces-showcase-3.webp", alt: "Spaces International website, Transformed Spaces initiative page mockup" },
     ],
-    tags: ["UX Research", "UI Design"],
+    tags: ["UX Design", "Content Strategy"],
+    heroVideo: "/spaces-international-hero.mp4",
   },
   {
     slug: "arc-studio",

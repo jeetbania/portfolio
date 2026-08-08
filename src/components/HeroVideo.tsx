@@ -1,10 +1,18 @@
 /**
  * Autoplay/muted/looping hero video, standing in for the usual
  * AnchoredImage hero when a project has one (Project.heroVideo in
- * projects.ts). Plain server-renderable markup, no client JS needed:
- * autoplay/loop/mute are just HTML attributes, and the
- * prefers-reduced-motion handling below is pure CSS (see .hero-video in
- * globals.css) rather than a media-query check in JS.
+ * projects.ts). Used to be plain server-renderable markup, no client JS
+ * needed — but that assumed `poster` always resolves to a real file.
+ * A project can now have a real video before it has a real poster image
+ * (Spaces International, Aug 2026: video was ready, mockups weren't) —
+ * for that case, this needs the exact same "missing image reads as still
+ * loading, not broken" treatment every other image in the codebase
+ * already gets (see ImageSkeleton.tsx, used identically in
+ * imageAnchor.tsx's AnchoredImage and Folder.tsx), which needs the
+ * onLoad callback below and so needs to be a client component now.
+ * autoplay/loop/mute stay plain HTML attributes either way, and the
+ * prefers-reduced-motion handling is still pure CSS (see .hero-video in
+ * globals.css), not a media-query check in JS.
  *
  * `poster` is required, not optional — it's what paints instantly before
  * the video has downloaded/decoded a frame (much better perceived
@@ -38,11 +46,32 @@
  * Or use HandBrake with a "Web" preset at similar settings if you'd
  * rather not use the command line.
  */
+"use client";
+
+import { useState } from "react";
+import { ImageSkeleton } from "./ImageSkeleton";
+
 export default function HeroVideo({
   src, posterSrc, posterAlt,
 }: { src: string; posterSrc: string; posterAlt: string }) {
+  // Same loaded/showSkeleton split as AnchoredImage — `loaded` flips the
+  // instant onLoad fires, `showSkeleton` lingers 320ms longer so the
+  // skeleton's own fade-out transition can finish playing instead of
+  // popping off mid-fade, then unmounts for good (no animation running
+  // in the background for the rest of the page's life). Never resets on
+  // a `posterSrc` change since this component's `src`/`posterSrc` are
+  // fixed for its whole mounted lifetime (no gallery/carousel reuse
+  // here, unlike AnchoredImage).
+  const [loaded, setLoaded] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const onLoad = () => {
+    setLoaded(true);
+    setTimeout(() => setShowSkeleton(false), 320);
+  };
+
   return (
     <div style={{ position: "absolute", inset: 0 }}>
+      {showSkeleton && <ImageSkeleton visible={!loaded} />}
       {/* eslint-disable-next-line @next/next/no-img-element -- plain img,
           not next/image: this sits permanently behind the video (not just
           as a loading placeholder) as the prefers-reduced-motion fallback,
@@ -51,7 +80,11 @@ export default function HeroVideo({
       <img
         src={posterSrc}
         alt={posterAlt}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        onLoad={onLoad}
+        style={{
+          position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+          opacity: loaded ? 1 : 0, transition: "opacity 280ms var(--ease-out)",
+        }}
       />
       <video
         className="hero-video"

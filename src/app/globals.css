@@ -139,12 +139,18 @@
   --folder-incore:    #B8F0D8;
   --folder-migrateful:#D4C9F5;
   --folder-yap:       #B8CEF5;
-  --folder-fourth:    #F5D4B8;
+  /* Was --folder-fourth (the generic placeholder name) — renamed now that
+     this slot is a real project. Color untouched though: unlike Arc
+     Studio's confirmed orange brand accent below, there's no real Spaces
+     International brand color to go on yet (the source material was
+     content strategy only, no visual design), so this stays the same
+     genuine placeholder peach until a real one exists. */
+  --folder-spaces:    #F5D4B8;
   /* Was --folder-fifth (a generic placeholder pink) — renamed and
      recolored now that this slot is a real project: Arc Studio's actual
      brand accent is orange (see the case study's own copy, "the orange
      accent... stayed the throughline accent across the whole site"), and
-     a warmer, more saturated orange than --folder-fourth's pale peach
+     a warmer, more saturated orange than --folder-spaces's pale peach
      keeps the two folders visually distinct sitting side by side. */
   --folder-arc:       #F2A65A;
   --folder-sixth:     #C8E6C0;
