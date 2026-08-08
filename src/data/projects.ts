@@ -93,28 +93,19 @@ export const projects: Project[] = [
     description: "Charity and social enterprise for social inclusion, its site rebuilt around three real audience personas.",
     tint: "var(--folder-spaces)",
     tintHex: "#F5D4B8",
-    /* Real content, from a source doc Jeet supplied (Aug 2026), not
-       placeholder — same as InCore/YAP Global/Arc Studio. Different from
-       those three in one real way though: no image mockups exist yet
-       (Jeet's making them "tomorrow", per chat) — every image below
-       points at a file that doesn't exist in public/ yet, on purpose.
-       AnchoredImage/ImageSkeleton (case-study images) and Folder.tsx's
-       own thumbnail stack (this array's first 3, for the homepage
-       folder-card) both already treat "image never finishes loading" as
-       "show the loading skeleton" rather than a broken-image icon — so
-       this reads as "still loading" instead of broken in both places,
-       with zero extra code needed. Once real files land at these exact
-       paths, they'll just start rendering, nothing else to wire up.
-       heroVideo is real footage, not a placeholder — but that means
-       images[0] (its poster, and what a prefers-reduced-motion visitor
-       is stuck seeing) is ALSO a missing file for now, which HeroVideo.tsx
-       doesn't route through ImageSkeleton (it's a deliberately plain,
-       server-renderable <img>, no client JS) — so that one visitor
-       segment sees a broken image, not a skeleton, until tomorrow. */
+    /* Real content, from a source doc Jeet supplied (Aug 2026) — same as
+       InCore/YAP Global/Arc Studio. Real mockups landed Aug 8 2026 too
+       (spaces-international-*.webp); images[0] is the approach shot
+       (laptop lifestyle photo of the homepage), same triple role as
+       incore-approach.webp/arc-approach.webp: case-study hero fallback,
+       heroVideo's poster frame, and the homepage folder-card thumbnail
+       (Folder.tsx only reads this array's first 3). The other uploaded
+       files (showcase/showcase-1..4, design-1, design-2) are still being
+       sorted into caseStudies.ts's Showcase section — see the note there. */
     images: [
-      { src: "/spaces-showcase-1.webp", alt: "Spaces International website, homepage mockup" },
-      { src: "/spaces-showcase-2.webp", alt: "Spaces International website, Open Spaces initiative page mockup" },
-      { src: "/spaces-showcase-3.webp", alt: "Spaces International website, Transformed Spaces initiative page mockup" },
+      { src: "/spaces-international-approach.webp", alt: "Spaces International website, homepage mockup" },
+      { src: "/spaces-international-showcase-1.webp", alt: "Spaces International website, Safe Spaces initiative page mockup" },
+      { src: "/spaces-international-showcase-3.webp", alt: "Spaces International website, Join Our Community section mockup" },
     ],
     tags: ["UX Design", "Content Strategy"],
     heroVideo: "/spaces-international-hero.mp4",

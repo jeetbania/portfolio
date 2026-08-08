@@ -396,12 +396,12 @@ export const caseStudies: CaseStudy[] = [
        the other real case studies. No `tools` in meta — the source doc
        says so directly ("this project stayed in content/IA territory, so
        no build platform was discussed"), and no `team` either, since none
-       was mentioned. No `design-system` section either: this engagement
-       never reached visual design (see the Outcome/Conclusion section
-       below), so there's no design system to document — sections are a
-       flexible list precisely for cases like this one. See the note on
-       Project.images in projects.ts for why every image block below
-       points at a file that doesn't exist yet on purpose. */
+       was mentioned. Real mockups landed Aug 8 2026 (see the note on
+       Project.images in projects.ts) — one of them (design-1.webp, a
+       Style Guide cover) is why this now HAS a `design-system` section
+       despite the source doc's own framing of the engagement as
+       content/IA-only. See that section's own note and the Conclusion
+       below for how that's reconciled without overstating the scope. */
     slug: "spaces-international",
     meta: {
       role: "UX Design, IA & Content Strategy",
@@ -526,29 +526,51 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        /* All 5 image blocks below point at files that don't exist in
-           public/ yet, on purpose — see the note on Project.images in
-           projects.ts. First 3 filenames match projects.ts's images[]
-           array exactly (same reuse pattern InCore/YAP Global/Arc Studio
-           already use), the other 2 only exist here. */
+        /* Real screenshots, uploaded Aug 8 2026, replacing the earlier
+           not-yet-uploaded placeholders. What actually landed doesn't
+           match 1:1 with what was assumed before the mockups existed —
+           no Transformed Spaces or About Us screens came through, but
+           Safe Spaces, the footer, a Join Our Community section, and a
+           404 page did — captions below describe what's actually in each
+           image rather than the original guess. spaces-international-
+           design-2.webp is a near-duplicate of showcase.webp (same Open
+           Spaces page, a different phone-mockup treatment) and was left
+           out on Jeet's call rather than used alongside it. */
         id: "showcase",
         label: "Showcase",
         blocks: [
-          { type: "image", src: "/spaces-showcase-1.webp", alt: "Spaces International homepage, three-initiative structure", wide: true },
+          { type: "image", src: "/spaces-international-showcase.webp", alt: "Open Spaces initiative page, persona-matched content for entrepreneurs", wide: true },
           {
             type: "imageGrid",
             images: [
-              { src: "/spaces-showcase-2.webp", alt: "Open Spaces initiative page, persona-matched content for entrepreneurs" },
-              { src: "/spaces-showcase-3.webp", alt: "Transformed Spaces initiative page, persona-matched content for corporate leaders" },
+              { src: "/spaces-international-showcase-1.webp", alt: "Safe Spaces initiative page, persona-matched content for listening and support" },
+              { src: "/spaces-international-showcase-3.webp", alt: "Get Involved page, Join Our Community section with volunteer opportunities" },
             ],
           },
           {
             type: "imageGrid",
             images: [
-              { src: "/spaces-showcase-4.webp", alt: "About Us page, Our Beliefs and Meet the Team sections" },
-              { src: "/spaces-showcase-5.webp", alt: "Get Involved page, Events, Internships, Resources, Hannah Grace Day" },
+              { src: "/spaces-international-showcase-2.webp", alt: "Site footer, newsletter signup and full site navigation" },
+              { src: "/spaces-international-showcase-4.webp", alt: "Custom 404 page, on-brand even at a dead end" },
             ],
           },
+        ],
+      },
+      {
+        /* Only one real design asset exists (design-1.webp, a Style
+           Guide cover) — not the usual 3-image grid+wide pattern the
+           other case studies' Design System sections use, since there
+           isn't a design iteration story to tell here, just this one
+           artifact. Kept honest about that in the copy below rather than
+           padding it out. */
+        id: "design-system",
+        label: "Design System",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "This engagement stayed almost entirely in content and IA, but it did produce one piece of real visual groundwork: a lightweight style guide covering type (headings and body set in Be Vietnam Pro), button specs, and the site's color palette, an orange anchor color against black and white, with a couple of softer supporting tones for texture.",
+          },
+          { type: "image", src: "/spaces-international-design-1.webp", alt: "Spaces International Style Guide cover, typography, button, and color specs", wide: true },
         ],
       },
       {
@@ -557,7 +579,7 @@ export const caseStudies: CaseStudy[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "This engagement stayed almost entirely in content strategy and copywriting rather than visual design iteration, so I don't have mockups, client design feedback rounds, or a launch milestone to point to the way I would for a more visually-driven project. What I can point to is a complete, persona-matched content structure delivered across the homepage, all three initiative pages, About Us, Get Involved, and Contact Us, each written for the specific audience it needed to reach rather than one shared nonprofit voice.",
+            text: "This engagement stayed almost entirely in content strategy and copywriting rather than full visual design iteration, so I don't have client design feedback rounds or a launch milestone to point to the way I would for a more visually-driven project. What I can point to is a complete, persona-matched content structure delivered across the homepage, all three initiative pages, About Us, Get Involved, and Contact Us, each written for the specific audience it needed to reach rather than one shared nonprofit voice, plus a lightweight style guide that gave the direction a real visual anchor beyond just copy.",
           },
           {
             type: "paragraph",
