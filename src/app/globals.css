@@ -1411,6 +1411,12 @@ body {
     grid-template-columns: 1fr !important;
     gap: 18px !important;
   }
+
+  /* 404 subcopy — too long to force onto one line at phone widths
+     without shrinking past comfortable reading size, so it wraps here. */
+  .notfound-subcopy {
+    white-space: normal !important;
+  }
   .work-section {
     padding-left: 20px !important;
     padding-right: 20px !important;
@@ -1490,6 +1496,13 @@ body {
 }
 .interaction-card-badge { transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 180ms var(--ease-spring); }
 .interaction-card:hover .interaction-card-badge { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
+
+/* ─── 404 page subcopy — single line on desktop (the sentence is short
+   enough to read as one beat rather than an awkward two-line wrap);
+   allowed to wrap again below the mobile breakpoint where it wouldn't
+   fit on one line without shrinking illegibly small — see the
+   max-width:767px override further down. ─────────────────────────── */
+.notfound-subcopy { white-space: nowrap; }
 
 /* ─── 404 page "Take me home" CTA — plain CSS :hover, not the inline JS
    handlers Hero.tsx's matching button uses, since not-found.tsx stays a

@@ -44,9 +44,9 @@ export default function NotFound() {
           }}>
             You&rsquo;ve wandered off the map.
           </h1>
-          <p style={{
-            fontFamily: "var(--font-sans)", fontSize: "16px", fontWeight: 500,
-            color: "var(--col-muted)", maxWidth: "440px", marginLeft: "auto", marginRight: "auto",
+          <p className="notfound-subcopy" style={{
+            fontFamily: "var(--font-sans)", fontSize: "clamp(13px, 1.8vw, 16px)", fontWeight: 500,
+            color: "var(--col-muted)",
           }}>
             Even the dino hasn&rsquo;t run this far. Give it a shot while you&rsquo;re here.
           </p>
