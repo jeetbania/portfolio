@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { animate } from "motion";
 import { withGlassShine, QUICK_EASE } from "@/lib/hoverStyles";
 import { useIsMobile } from "@/lib/useIsMobile";
 
@@ -424,10 +425,40 @@ function QuickAsk({ mounted }: { mounted: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const clearDismissTimer = () => {
     if (dismissTimer.current) clearTimeout(dismissTimer.current);
   };
+
+  /* Real spring physics (Motion's `animate()`, same imperative pattern as
+     Header.tsx's mobile panel morph) driving an actual pixel height,
+     instead of the old grid-template-rows 0fr→1fr CSS-transition trick.
+     That trick could never visibly overshoot: with only one track in the
+     grid, any progress value past 1fr still resolves to the same
+     max-content height, so the "bounce" in the easing curve was mostly
+     invisible — which is exactly why it read as barely-there. Animating a
+     real measured height in px has no such ceiling, so the spring's
+     overshoot actually shows: the card grows past its final height and
+     settles back, a genuine pop instead of a fast ease. Re-measures and
+     re-springs on every change (thinking → reply included), so the
+     height adjustment between "Let me think..." and the actual answer
+     gets its own little bounce too. */
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isOpen = thinking || !!reply;
+    if (isOpen) {
+      const targetHeight = contentRef.current?.scrollHeight ?? 0;
+      animate(panel, { height: `${targetHeight}px` },
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.6, bounce: 0.5 });
+    } else {
+      animate(panel, { height: "0px" },
+        reduced ? { duration: 0 } : { type: "spring", duration: 0.42, bounce: 0.05 });
+    }
+  }, [thinking, reply]);
 
   function closeReply() {
     clearDismissTimer();
@@ -569,22 +600,10 @@ function QuickAsk({ mounted }: { mounted: boolean }) {
           </button>
         </div>
 
-        {/*
-         * Response expands INSIDE the same bar using the 0fr→1fr grid-row
-         * trick — this animates height smoothly without measuring the DOM.
-         * Bounce comes from y1 > 1 on the cubic-bezier (a "back" ease):
-         * grid-template-rows happily overshoots past 1fr before settling,
-         * same trick FanCard's hover lift uses. Bumped from a barely-there
-         * 1.05 to 1.5 (and 420ms → 520ms to give the extra travel room to
-         * read) so the card visibly springs open/shut instead of just
-         * easing.
-         */}
-        <div style={{
-          display: "grid",
-          gridTemplateRows: (thinking || reply) ? "1fr" : "0fr",
-          transition: "grid-template-rows 520ms cubic-bezier(0.34,1.5,0.64,1)",
-        }}>
-          <div style={{ overflow: "hidden" }}>
+        {/* Response expands INSIDE the same bar — panelRef's height is
+            sprung open/shut imperatively, see the effect above. */}
+        <div ref={panelRef} style={{ height: 0, overflow: "hidden" }}>
+          <div ref={contentRef}>
             {(thinking || reply) && (
               <div style={{
                 padding: "2px 20px 18px",
