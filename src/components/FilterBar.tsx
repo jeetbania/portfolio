@@ -106,6 +106,7 @@ export default function FilterBar({
             left: 0,
             borderRadius: "10px",
             background: "var(--surface-glass-strong)",
+            border: "1px solid var(--col-border)",
             boxShadow: "0 1px 3px rgba(var(--shadow-tint-rgb),0.12), 0 4px 10px rgba(var(--shadow-tint-rgb),0.07), var(--glass-bevel)",
             zIndex: 0,
             willChange: "transform, width, height",
