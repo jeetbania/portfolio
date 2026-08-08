@@ -63,7 +63,7 @@ export default function Hero() {
               text rather than at it. */}
           <p style={{ fontFamily:"var(--font-hand)", fontSize:"clamp(20px,2.8vw,26px)",
             color:"var(--col-muted)", marginTop:"6px" }}>
-            yes, actual humans <AnnotationArrow style={{ marginTop:"-8px" }} />
+            yes, actual humans <AnnotationArrow style={{ marginTop:"-16px" }} />
           </p>
         </div>
 
