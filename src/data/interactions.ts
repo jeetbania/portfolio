@@ -30,7 +30,9 @@ export interface Interaction {
  * zoom. 1920px (not the original 1280px pass) specifically because these
  * now render as a single full-width card in a vertical stack rather than
  * a half-width grid cell — needed the extra resolution headroom to stay
- * sharp at that size.
+ * sharp at that size. Third clip (Prem Bhai) landed same way from a
+ * 60fps/3734x1878/107.3MB source with an AAC track — same recompress +
+ * mute recipe, landing at 2.76MB (~97% smaller).
  *
  * Ordered NEWEST FIRST — this array's order is the display order, there's
  * no separate date field. Add new entries at the TOP of this array (not
@@ -38,6 +40,12 @@ export interface Interaction {
  * public/, fill in the tweet URL, done.
  */
 export const interactions: Interaction[] = [
+  {
+    id: "prem-bhai",
+    title: "Prem bhai k gaane player",
+    video: "/interaction-prem-bhai.mp4",
+    tweetUrl: "https://x.com/figmajeet/status/2087026220865355838?s=20",
+  },
   {
     id: "slot-machine",
     title: "Slot machine UI",
