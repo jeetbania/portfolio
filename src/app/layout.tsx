@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif, Nanum_Pen_Script } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Header  from "@/components/Header";
 import DotGrid from "@/components/DotGrid";
@@ -107,6 +108,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </div>
         </ThemeProvider>
+        {/* Vercel Analytics — page views only, no cookies. Tracking picks
+            up automatically once this deploys on Vercel; the dashboard's
+            Analytics tab lights up on the next visit. */}
+        <Analytics />
       </body>
     </html>
   );
