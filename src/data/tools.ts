@@ -44,6 +44,50 @@ export interface Tool {
  */
 export const tools: Tool[] = [
   {
+    slug: "glowfield",
+    title: "Glowfield",
+    tagline: "A generative background-effects tool: dot fields, glass, god rays, aurora gradients, and particle networks for hero sections and posters, exportable as PNG, SVG, video, or embed code.",
+    kind: "web",
+    thumb: "/tool-glowfield-thumb.webp",
+    tintHex: "#3D5CFF",
+    builtWith: "Toolcraft, Canvas 2D, SVG",
+    variants: [
+      { label: "Glowfield", url: "https://glowfield.jeetcreates.cc", screenshot: "/tool-glowfield-screenshot.webp" },
+    ],
+    sections: [
+      {
+        id: "overview",
+        label: "Overview",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Glowfield generates copy-paste background effects for hero sections and posters: seven effects (dot fields, a flicker grid, refractable glass tiles, a pixel-reveal image mask, volumetric god rays, flowing aurora gradients, and a particle-network constellation), each with its own animation library and a shared circle/square/freehand mask. Everything exports as PNG, SVG, MP4/WebM, or a dependency-free HTML embed snippet.",
+          },
+        ],
+      },
+      {
+        id: "how-it-works",
+        label: "How it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Every effect renders through three parallel implementations of the exact same math: a Canvas 2D renderer for the live preview and raster export, a real vector SVG renderer for the SVG export, and a dependency-free JS twin baked into the copy-paste embed snippet. The shared geometry and motion formulas live in one canonical file that the SVG exporter imports directly; the embed snippet's JS twin is hand-ported since it can't import TypeScript modules, so every renderer change has to be mirrored there by hand.",
+          },
+        ],
+      },
+      {
+        id: "iterating-on-effects",
+        label: "Iterating on effects",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The effect library isn't fixed. An early radial \"Glyph\" gradient effect went through several full rewrites chasing a specific reference look, then got removed outright once it stopped earning its keep, replaced by three effects built from an open brief instead of a reference image: Beams (god rays from a light source that can be dragged off-canvas), Aurora (soft flowing mesh-gradient blobs derived from one primary color), and Constellation (a particle network with distance-tapered connecting lines). All three deliberately stick to Canvas 2D gradient and blend techniques rather than WebGL shaders, since a shader effect can't be mirrored into the SVG and embed renderers without breaking that shared-math architecture.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     slug: "dither-motion",
     title: "Dither Motion",
     tagline: "A live WebGL motion tool: procedural 3D and particle scenes pushed through a real-time Bayer dither shader, with PNG and video export.",
