@@ -293,17 +293,9 @@ function DesktopNav() {
           style={{
             width: 30, height: 30, borderRadius: "50%",
             display: "grid", placeItems: "center",
-            // No backdrop-filter here on purpose — two separate blurred
-            // glass surfaces sitting 8px apart (this + the main bar) is
-            // what was actually causing the visible seam reported near
-            // the footer/tool cards, confirmed by testing: the artifact
-            // only ever appeared once this pill existed alongside the
-            // main bar, never with the bar alone (its expanded state,
-            // hero). Solid, fully opaque background sidesteps the whole
-            // class of bug instead of chasing the exact Chromium
-            // internals that caused it, this pill is small/plain enough
-            // that it doesn't need its own glass treatment anyway.
-            background: "var(--col-bg)",
+            background: "var(--surface-nav)",
+            backdropFilter: "blur(22px) saturate(180%)",
+            WebkitBackdropFilter: "blur(22px) saturate(180%)",
             border: "1px solid var(--surface-glass-border)",
             boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
             color: "var(--col-muted)",
@@ -323,14 +315,9 @@ function DesktopNav() {
         style={{
           display: "inline-flex", alignItems: "center", gap: "2px",
           padding: "5px 8px", borderRadius: "99px",
-          // Fully solid, no backdrop-filter — this bar now roams over
-          // every kind of page content (grids, the footer's game), and
-          // any amount of translucency showed a visible seam wherever a
-          // real edge/gutter in that content sat behind it (confirmed:
-          // fainter at higher opacity, gone only once fully opaque).
-          // Matches --surface-nav's own hue exactly, so it still reads
-          // as "the same nav" even without the glass see-through.
-          background: "var(--col-bg)",
+          background: "var(--surface-nav)",
+          backdropFilter: "blur(22px) saturate(180%)",
+          WebkitBackdropFilter: "blur(22px) saturate(180%)",
           border: "1px solid var(--surface-glass-border)",
           boxShadow: [
             "0 1px 0 rgba(255,255,255,0.2) inset",
