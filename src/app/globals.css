@@ -1549,3 +1549,25 @@ body {
   border-color: transparent;
   box-shadow: 0 6px 16px var(--cta-shadow-hover);
 }
+
+/* ─── Bottom nav's "look here" hint pill (Header.tsx, DesktopNav, first
+   draft) — a slow, small side-to-side nudge so it reads as pointing at
+   something rather than just sitting there, without being distracting.
+   Pauses on hover so it doesn't fight the click. ────────────────────── */
+@keyframes desktop-nav-hint-nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-3px); }
+}
+.desktop-nav-hint {
+  animation: desktop-nav-hint-nudge 1.8s ease-in-out infinite;
+}
+.desktop-nav-hint:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .desktop-nav-hint { animation: none; }
+  .desktop-nav-collapsible,
+  .desktop-nav-collapsible > div {
+    transition-duration: 0ms !important;
+  }
+}

@@ -117,26 +117,49 @@ function useHeaderState() {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   DESKTOP nav — unchanged from before, byte-for-byte, gated behind
-   isMobile === false so nothing here can regress the desktop layout.
-   ══════════════════════════════════════════════════════════════════ */
+   DESKTOP nav — FIRST DRAFT of the bottom floating bar (Aug 2026), per
+   Jeet: too many links sitting in one row at the top. Behavior:
+     - Hero (home page, scrollY < 100): fully expanded, every link shown,
+       same set as the old top bar.
+     - Scrolled past the hero: collapses down to just About / Jeet Bania /
+       Work / Theme, the "always visible" set, plus a Menu pill.
+     - Clicking Menu (or the little arrow-hint pill beside it) force-
+       expands the collapsed extras back in, growing the bar sideways.
+       Scrolling again while manually expanded collapses it right back,
+       same as leaving the hero would.
+     - Every other page (no hero to be "at the top of"): starts collapsed,
+       Menu still works to expand/collapse manually.
+   Non-home pages never auto-hide/show anymore (there's no hero baseline
+   to return to), so the old visible-on-scroll enter/exit animation is
+   gone entirely, this bar is just always there, expanded or collapsed.
+   Still gated behind isMobile === false — MobileNav (top, hamburger
+   panel) is completely untouched and has its own "too many links"
+   answer already. ══════════════════════════════════════════════════ */
 function DesktopNav() {
-  const { visible, active } = useHeaderState();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const { active } = useHeaderState();
   const [hovered, setHovered] = useState<string | null>(null);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const [atTop, setAtTop] = useState(isHome);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const expanded = (isHome && atTop) || menuOpen;
 
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (visible) {
-      animate(el, { y: 0, opacity: 1, scale: 1 },
-        reduced ? { duration: 0 } : { type: "spring", duration: 0.45, bounce: 0.26 });
-    } else {
-      animate(el, { y: -14, opacity: 0, scale: 0.96 },
-        reduced ? { duration: 0 } : { type: "spring", duration: 0.28, bounce: 0 });
-    }
-  }, [visible]);
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        if (isHome) setAtTop(window.scrollY < 100);
+        // Any scroll collapses a manual expand, whether that scroll left
+        // the hero or just happened while the menu was open elsewhere.
+        setMenuOpen(false);
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isHome]);
 
   const NavLink = useCallback(({ href, label }: { href: string; label: string }) => {
     const isActive  = active  === href;
@@ -175,13 +198,43 @@ function DesktopNav() {
     <div aria-hidden="true" style={{ width: 1, height: 16, background: "var(--col-border)", margin: "0 3px", flexShrink: 0 }} />
   );
 
-  const leftLinks  = SECTIONS.filter(s => s.side === "left");
-  const rightLinks = SECTIONS.filter(s => s.side === "right");
+  /* First link on each side stays visible when collapsed (About, Work),
+     everything after it is the "extra" set that morphs away. */
+  const leftLinks   = SECTIONS.filter(s => s.side === "left");
+  const rightLinks  = SECTIONS.filter(s => s.side === "right");
+  const leftMain    = leftLinks[0];
+  const leftExtra   = leftLinks.slice(1);
+  const rightMain   = rightLinks[0];
+  const rightExtra  = rightLinks.slice(1);
+
+  /* The grid-template-columns 0fr/1fr trick: animates to the group's real
+     intrinsic width (not a guessed max-width), no ref measurement needed.
+     The inner div's overflow:hidden is what actually clips during the
+     transition; the outer grid is what's animated. */
+  const Collapsible = ({ links }: { links: typeof SECTIONS }) => (
+    <div
+      className="desktop-nav-collapsible"
+      style={{
+        display: "grid",
+        gridTemplateColumns: expanded ? "1fr" : "0fr",
+        transition: "grid-template-columns 420ms var(--ease-spring)",
+      }}
+    >
+      <div style={{
+        overflow: "hidden", minWidth: 0, display: "flex", alignItems: "center", gap: "1px",
+        opacity: expanded ? 1 : 0,
+        transition: `opacity ${expanded ? "260ms" : "140ms"} var(--ease-out) ${expanded ? "80ms" : "0ms"}`,
+      }}>
+        {links.map(n => <NavLink key={n.href} href={n.href} label={n.label} />)}
+      </div>
+    </div>
+  );
+
+  const toggleMenu = () => setMenuOpen(o => !o);
 
   return (
-    <div style={{ position: "fixed", top: "14px", left: 0, right: 0, zIndex: 100, display: "flex", justifyContent: "center", pointerEvents: "none" }}>
+    <div style={{ position: "fixed", bottom: "14px", left: 0, right: 0, zIndex: 100, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", pointerEvents: "none" }}>
       <div
-        ref={wrapRef}
         style={{
           display: "inline-flex", alignItems: "center", gap: "2px",
           padding: "5px 8px", borderRadius: "99px",
@@ -194,15 +247,13 @@ function DesktopNav() {
             "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
             "0 8px 24px rgba(var(--shadow-tint-rgb),0.06)",
           ].join(", "),
-          pointerEvents: visible ? "auto" : "none",
-          willChange: "transform, opacity",
-          opacity: 0,
-          transform: "translateY(-14px) scale(0.96)",
+          pointerEvents: "auto",
           transition: "background 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out)",
         }}
       >
         <nav aria-label="Left navigation" style={{ display: "flex", alignItems: "center", gap: "1px" }}>
-          {leftLinks.map(n => <NavLink key={n.href} href={n.href} label={n.label} />)}
+          <NavLink href={leftMain.href} label={leftMain.label} />
+          {leftExtra.length > 0 && <Collapsible links={leftExtra} />}
         </nav>
         <Divider />
         <Link href="/" style={{ fontFamily: "var(--font-serif)", fontSize: "14px", fontWeight: 400, color: "var(--col-fg)", textDecoration: "none", padding: "4px 14px", whiteSpace: "nowrap" as const, letterSpacing: "-0.01em" }}>
@@ -210,11 +261,69 @@ function DesktopNav() {
         </Link>
         <Divider />
         <nav aria-label="Right navigation" style={{ display: "flex", alignItems: "center", gap: "1px" }}>
-          {rightLinks.map(n => <NavLink key={n.href} href={n.href} label={n.label} />)}
+          <NavLink href={rightMain.href} label={rightMain.label} />
+          {rightExtra.length > 0 && <Collapsible links={rightExtra} />}
         </nav>
+
+        {/* Menu toggle — icon flips to a close "x" once expanded (whether
+            that's from being manually opened, or just from sitting in the
+            hero), so it always reads as "click me to go back". */}
+        <Divider />
+        <button
+          onClick={toggleMenu}
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse navigation" : "Expand navigation"}
+          style={{
+            display: "flex", alignItems: "center", gap: "6px",
+            fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)",
+            padding: "4px 10px", borderRadius: "99px", border: "none",
+            background: "transparent", cursor: "pointer",
+            transition: "background 180ms var(--ease-out), color 180ms var(--ease-out)",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = "var(--surface-glass)"; e.currentTarget.style.color = "var(--col-fg)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--col-muted)"; }}
+        >
+          Menu
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"
+            style={{ transition: "transform 260ms var(--ease-spring)", transform: expanded ? "rotate(45deg)" : "rotate(0deg)" }}>
+            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+        </button>
+
         <Divider />
         <ThemeToggle />
       </div>
+
+      {/* Separate little "look here" pill — only shown while collapsed,
+          points at the Menu button since some visitors won't guess it's
+          clickable on its own. Clicking this does the same thing Menu
+          does. */}
+      {!expanded && (
+        <button
+          onClick={toggleMenu}
+          aria-hidden="true"
+          tabIndex={-1}
+          className="desktop-nav-hint"
+          style={{
+            width: 30, height: 30, borderRadius: "50%",
+            display: "grid", placeItems: "center",
+            background: "var(--surface-nav)",
+            backdropFilter: "blur(22px) saturate(180%)",
+            WebkitBackdropFilter: "blur(22px) saturate(180%)",
+            border: "1px solid var(--surface-glass-border)",
+            boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
+            color: "var(--col-muted)",
+            cursor: "pointer",
+            pointerEvents: "auto",
+          }}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            {/* Points left, back at the Menu button inside the main bar
+                this pill sits just outside of. */}
+            <path d="M11 6H2M6 2 2 6l4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
