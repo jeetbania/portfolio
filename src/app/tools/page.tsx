@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { blogPosts } from "@/data/blog";
-import BlogFilterGrid from "@/components/BlogFilterGrid";
+import { tools } from "@/data/tools";
+import ToolsGrid from "@/components/ToolsGrid";
 import Footer from "@/components/Footer";
 import RoundedCap from "@/components/RoundedCap";
 
 export const metadata: Metadata = {
-  title: "Blog",
-  description: "Notes on design, product, and motion.",
+  title: "Tools",
+  description: "Small tools and plugins I've built on the side.",
 };
 
-export default function BlogPage() {
+export default function ToolsPage() {
   return (
     <main style={{ background: "var(--col-bg)" }}>
       <div style={{
@@ -17,32 +17,35 @@ export default function BlogPage() {
         margin: "0 auto",
         padding: "clamp(110px, 15vh, 160px) clamp(24px, 5vw, 72px) clamp(24px, 5vw, 64px)",
       }}>
-        {/* ── Hero — center-aligned to match the About page treatment.
-            maxWidth'd h1/p need margin:auto too, not just text-align. ── */}
+        {/* ── Hero, same treatment as /blog's ── */}
         <div style={{ marginBottom: "clamp(48px, 7vh, 72px)", textAlign: "center" }}>
           <p style={{
             fontFamily: "var(--font-sans)", fontSize: "11px", letterSpacing: "0.1em",
             textTransform: "uppercase", color: "var(--col-muted)", marginBottom: "14px",
           }}>
-            Blog
+            Tools
           </p>
           <h1 style={{
             fontFamily: "var(--font-serif)", fontSize: "clamp(38px, 6vw, 64px)",
             fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: "18px",
             maxWidth: "680px", marginLeft: "auto", marginRight: "auto",
           }}>
-            Notes from the process.
+            Things I've built on the side.
           </h1>
           <p style={{
             fontFamily: "var(--font-sans)", fontSize: "18px", fontWeight: 500,
             letterSpacing: "-0.01em", lineHeight: 1.55, color: "var(--col-muted)",
             maxWidth: "560px", marginLeft: "auto", marginRight: "auto",
           }}>
-            Design, product, and motion: the things I keep re-learning, written down before I forget them again.
+            A few small web tools and Figma plugins, built for myself first, and how each one came together.
           </p>
         </div>
 
-        <BlogFilterGrid posts={blogPosts} />
+        {/* 2-column, not the blog grid's 3, these cards carry a heavier
+            screenshot-style thumbnail than a blog card's flat gradient,
+            so they read better with more room per card. No filter bar,
+            there are only a handful of these so far. */}
+        <ToolsGrid tools={tools} />
       </div>
 
       <RoundedCap />

@@ -1412,6 +1412,19 @@ body {
     gap: 18px !important;
   }
 
+  /* /tools: same fixed 2-column → 1 collapse as .work-grid, same reason. */
+  .tool-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  /* Individual tool page's variant mockups (the jukebox pair's two
+     screenshots) stack instead of squeezing two browser mockups side by
+     side at phone width. */
+  .tool-variant-grid {
+    grid-template-columns: 1fr !important;
+  }
+
   /* Interactions is a single-column flex stack even on desktop now (see
      InteractionsGrid.tsx), so it needs no column-count override here —
      just tighten the gap to match every other mobile grid. */
@@ -1490,6 +1503,19 @@ body {
 }
 .blog-card-arrow { transition: background 180ms var(--ease-out), transform 180ms var(--ease-spring); }
 .blog-card:hover .blog-card-arrow { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
+
+/* ─── Tool card — /tools, identical rest/hover weight to .blog-card. Kept
+   as its own class rather than sharing .blog-card so tuning one later
+   doesn't silently move the other. ──────────────────────────────────── */
+.tool-card {
+  transition: transform 220ms var(--ease-spring), box-shadow 220ms var(--ease-out);
+}
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(var(--shadow-tint-rgb),0.08), 0 18px 38px rgba(var(--shadow-tint-rgb),0.14), var(--glass-bevel);
+}
+.tool-card-arrow { transition: background 180ms var(--ease-out), transform 180ms var(--ease-spring); }
+.tool-card:hover .tool-card-arrow { background: var(--col-fg); color: var(--col-bg); transform: translate(2px, -2px); }
 
 /* ─── Interaction card — /work's "Interactions" tab (InteractionCard.tsx).
    No caption overlay, so hover lift + a shadow bloom is the only "this

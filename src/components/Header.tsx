@@ -17,6 +17,7 @@ const SECTIONS = [
   { id: "playground", href: "/playground",  label: "Playground", side: "left"  },
   { id: "work",       href: "/work",        label: "Work",       side: "right" },
   { id: "blog",       href: "/blog",        label: "Blog",       side: "right" },
+  { id: "tools",      href: "/tools",       label: "Tools",      side: "right" },
   { id: "contact",    href: "/#contact",    label: "Contact",    side: "right" },
 ];
 

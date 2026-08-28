@@ -3,7 +3,7 @@ import DinoGame from "@/components/DinoGame";
 import RoundedCap from "@/components/RoundedCap";
 
 export const metadata: Metadata = {
-  title: "404 - Jeet Bania",
+  title: "404",
   description: "This page doesn't exist. Play a round of Jeet Run while you're here.",
 };
 

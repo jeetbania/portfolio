@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import RoundedCap from "@/components/RoundedCap";
 
 export const metadata: Metadata = {
-  title: "About - Jeet Bania",
+  title: "About",
   description: "Product & UX Designer. Bengaluru.",
 };
 
