@@ -20,7 +20,7 @@ export default function PlaygroundPage() {
     <main style={{ background: "var(--col-bg)" }}>
       <div style={{
         maxWidth: "min(1900px, 97vw)", margin: "0 auto",
-        padding: "clamp(100px, 13vh, 150px) clamp(10px, 2vw, 28px) clamp(50px, 8vh, 90px)",
+        padding: "clamp(52px, 7.5vh, 80px) clamp(10px, 2vw, 28px) clamp(50px, 8vh, 90px)",
       }}>
         <div style={{
           borderRadius: "clamp(20px,3vw,32px)",

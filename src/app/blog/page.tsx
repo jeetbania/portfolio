@@ -15,7 +15,7 @@ export default function BlogPage() {
       <div style={{
         maxWidth: "1160px",
         margin: "0 auto",
-        padding: "clamp(110px, 15vh, 160px) clamp(24px, 5vw, 72px) clamp(24px, 5vw, 64px)",
+        padding: "clamp(56px, 8vh, 88px) clamp(24px, 5vw, 72px) clamp(24px, 5vw, 64px)",
       }}>
         {/* ── Hero — center-aligned to match the About page treatment.
             maxWidth'd h1/p need margin:auto too, not just text-align. ── */}

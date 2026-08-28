@@ -27,7 +27,7 @@ export default function NotFound() {
       <div style={{
         maxWidth: "1020px",
         margin: "0 auto",
-        padding: "clamp(110px, 15vh, 160px) clamp(20px, 5vw, 60px) clamp(64px, 9vh, 100px)",
+        padding: "clamp(56px, 8vh, 88px) clamp(20px, 5vw, 60px) clamp(64px, 9vh, 100px)",
         display: "flex", flexDirection: "column", alignItems: "center",
       }}>
         <div style={{ textAlign: "center", marginBottom: "clamp(36px, 6vh, 56px)" }}>

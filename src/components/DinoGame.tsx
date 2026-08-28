@@ -182,6 +182,9 @@ export default function DinoGame() {
       state.dino.vy=0; state.dino.onGround=true;
       state.dino.y = state.groundY - PLAYER_H;
       setStatus("running");
+      // The loop below only reschedules itself while "running", so idle
+      // and dead states let it stop entirely, this is what restarts it.
+      raf = requestAnimationFrame(tick);
     }
 
     function jump() {
@@ -308,7 +311,17 @@ export default function DinoGame() {
         setScore(state.score);
       }
       draw();
-      raf = requestAnimationFrame(tick);
+      /* Only keep re-scheduling while actually running — idle and dead
+         both draw a completely static frame (nothing here reads state
+         outside the "running" branch above), so looping forever for
+         them was pure waste: this canvas sits in the Footer, which is on
+         every single page, so a permanent 60fps repaint here was never
+         free. It was also almost certainly what caused the new bottom
+         nav bar to visibly flicker wherever it overlaps this canvas
+         (its glass blur has to keep resampling a backdrop that's
+         invalidating every frame for no visual reason). reset() below
+         is what restarts this loop once the game actually starts. */
+      if (state.status === "running") raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
 

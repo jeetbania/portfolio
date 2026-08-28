@@ -15,7 +15,7 @@ export default function ToolsPage() {
       <div style={{
         maxWidth: "1160px",
         margin: "0 auto",
-        padding: "clamp(110px, 15vh, 160px) clamp(24px, 5vw, 72px) clamp(24px, 5vw, 64px)",
+        padding: "clamp(56px, 8vh, 88px) clamp(24px, 5vw, 72px) clamp(24px, 5vw, 64px)",
       }}>
         {/* ── Hero, same treatment as /blog's ── */}
         <div style={{ marginBottom: "clamp(48px, 7vh, 72px)", textAlign: "center" }}>

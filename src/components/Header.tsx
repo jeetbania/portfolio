@@ -301,6 +301,12 @@ function DesktopNav() {
             color: "var(--col-muted)",
             cursor: "pointer",
             pointerEvents: "auto",
+            // Forces its own compositor layer so its backdrop-blur isn't
+            // resampled against whatever's scrolling/animating behind it
+            // (this bar can sit over the Footer's canvas game) — belt and
+            // suspenders alongside actually stopping that canvas's idle
+            // repaint loop (see DinoGame.tsx).
+            willChange: "transform",
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -326,6 +332,7 @@ function DesktopNav() {
           ].join(", "),
           pointerEvents: "auto",
           transition: "background 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out)",
+          willChange: "transform",
         }}
       >
         {/* Menu toggle — moved to the bar's leading edge per feedback,

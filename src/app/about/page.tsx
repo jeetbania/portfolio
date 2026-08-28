@@ -39,7 +39,7 @@ export default function AboutPage() {
       <div style={{
         maxWidth: "820px",
         margin: "0 auto",
-        padding: "clamp(90px, 12vh, 130px) clamp(20px, 5vw, 40px) 80px",
+        padding: "clamp(48px, 7vh, 72px) clamp(20px, 5vw, 40px) 80px",
         display: "flex",
         flexDirection: "column",
         gap: "clamp(32px, 5vh, 52px)",

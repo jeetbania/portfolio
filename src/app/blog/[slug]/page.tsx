@@ -35,7 +35,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div
         style={{
           minHeight: "100svh",
-          padding: "clamp(110px, 15vh, 160px) clamp(24px, 5vw, 64px) clamp(24px, 5vw, 64px)",
+          padding: "clamp(56px, 8vh, 88px) clamp(24px, 5vw, 64px) clamp(24px, 5vw, 64px)",
           maxWidth: "1160px",
           margin: "0 auto",
         }}
