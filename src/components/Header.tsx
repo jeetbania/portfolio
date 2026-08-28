@@ -293,20 +293,22 @@ function DesktopNav() {
           style={{
             width: 30, height: 30, borderRadius: "50%",
             display: "grid", placeItems: "center",
-            background: "var(--surface-nav)",
-            backdropFilter: "blur(22px) saturate(180%)",
-            WebkitBackdropFilter: "blur(22px) saturate(180%)",
+            // No backdrop-filter here on purpose — two separate blurred
+            // glass surfaces sitting 8px apart (this + the main bar) is
+            // what was actually causing the visible seam reported near
+            // the footer/tool cards, confirmed by testing: the artifact
+            // only ever appeared once this pill existed alongside the
+            // main bar, never with the bar alone (its expanded state,
+            // hero). Solid, fully opaque background sidesteps the whole
+            // class of bug instead of chasing the exact Chromium
+            // internals that caused it, this pill is small/plain enough
+            // that it doesn't need its own glass treatment anyway.
+            background: "var(--col-bg)",
             border: "1px solid var(--surface-glass-border)",
             boxShadow: "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
             color: "var(--col-muted)",
             cursor: "pointer",
             pointerEvents: "auto",
-            // Forces its own compositor layer so its backdrop-blur isn't
-            // resampled against whatever's scrolling/animating behind it
-            // (this bar can sit over the Footer's canvas game) — belt and
-            // suspenders alongside actually stopping that canvas's idle
-            // repaint loop (see DinoGame.tsx).
-            willChange: "transform",
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -321,9 +323,14 @@ function DesktopNav() {
         style={{
           display: "inline-flex", alignItems: "center", gap: "2px",
           padding: "5px 8px", borderRadius: "99px",
-          background: "var(--surface-nav)",
-          backdropFilter: "blur(22px) saturate(180%)",
-          WebkitBackdropFilter: "blur(22px) saturate(180%)",
+          // Fully solid, no backdrop-filter — this bar now roams over
+          // every kind of page content (grids, the footer's game), and
+          // any amount of translucency showed a visible seam wherever a
+          // real edge/gutter in that content sat behind it (confirmed:
+          // fainter at higher opacity, gone only once fully opaque).
+          // Matches --surface-nav's own hue exactly, so it still reads
+          // as "the same nav" even without the glass see-through.
+          background: "var(--col-bg)",
           border: "1px solid var(--surface-glass-border)",
           boxShadow: [
             "0 1px 0 rgba(255,255,255,0.2) inset",
@@ -332,7 +339,6 @@ function DesktopNav() {
           ].join(", "),
           pointerEvents: "auto",
           transition: "background 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out)",
-          willChange: "transform",
         }}
       >
         {/* Menu toggle — moved to the bar's leading edge per feedback,

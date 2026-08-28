@@ -8,15 +8,21 @@ import type { Tool } from "@/data/tools";
  * excerpt field Jeet didn't want here, the tagline does double duty as
  * both. Thumbnail is a real OG image where one exists (thumb set), or
  * ToolPlaceholderThumb for the two Figma plugins that don't have one yet.
+ *
+ * `wide`: for the lone trailing card when the tool count is odd (see
+ * ToolsGrid), spanning both grid columns, switches to a horizontal
+ * (image left, text right) layout instead of stretching the normal
+ * vertical card to double width, which would have left the thumbnail
+ * a very short, oddly-proportioned strip.
  */
-export default function ToolCard({ tool }: { tool: Tool }) {
+export default function ToolCard({ tool, wide = false }: { tool: Tool; wide?: boolean }) {
   return (
     <Link
       href={`/tools/${tool.slug}`}
       className="tool-card block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[#3B5BDB]"
       style={{
         display: "flex",
-        flexDirection: "column",
+        flexDirection: wide ? "row" : "column",
         height: "100%",
         borderRadius: "22px",
         background: "var(--surface-opaque)",
@@ -27,8 +33,8 @@ export default function ToolCard({ tool }: { tool: Tool }) {
         overflow: "hidden",
       }}
     >
-      <div style={{ padding: "10px 10px 0", flexShrink: 0 }}>
-        <div style={{ position: "relative", width: "100%", aspectRatio: "16/10", borderRadius: "16px", overflow: "hidden" }}>
+      <div style={{ padding: wide ? "10px 0 10px 10px" : "10px 10px 0", flexShrink: 0, width: wide ? "42%" : undefined }}>
+        <div style={{ position: "relative", width: "100%", height: wide ? "100%" : undefined, aspectRatio: wide ? undefined : "16/10", borderRadius: "16px", overflow: "hidden" }}>
           {tool.thumb ? (
             <Image src={tool.thumb} alt="" fill sizes="(max-width: 700px) 100vw, 480px" style={{ objectFit: "cover" }} />
           ) : (
