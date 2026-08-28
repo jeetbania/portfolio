@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { animate } from "motion";
@@ -135,6 +135,107 @@ function useHeaderState() {
    Still gated behind isMobile === false — MobileNav (top, hamburger
    panel) is completely untouched and has its own "too many links"
    answer already. ══════════════════════════════════════════════════ */
+/* Separate open/close springs, bouncier opening, snappier settling on
+   close, same asymmetry MobileNav's panel morph already uses below.
+   Module-level (not re-created every DesktopNav render) since they're
+   just plain objects passed straight to Motion's animate(). */
+const EXTRA_LINKS_OPEN_SPRING  = { type: "spring" as const, duration: 0.58, bounce: 0.34 };
+const EXTRA_LINKS_CLOSE_SPRING = { type: "spring" as const, duration: 0.4,  bounce: 0.08 };
+
+/* Hoisted to module scope on purpose: NavLinkGroup owns refs that a
+   width/opacity animation writes into directly (see below), so it needs
+   to be the SAME component across DesktopNav's re-renders. Defining a
+   component function INSIDE another component (the original NavLink/
+   Collapsible both did this) gives it a new identity every render,
+   which for a plain presentational component is harmless, but here it
+   would make React unmount+remount this on every unrelated re-render
+   (e.g. hovering a different link), wiping out the in-flight animation
+   each time. Same reasoning is why NavLink is hoisted too, everything
+   it needs (active/hovered) now comes in as props instead of closure. */
+function NavLink({
+  href, label, isActive, isHovered, onEnter, onLeave,
+}: { href: string; label: string; isActive: boolean; isHovered: boolean; onEnter: () => void; onLeave: () => void }) {
+  return (
+    <Link
+      href={href}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      style={{
+        fontFamily: "var(--font-sans)",
+        fontSize: "13px",
+        fontWeight: isActive ? 500 : 400,
+        color: isActive || isHovered ? "var(--col-fg)" : "var(--col-muted)",
+        padding: "4px 12px",
+        borderRadius: "99px",
+        background: isActive
+          ? "var(--surface-glass-strong)"
+          : isHovered
+          ? "var(--surface-glass)"
+          : "transparent",
+        boxShadow: isActive
+          ? "0 1px 4px rgba(var(--shadow-tint-rgb),0.12), 0 0 0 1px var(--surface-glass-border), var(--glass-bevel)"
+          : "none",
+        transition: "all 180ms var(--ease-out)",
+        textDecoration: "none",
+        whiteSpace: "nowrap" as const,
+      }}
+    >
+      {label}
+    </Link>
+  );
+}
+
+/* The collapsible "extra links" group — animates real pixel width via
+   Motion (a proper spring, run over requestAnimationFrame) instead of
+   the CSS grid-template-columns 0fr/1fr trick this replaced, which
+   looked choppy: browsers don't interpolate that property smoothly
+   frame to frame, and a plain cubic-bezier transition on it has no real
+   bounce. Width target is measured off the inner wrapper's own
+   scrollWidth (same technique as MobileNav's panel height below), so it
+   grows to the links' actual rendered width, not a guessed max-width. */
+function NavLinkGroup({
+  links, expanded, activeHref, hoveredHref, onHover,
+}: {
+  links: typeof SECTIONS; expanded: boolean; activeHref: string | null;
+  hoveredHref: string | null; onHover: (href: string | null) => void;
+}) {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (expanded) {
+      const targetWidth = inner.scrollWidth;
+      animate(outer, { width: `${targetWidth}px` }, reduced ? { duration: 0 } : EXTRA_LINKS_OPEN_SPRING);
+      animate(inner, { opacity: 1 }, reduced ? { duration: 0 } : { type: "spring", duration: 0.42, bounce: 0.1, delay: 0.06 });
+    } else {
+      animate(outer, { width: "0px" }, reduced ? { duration: 0 } : EXTRA_LINKS_CLOSE_SPRING);
+      animate(inner, { opacity: 0 }, reduced ? { duration: 0 } : { type: "spring", duration: 0.22, bounce: 0 });
+    }
+  }, [expanded]);
+
+  return (
+    <div ref={outerRef} style={{ overflow: "hidden", width: 0 }}>
+      <div ref={innerRef} style={{ display: "flex", alignItems: "center", gap: "1px", whiteSpace: "nowrap", opacity: 0 }}>
+        {links.map(n => (
+          <NavLink
+            key={n.href}
+            href={n.href}
+            label={n.label}
+            isActive={activeHref === n.href}
+            isHovered={hoveredHref === n.href}
+            onEnter={() => onHover(n.href)}
+            onLeave={() => onHover(null)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function DesktopNav() {
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -161,39 +262,6 @@ function DesktopNav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHome]);
 
-  const NavLink = useCallback(({ href, label }: { href: string; label: string }) => {
-    const isActive  = active  === href;
-    const isHovered = hovered === href;
-    return (
-      <Link
-        href={href}
-        onMouseEnter={() => setHovered(href)}
-        onMouseLeave={() => setHovered(null)}
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "13px",
-          fontWeight: isActive ? 500 : 400,
-          color: isActive || isHovered ? "var(--col-fg)" : "var(--col-muted)",
-          padding: "4px 12px",
-          borderRadius: "99px",
-          background: isActive
-            ? "var(--surface-glass-strong)"
-            : isHovered
-            ? "var(--surface-glass)"
-            : "transparent",
-          boxShadow: isActive
-            ? "0 1px 4px rgba(var(--shadow-tint-rgb),0.12), 0 0 0 1px var(--surface-glass-border), var(--glass-bevel)"
-            : "none",
-          transition: "all 180ms var(--ease-out)",
-          textDecoration: "none",
-          whiteSpace: "nowrap" as const,
-        }}
-      >
-        {label}
-      </Link>
-    );
-  }, [active, hovered]);
-
   const Divider = () => (
     <div aria-hidden="true" style={{ width: 1, height: 16, background: "var(--col-border)", margin: "0 3px", flexShrink: 0 }} />
   );
@@ -207,97 +275,15 @@ function DesktopNav() {
   const rightMain   = rightLinks[0];
   const rightExtra  = rightLinks.slice(1);
 
-  /* The grid-template-columns 0fr/1fr trick: animates to the group's real
-     intrinsic width (not a guessed max-width), no ref measurement needed.
-     The inner div's overflow:hidden is what actually clips during the
-     transition; the outer grid is what's animated. */
-  const Collapsible = ({ links }: { links: typeof SECTIONS }) => (
-    <div
-      className="desktop-nav-collapsible"
-      style={{
-        display: "grid",
-        gridTemplateColumns: expanded ? "1fr" : "0fr",
-        transition: "grid-template-columns 420ms var(--ease-spring)",
-      }}
-    >
-      <div style={{
-        overflow: "hidden", minWidth: 0, display: "flex", alignItems: "center", gap: "1px",
-        opacity: expanded ? 1 : 0,
-        transition: `opacity ${expanded ? "260ms" : "140ms"} var(--ease-out) ${expanded ? "80ms" : "0ms"}`,
-      }}>
-        {links.map(n => <NavLink key={n.href} href={n.href} label={n.label} />)}
-      </div>
-    </div>
-  );
-
   const toggleMenu = () => setMenuOpen(o => !o);
 
   return (
     <div style={{ position: "fixed", bottom: "14px", left: 0, right: 0, zIndex: 100, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", pointerEvents: "none" }}>
-      <div
-        style={{
-          display: "inline-flex", alignItems: "center", gap: "2px",
-          padding: "5px 8px", borderRadius: "99px",
-          background: "var(--surface-nav)",
-          backdropFilter: "blur(22px) saturate(180%)",
-          WebkitBackdropFilter: "blur(22px) saturate(180%)",
-          border: "1px solid var(--surface-glass-border)",
-          boxShadow: [
-            "0 1px 0 rgba(255,255,255,0.2) inset",
-            "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
-            "0 8px 24px rgba(var(--shadow-tint-rgb),0.06)",
-          ].join(", "),
-          pointerEvents: "auto",
-          transition: "background 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out)",
-        }}
-      >
-        <nav aria-label="Left navigation" style={{ display: "flex", alignItems: "center", gap: "1px" }}>
-          <NavLink href={leftMain.href} label={leftMain.label} />
-          {leftExtra.length > 0 && <Collapsible links={leftExtra} />}
-        </nav>
-        <Divider />
-        <Link href="/" style={{ fontFamily: "var(--font-serif)", fontSize: "14px", fontWeight: 400, color: "var(--col-fg)", textDecoration: "none", padding: "4px 14px", whiteSpace: "nowrap" as const, letterSpacing: "-0.01em" }}>
-          Jeet Bania
-        </Link>
-        <Divider />
-        <nav aria-label="Right navigation" style={{ display: "flex", alignItems: "center", gap: "1px" }}>
-          <NavLink href={rightMain.href} label={rightMain.label} />
-          {rightExtra.length > 0 && <Collapsible links={rightExtra} />}
-        </nav>
-
-        {/* Menu toggle — icon flips to a close "x" once expanded (whether
-            that's from being manually opened, or just from sitting in the
-            hero), so it always reads as "click me to go back". */}
-        <Divider />
-        <button
-          onClick={toggleMenu}
-          aria-expanded={expanded}
-          aria-label={expanded ? "Collapse navigation" : "Expand navigation"}
-          style={{
-            display: "flex", alignItems: "center", gap: "6px",
-            fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)",
-            padding: "4px 10px", borderRadius: "99px", border: "none",
-            background: "transparent", cursor: "pointer",
-            transition: "background 180ms var(--ease-out), color 180ms var(--ease-out)",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = "var(--surface-glass)"; e.currentTarget.style.color = "var(--col-fg)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--col-muted)"; }}
-        >
-          Menu
-          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"
-            style={{ transition: "transform 260ms var(--ease-spring)", transform: expanded ? "rotate(45deg)" : "rotate(0deg)" }}>
-            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-          </svg>
-        </button>
-
-        <Divider />
-        <ThemeToggle />
-      </div>
-
       {/* Separate little "look here" pill — only shown while collapsed,
-          points at the Menu button since some visitors won't guess it's
-          clickable on its own. Clicking this does the same thing Menu
-          does. */}
+          points at the Menu button (now the bar's leftmost control)
+          since some visitors won't guess it's clickable on its own.
+          Clicking this does the same thing Menu does. Rendered before
+          the main bar in the DOM so it sits to its left. */}
       {!expanded && (
         <button
           onClick={toggleMenu}
@@ -318,12 +304,80 @@ function DesktopNav() {
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            {/* Points left, back at the Menu button inside the main bar
-                this pill sits just outside of. */}
-            <path d="M11 6H2M6 2 2 6l4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            {/* Points right, at the Menu button just inside the main
+                bar's left edge. */}
+            <path d="M1 6h9M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       )}
+
+      <div
+        style={{
+          display: "inline-flex", alignItems: "center", gap: "2px",
+          padding: "5px 8px", borderRadius: "99px",
+          background: "var(--surface-nav)",
+          backdropFilter: "blur(22px) saturate(180%)",
+          WebkitBackdropFilter: "blur(22px) saturate(180%)",
+          border: "1px solid var(--surface-glass-border)",
+          boxShadow: [
+            "0 1px 0 rgba(255,255,255,0.2) inset",
+            "0 2px 8px rgba(var(--shadow-tint-rgb),0.1)",
+            "0 8px 24px rgba(var(--shadow-tint-rgb),0.06)",
+          ].join(", "),
+          pointerEvents: "auto",
+          transition: "background 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out)",
+        }}
+      >
+        {/* Menu toggle — moved to the bar's leading edge per feedback,
+            reads better on the left. Icon flips to a close "x" once
+            expanded (whether that's from being manually opened, or just
+            from sitting in the hero), so it always reads as "click me to
+            go back". */}
+        <button
+          onClick={toggleMenu}
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse navigation" : "Expand navigation"}
+          style={{
+            display: "flex", alignItems: "center", gap: "6px",
+            fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--col-muted)",
+            padding: "4px 10px", borderRadius: "99px", border: "none",
+            background: "transparent", cursor: "pointer",
+            transition: "background 180ms var(--ease-out), color 180ms var(--ease-out)",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = "var(--surface-glass)"; e.currentTarget.style.color = "var(--col-fg)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--col-muted)"; }}
+        >
+          Menu
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"
+            style={{ transition: "transform 260ms var(--ease-spring)", transform: expanded ? "rotate(45deg)" : "rotate(0deg)" }}>
+            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+        </button>
+        <Divider />
+
+        <nav aria-label="Left navigation" style={{ display: "flex", alignItems: "center", gap: "1px" }}>
+          <NavLink href={leftMain.href} label={leftMain.label} isActive={active === leftMain.href} isHovered={hovered === leftMain.href}
+            onEnter={() => setHovered(leftMain.href)} onLeave={() => setHovered(null)} />
+          {leftExtra.length > 0 && (
+            <NavLinkGroup links={leftExtra} expanded={expanded} activeHref={active} hoveredHref={hovered} onHover={setHovered} />
+          )}
+        </nav>
+        <Divider />
+        <Link href="/" style={{ fontFamily: "var(--font-serif)", fontSize: "14px", fontWeight: 400, color: "var(--col-fg)", textDecoration: "none", padding: "4px 14px", whiteSpace: "nowrap" as const, letterSpacing: "-0.01em" }}>
+          Jeet Bania
+        </Link>
+        <Divider />
+        <nav aria-label="Right navigation" style={{ display: "flex", alignItems: "center", gap: "1px" }}>
+          <NavLink href={rightMain.href} label={rightMain.label} isActive={active === rightMain.href} isHovered={hovered === rightMain.href}
+            onEnter={() => setHovered(rightMain.href)} onLeave={() => setHovered(null)} />
+          {rightExtra.length > 0 && (
+            <NavLinkGroup links={rightExtra} expanded={expanded} activeHref={active} hoveredHref={hovered} onHover={setHovered} />
+          )}
+        </nav>
+
+        <Divider />
+        <ThemeToggle />
+      </div>
     </div>
   );
 }

@@ -1556,7 +1556,7 @@ body {
    Pauses on hover so it doesn't fight the click. ────────────────────── */
 @keyframes desktop-nav-hint-nudge {
   0%, 100% { transform: translateX(0); }
-  50%      { transform: translateX(-3px); }
+  50%      { transform: translateX(3px); }
 }
 .desktop-nav-hint {
   animation: desktop-nav-hint-nudge 1.8s ease-in-out infinite;
@@ -1566,8 +1566,4 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .desktop-nav-hint { animation: none; }
-  .desktop-nav-collapsible,
-  .desktop-nav-collapsible > div {
-    transition-duration: 0ms !important;
-  }
 }
