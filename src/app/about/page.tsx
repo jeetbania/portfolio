@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import RoundedCap from "@/components/RoundedCap";
 
 export const metadata: Metadata = {
-  title: "About — Jeet Bania",
+  title: "About - Jeet Bania",
   description: "Product & UX Designer. Bengaluru.",
 };
 
@@ -138,7 +138,7 @@ export default function AboutPage() {
             I usually begin with questions rather than screens. I like understanding why something feels confusing before thinking about how it should look. Once the problem is clear, I explore different directions, prototype ideas quickly, and keep refining until the solution feels simple.
           </p>
           <p style={BODY}>
-            I&rsquo;m also constantly experimenting with new tools — especially AI — not to replace thoughtful design, but to spend less time on repetitive work and more time polishing the parts that people actually remember.
+            I&rsquo;m also constantly experimenting with new tools, especially AI, not to replace thoughtful design but to spend less time on repetitive work and more time polishing the parts people actually remember.
           </p>
         </div>
 

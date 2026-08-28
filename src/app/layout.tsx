@@ -49,14 +49,14 @@ const nanumPenScript = Nanum_Pen_Script({
  * doing it against placeholder content now would mean redoing most of it
  * later anyway.
  */
-const SITE_TITLE = "Jeet Bania — UX & Motion Designer";
+const SITE_TITLE = "Jeet Bania - UX & Motion Designer";
 const SITE_DESCRIPTION = "I make real experiences that connect with real people.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jeetcreates.cc"),
   title: {
     default: SITE_TITLE,
-    template: "%s — Jeet Bania",
+    template: "%s - Jeet Bania",
   },
   description: SITE_DESCRIPTION,
   openGraph: {

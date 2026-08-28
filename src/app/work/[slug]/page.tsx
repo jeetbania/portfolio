@@ -18,7 +18,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = projects.find(p => p.slug === slug);
-  return { title: project ? `${project.title} — Jeet Bania` : "Case Study" };
+  return { title: project ? `${project.title} - Jeet Bania` : "Case Study" };
 }
 
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {

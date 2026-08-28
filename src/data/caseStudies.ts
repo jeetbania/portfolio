@@ -76,7 +76,7 @@ export const caseStudies: CaseStudy[] = [
          doesn't belong in a "design tools" tile. No em dashes anywhere in
          this case study's copy, per Jeet's request. */
       role: "UX Design, IA & Content Strategy",
-      timeline: "Feb 2024 — Jul 2025 (ongoing)",
+      timeline: "Feb 2024–Jul 2025 (ongoing)",
       tools: ["Figma"],
     },
     sections: [
@@ -239,7 +239,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "migrateful",
     meta: {
       role: "UX Design, IA & Content Strategy",
-      timeline: "Aug 2023 — Sep 2023",
+      timeline: "Aug 2023–Sep 2023",
     },
     sections: [
       {
@@ -371,7 +371,7 @@ export const caseStudies: CaseStudy[] = [
          unconfirmed ("worth confirming and filling in yourself") rather
          than guessing, so nothing's been invented here either. */
       role: "UX Design, Content Strategy & IA",
-      timeline: "May 2025 — Jun 2025",
+      timeline: "May 2025–Jun 2025",
       team: "Natural Eye Media, small internal team",
       tools: ["Figma"],
     },
@@ -526,7 +526,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "spaces-international",
     meta: {
       role: "UX Design, IA & Content Strategy",
-      timeline: "Feb 2024 — May 2024",
+      timeline: "Feb 2024–May 2024",
     },
     sections: [
       {
@@ -689,7 +689,7 @@ export const caseStudies: CaseStudy[] = [
          placeholder. No em dashes anywhere in this case study's copy,
          same standing preference as InCore's. */
       role: "UX Design, Brand & Art Direction",
-      timeline: "Mar 2025 — Jul 2025",
+      timeline: "Mar 2025–Jul 2025",
       tools: ["Figma", "Photoshop"],
     },
     sections: [

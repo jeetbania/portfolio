@@ -4,8 +4,8 @@ import RoundedCap from "@/components/RoundedCap";
 import PlaygroundShell from "@/components/PlaygroundShell";
 
 export const metadata: Metadata = {
-  title: "Playground — Jeet Bania",
-  description: "A pannable, zoomable corner of the site — drag the cards around, pin a few down.",
+  title: "Playground - Jeet Bania",
+  description: "A pannable, zoomable corner of the site. Drag the cards around, pin a few down.",
 };
 
 /**

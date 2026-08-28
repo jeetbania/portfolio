@@ -45,11 +45,11 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Every engineering team we onboarded to InCore asked the same question in week one: \"where do I actually start?\" The product had forty capabilities and one entry point — a dashboard that treated a first-time licensing lead and a five-year power user identically.",
+            text: "Every engineering team we onboarded to InCore asked the same question in week one: \"where do I actually start?\" The product had forty capabilities and one entry point: a dashboard that treated a first-time licensing lead and a five-year power user identically.",
           },
           {
             type: "paragraph",
-            text: "Our first attempt fixed this with more structure: a guided checklist, progress bars, the works. It was correct. It was also completely ignored — completion rates sat at 11% after three weeks.",
+            text: "Our first attempt fixed this with more structure: a guided checklist, progress bars, the works. It was correct. It was also completely ignored. Completion rates sat at 11% after three weeks.",
           },
         ],
       },
@@ -59,7 +59,7 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "The checklist assumed people wanted to be taught the product. What they actually wanted was to finish the one task that brought them there — usually licensing a specific core — and see everything else later, on their own terms.",
+            text: "The checklist assumed people wanted to be taught the product. What they actually wanted was to finish the one task that brought them there, usually licensing a specific core, and see everything else later, on their own terms.",
           },
           {
             type: "quote",
@@ -113,11 +113,11 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Most handoff advice is about tooling — dev mode, redlines, design tokens synced to code. All useful. None of it addresses the actual failure mode, which is that by the time engineering opens the file, the reasoning behind every decision has already left the room with you.",
+            text: "Most handoff advice is about tooling: dev mode, redlines, design tokens synced to code. All useful. None of it addresses the actual failure mode, which is that by the time engineering opens the file, the reasoning behind every decision has already left the room with you.",
           },
           {
             type: "paragraph",
-            text: "A spacing value survives handoff. The reason you chose 12px over 16px almost never does — and that reason is usually the part worth protecting.",
+            text: "A spacing value survives handoff. The reason you chose 12px over 16px almost never does, and that reason is usually the part worth protecting.",
           },
         ],
       },
@@ -127,7 +127,7 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "I started writing a one-paragraph \"why\" next to every non-obvious decision directly in the file — not a separate doc nobody opens, but a sticky note living where the component lives. It's slower to write. It's saved every project it's been on from at least one silent regression.",
+            text: "I started writing a one-paragraph \"why\" next to every non-obvious decision directly in the file: not a separate doc nobody opens, but a sticky note living where the component lives. It's slower to write. It's saved every project it's been on from at least one silent regression.",
           },
           {
             type: "image",
@@ -157,7 +157,7 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "A button that snaps into its hover state is arguing \"this is instant and free.\" A button that eases in with a little overshoot is arguing \"this had weight, and now it's settled.\" Neither is wrong — but shipping the wrong one for the action is a small, constant tax on trust.",
+            text: "A button that snaps into its hover state is arguing \"this is instant and free.\" A button that eases in with a little overshoot is arguing \"this had weight, and now it's settled.\" Neither is wrong, but shipping the wrong one for the action is a small, constant tax on trust.",
           },
           {
             type: "quote",
@@ -172,9 +172,9 @@ export const blogPosts: BlogPost[] = [
           {
             type: "list",
             items: [
-              "Reversible, low-stakes actions (hover, toggle) — fast, linear-ish, no overshoot",
-              "Consequential actions (delete, submit) — a beat slower, so the pause reads as weight",
-              "Anything appearing near a cursor — should feel summoned, not teleported",
+              "Reversible, low-stakes actions (hover, toggle): fast, linear-ish, no overshoot",
+              "Consequential actions (delete, submit): a beat slower, so the pause reads as weight",
+              "Anything appearing near a cursor should feel summoned, not teleported",
             ],
           },
           {
@@ -221,7 +221,7 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "I underpriced the first two projects badly enough that I was effectively subsidizing them. I also assumed good work would market itself — it doesn't; the unglamorous stuff (a clear case study, a fast reply, showing up on time) did more for the pipeline than any single project.",
+            text: "I underpriced the first two projects badly enough that I was effectively subsidizing them. I also assumed good work would market itself. It doesn't. The unglamorous stuff (a clear case study, a fast reply, showing up on time) did more for the pipeline than any single project.",
           },
           {
             type: "paragraph",
@@ -264,7 +264,7 @@ export const blogPosts: BlogPost[] = [
           {
             type: "list",
             items: [
-              "Components default to invisible — personality is opt-in, not baked in",
+              "Components default to invisible: personality is opt-in, not baked in",
               "One accent color per surface, chosen at the page level, not the component level",
               "If a component needs a comment explaining when to use it, it's two components",
             ],
@@ -295,7 +295,7 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "For a while, every spacing value, every one-off color, every corner radius in my files became a variable. It looked disciplined. In practice it meant every design review turned into archaeology — three clicks to find out that \"spacing/lg\" resolved to a number I could've just typed.",
+            text: "For a while, every spacing value, every one-off color, every corner radius in my files became a variable. It looked disciplined. In practice it meant every design review turned into archaeology. Three clicks to find out that \"spacing/lg\" resolved to a number I could've just typed.",
           },
         ],
       },
@@ -305,11 +305,11 @@ export const blogPosts: BlogPost[] = [
         blocks: [
           {
             type: "paragraph",
-            text: "Tokens earn their keep when a value is shared across many surfaces and needs to move together — brand color, type scale, the handful of spacing steps that actually repeat. Everything else is faster, clearer, and just as maintainable as a literal value sitting where you can see it.",
+            text: "Tokens earn their keep when a value is shared across many surfaces and needs to move together: brand color, type scale, the handful of spacing steps that actually repeat. Everything else is faster, clearer, and just as maintainable as a literal value sitting where you can see it.",
           },
           {
             type: "paragraph",
-            text: "Indirection is a tool, not a virtue. I only reach for it now when something will actually need to change in one place and propagate — not by default, just in case.",
+            text: "Indirection is a tool, not a virtue. I only reach for it now when something will actually need to change in one place and propagate, not by default, just in case.",
           },
         ],
       },

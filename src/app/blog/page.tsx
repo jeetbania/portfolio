@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import RoundedCap from "@/components/RoundedCap";
 
 export const metadata: Metadata = {
-  title: "Blog — Jeet Bania",
+  title: "Blog - Jeet Bania",
   description: "Notes on design, product, and motion.",
 };
 
@@ -38,7 +38,7 @@ export default function BlogPage() {
             letterSpacing: "-0.01em", lineHeight: 1.55, color: "var(--col-muted)",
             maxWidth: "560px", marginLeft: "auto", marginRight: "auto",
           }}>
-            Design, product, and motion — the things I keep re-learning, written down before I forget them again.
+            Design, product, and motion: the things I keep re-learning, written down before I forget them again.
           </p>
         </div>
 
