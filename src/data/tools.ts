@@ -44,6 +44,54 @@ export interface Tool {
  */
 export const tools: Tool[] = [
   {
+    slug: "generative-visual-lab",
+    title: "Generative Visual Lab",
+    tagline: "A procedural visual-effects instrument for premium, atmospheric motion: force-field string systems, magnetic particle flows, and a stippled particle globe, all built on one composable engine with a real OKLCH color model underneath.",
+    kind: "web",
+    thumb: "/tool-generative-visual-lab-thumb.webp",
+    tintHex: "#D4A22E",
+    builtWith: "Next.js, Canvas 2D, DialKit",
+    variants: [
+      { label: "Generative Visual Lab", url: "https://generative-visual-lab.pages.dev", screenshot: "/tool-generative-visual-lab-screenshot.webp" },
+    ],
+    sections: [
+      {
+        id: "overview",
+        label: "Overview",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Studying a handful of Stripe's generative hero animations, organic string fields, magnetic particle flows, a particle-stippled globe, turned into a bigger question: what's the actual system underneath that class of visual, and could it be built as a real instrument instead of a few one-off recreations. Generative Visual Lab is that instrument: a three-zone editor (effect library, canvas, inspector) with thirteen generators, each assembled from the same small set of composable primitives rather than bespoke code per effect.",
+          },
+        ],
+      },
+      {
+        id: "how-it-works",
+        label: "How it works",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "Every generator is built from the same handful of engines: a seeded random/mutate system, simplex and curl noise, a composable force-field engine (attract, repel, vortex, directional, and turbulence sources that just sum together), a generic particle renderer, and a color engine that derives a full atmospheric palette, ambient, focal, accent, glow, from one base hex color in OKLCH space rather than picking five hardcoded hues per mood. The mouse is just another force-field source, so \"the cursor bends the strings\" and \"the cursor repels the particles\" are the same code path pointed at different fields.",
+          },
+          {
+            type: "paragraph",
+            text: "The particle globe samples bundled Natural Earth land geometry (no external map API) with spherical-uniform rejection sampling, and supports flat, orthographic, and slight-perspective projections, plus a click-to-place anchor and route system for great-circle and arc flight paths between them.",
+          },
+        ],
+      },
+      {
+        id: "surprise-me",
+        label: "Surprise Me",
+        blocks: [
+          {
+            type: "paragraph",
+            text: "The button I actually drive the tool with: instead of a full reroll, it nudges the current geometry, field, particle behavior, palette, composition, and motion together by degrees, so the result stays recognizably related to what's on screen. Most presses stay on the same generator and mutate its parameters; some switch to a neighboring generator in the same category; a rare few reroll the palette entirely. Seed plus the full parameter set is one Save away the moment something looks right.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     slug: "glowfield",
     title: "Glowfield",
     tagline: "A generative background-effects tool: dot fields, glass, god rays, aurora gradients, and particle networks for hero sections and posters, exportable as PNG, SVG, video, or embed code.",
